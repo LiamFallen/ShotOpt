@@ -1,0 +1,15 @@
+{
+  "name": "ShotOpt — Screenshot Beautifier",
+  "short_name": "ShotOpt",
+  "description": "Turn plain screenshots into polished images. Entirely client-side.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#08080a",
+  "theme_color": "#08080a",
+  "orientation": "any",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "maskable" }
+  ]
+}
