@@ -1162,7 +1162,7 @@ function drawPlaceholder(ctx,x,y,w,h){
   ctx.fillText("Drop or Paste",x+w/2,y+h/2+f*.03);
   ctx.fillStyle = "rgba(255,255,255,.15)";
   ctx.font = `500 ${f*.042}px -apple-system,BlinkMacSystemFont,Inter,sans-serif`;
-  ctx.fillText("PNG · JPG · WEBP · GIF",x+w/2,y+h/2+f*.13);
+  ctx.fillText("Click to browse · PNG · JPG · WEBP · GIF",x+w/2,y+h/2+f*.13);
   const br = f*.055, cy = y+h/2-f*.13;
   ctx.beginPath(); ctx.arc(x+w/2,cy,br,0,Math.PI*2);
   ctx.fillStyle = "rgba(255,255,255,.9)"; ctx.fill();
@@ -1744,6 +1744,57 @@ document.getElementById("clearAll").addEventListener("click",()=>{
   [0,1,2].forEach(i=>{ if(IMGS[i]?.url) URL.revokeObjectURL(IMGS[i].url); IMGS[i]=null; });
   magicPalette = null; renderSlots(); update();
 });
+
+/* The on-canvas "Drop or Paste" placeholder looks like a button, so it has to
+   behave like one. Hit-test the click against each mockup's projected quad so
+   the right slot opens — the quads are tilted, hence a polygon test rather
+   than a bounding box. */
+function pointInQuad(p,q){
+  let sign = 0;
+  for(let i=0;i<4;i++){
+    const a = q[i], b = q[(i+1)%4];
+    const cross = (b.x-a.x)*(p.y-a.y) - (b.y-a.y)*(p.x-a.x);
+    if(Math.abs(cross) < 1e-9) continue;             // point on the edge
+    const s = cross > 0 ? 1 : -1;
+    if(!sign) sign = s;
+    else if(s !== sign) return false;
+  }
+  return true;
+}
+function slotAtPoint(clientX,clientY){
+  if(S.hideMockup) return -1;
+  const rect = preview.getBoundingClientRect();
+  if(!rect.width || !rect.height) return -1;
+  const F = frameLayout();
+  const p = {
+    x:(clientX-rect.left)/rect.width  * F.W,
+    y:(clientY-rect.top) /rect.height * F.H
+  };
+  for(let k=F.items.length-1;k>=0;k--){            // topmost first
+    const it = F.items[k];
+    const quad = [[0,0],[1,0],[1,1],[0,1]].map(([u,v])=>{
+      const q = F.P(it,u,v);
+      return {x:F.ox+q.x*F.scale, y:F.oy+q.y*F.scale};
+    });
+    if(pointInQuad(p,quad)) return it.i;
+  }
+  return -1;
+}
+preview.addEventListener("click",e=>{
+  const i = slotAtPoint(e.clientX,e.clientY);
+  if(i>=0 && !IMGS[i]){ pendingSlot = i; fileIn.click(); }
+});
+let hoverRaf = 0;
+preview.addEventListener("mousemove",e=>{
+  if(hoverRaf) return;                              // once per frame is plenty
+  const {clientX,clientY} = e;
+  hoverRaf = requestAnimationFrame(()=>{
+    hoverRaf = 0;
+    const i = slotAtPoint(clientX,clientY);
+    preview.style.cursor = (i>=0 && !IMGS[i]) ? "pointer" : "default";
+  });
+});
+preview.addEventListener("mouseleave",()=>{ preview.style.cursor = "default"; });
 
 const overlay = document.getElementById("overlay");
 let dragN = 0;
