@@ -12,7 +12,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <meta property="og:type" content="website">
 <meta property="og:title" content="ShotOpt — Screenshot Beautifier">
-<meta property="og:description" content="Turn plain screenshots into polished images. Gradients, mockup styles, 3D tilt and one-click PNG export — entirely in your browser, nothing uploaded.">
+<meta property="og:description" content="Turn plain screenshots into polished images and motion mockups. 150+ backgrounds, templates, 3D scenes, VFX, annotation, WebM video and GIF export — entirely in your browser, nothing uploaded.">
 <meta property="og:image" content="og.jpg">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="ShotOpt — Screenshot Beautifier">
@@ -25,12 +25,12 @@
     --card:#15151b;
     --card-2:#1c1c24;
     --card-3:#24242e;
-    --line:rgba(255,255,255,.06);
-    --line-2:rgba(255,255,255,.12);
-    --line-3:rgba(255,255,255,.22);
-    --txt:#f0f0f4;
-    --dim:#9a9aa6;
-    --faint:#63636f;
+    --line:rgba(255,255,255,.08);
+    --line-2:rgba(255,255,255,.15);
+    --line-3:rgba(255,255,255,.26);
+    --txt:#f2f2f6;
+    --dim:#b4b5c2;
+    --faint:#8e8f9e;
     --accent:#8b7bff;
     --accent-2:#22d3ee;
     --rc:13px;
@@ -105,7 +105,7 @@
   .ctrl{margin-bottom:13px}
   .ctrl:last-child{margin-bottom:0}
   .lab{display:flex;justify-content:space-between;align-items:center;margin-bottom:7px;gap:8px}
-  .lab span{font-size:12px;color:var(--dim);font-weight:450}
+  .lab span{font-size:12px;color:#cfd0da;font-weight:500}
   .lab i{
     font-style:normal;font-size:10.5px;color:var(--dim);font-variant-numeric:tabular-nums;
     background:var(--card);border:1px solid var(--line);padding:1.5px 7px;border-radius:6px;min-width:44px;text-align:center;
@@ -163,7 +163,7 @@
     padding:8px 3px 7px;display:flex;flex-direction:column;align-items:center;gap:6px;
     transition:.15s var(--ease);cursor:pointer}
   .bgq:hover{background:var(--card-2);border-color:var(--line-2);transform:translateY(-1px)}
-  .bgq[aria-pressed=true]{border-color:transparent;background:var(--card-2);box-shadow:0 0 0 1.5px #fff}
+  .bgq[aria-pressed=true]{border-color:transparent;background:var(--card-2);box-shadow:0 0 0 2px var(--accent)}
   .bgq .ico{width:26px;height:26px;border-radius:8px;display:grid;place-items:center;font-size:12px;
     background:rgba(255,255,255,.07);color:var(--txt);overflow:hidden}
   .bgq .ico.chk{background:conic-gradient(#33333c 0 25%,#22222a 0 50%,#33333c 0 75%,#22222a 0) 0 0/8px 8px}
@@ -199,7 +199,7 @@
 
   /* switches */
   .check{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:5px 0}
-  .check span{font-size:12px;color:var(--dim)}
+  .check span{font-size:12px;color:#cfd0da;font-weight:500}
   .switch{width:34px;height:20px;border-radius:20px;background:rgba(255,255,255,.11);position:relative;
     flex:0 0 auto;transition:.18s var(--ease);border:1px solid transparent}
   .switch::after{content:"";position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;
@@ -344,22 +344,23 @@
   .seg.wrap button{padding:8px 4px}
 
   /* tab panes ease in on switch */
-  #tab-mockup,#tab-frame,#tab-fx{animation:tabin .22s var(--ease)}
+  #tab-mockup,#tab-layout,#tab-frame,#tab-fx,#tab-motion{animation:tabin .22s var(--ease)}
   @keyframes tabin{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
 
-  /* ───── resize handles ───── */
-  #handles{position:absolute;pointer-events:none;z-index:4;
-    outline:1px dashed rgba(255,255,255,.0);border-radius:2px;transition:outline-color .15s}
-  #handles.hot{outline-color:rgba(255,255,255,.28)}
-  #handles .h{position:absolute;width:12px;height:12px;border-radius:50%;background:#fff;
-    box-shadow:0 0 0 1.5px rgba(0,0,0,.55),0 2px 8px rgba(0,0,0,.6);pointer-events:auto;
-    opacity:.0;transform:scale(.6);transition:.16s var(--ease)}
+  /* ───── resize handles — two sleek corner chips, no outline ───── */
+  #handles{position:absolute;pointer-events:none;z-index:4}
+  #handles .h{position:absolute;width:28px;height:28px;border-radius:10px;pointer-events:auto;
+    display:grid;place-items:center;color:#fff;
+    background:rgba(15,15,21,.85);border:1px solid rgba(255,255,255,.28);
+    backdrop-filter:blur(8px);box-shadow:0 6px 18px -6px rgba(0,0,0,.8);
+    opacity:0;transform:scale(.7);transition:.18s var(--ease)}
+  #handles .h svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:1.8;
+    stroke-linecap:round;stroke-linejoin:round}
   #handles.hot .h,#handles .h:hover{opacity:1;transform:scale(1)}
-  #handles .h:hover{background:var(--accent)}
-  #handles .h[data-h=tl]{left:-6px;top:-6px;cursor:nwse-resize}
-  #handles .h[data-h=tr]{right:-6px;top:-6px;cursor:nesw-resize}
-  #handles .h[data-h=bl]{left:-6px;bottom:-6px;cursor:nesw-resize}
-  #handles .h[data-h=br]{right:-6px;bottom:-6px;cursor:nwse-resize}
+  #handles .h:hover{border-color:var(--accent);color:var(--accent);
+    box-shadow:0 0 0 3px rgba(139,123,255,.22),0 6px 18px -6px rgba(0,0,0,.8)}
+  #handles .h[data-h=tl]{left:-14px;top:-14px;cursor:nwse-resize}
+  #handles .h[data-h=br]{right:-14px;bottom:-14px;cursor:nwse-resize}
 
   /* ───── templates modal ───── */
   .modal{position:fixed;inset:0;z-index:50;display:grid;place-items:center;
@@ -391,6 +392,47 @@
 
   /* recording state */
   .btn.rec{background:linear-gradient(100deg,#ff2d2d,#ff2d75);border-color:transparent;color:#fff}
+
+  /* ───── visual ratio picker ───── */
+  .rsel{width:100%;display:flex;align-items:center;gap:10px;padding:9px 11px;
+    background:var(--card);border:1px solid var(--line);border-radius:10px;
+    font-size:12px;font-weight:550;color:var(--txt);transition:.14s;text-align:left}
+  .rsel:hover{border-color:var(--line-2);background:var(--card-2)}
+  .rsel .rlab{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .rsel .rchev{color:var(--faint);font-size:11px}
+  .rbx{display:inline-block;border:1.5px solid var(--faint);border-radius:3px;
+    width:22px;height:15px;flex:0 0 auto}
+  .rpop{position:fixed;z-index:55;width:296px;max-height:min(560px,72vh);overflow-y:auto;
+    background:linear-gradient(180deg,#15151c,#0e0e13);border:1px solid var(--line-2);
+    border-radius:16px;padding:12px;box-shadow:0 30px 90px -20px rgba(0,0,0,.95);
+    animation:pop .16s var(--ease)}
+  .rpop h3{font-size:9.5px;font-weight:650;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--faint);margin:14px 2px 8px}
+  .rpop h3:first-child{margin-top:2px}
+  .rgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
+  .rchip{display:flex;flex-direction:column;align-items:center;gap:6px;padding:10px 4px 8px;
+    border:1px solid var(--line);border-radius:11px;background:var(--card);
+    transition:.14s var(--ease)}
+  .rchip:hover{background:var(--card-2);border-color:var(--line-2);transform:translateY(-1px)}
+  .rchip[aria-pressed=true]{border-color:transparent;
+    box-shadow:0 0 0 2px var(--accent);background:var(--card-2)}
+  .rchip .shape{display:grid;place-items:center;border:1.5px solid var(--dim);border-radius:4px;
+    font-size:8.5px;font-weight:650;color:var(--dim);letter-spacing:-.02em}
+  .rchip[aria-pressed=true] .shape{border-color:var(--accent);color:#fff}
+  .rchip b{font-size:9.5px;font-weight:550;color:var(--dim);max-width:100%;
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .rchip[aria-pressed=true] b{color:#fff}
+  .rchip i{font-style:normal;font-size:8.5px;color:var(--faint);margin-top:-3px}
+
+  /* ───── info tooltips ───── */
+  .info{width:15px;height:15px;border-radius:50%;border:1px solid var(--line-2);
+    color:var(--faint);font-size:9px;font-weight:650;display:inline-grid;place-items:center;
+    text-transform:none;letter-spacing:0;transition:.14s;flex:0 0 auto;line-height:1;cursor:help}
+  .info:hover{color:#fff;border-color:var(--accent);background:rgba(139,123,255,.15)}
+  #tipbox{position:fixed;z-index:70;max-width:240px;padding:9px 12px;
+    background:#1c1c25;border:1px solid var(--line-2);border-radius:10px;
+    font-size:11px;line-height:1.5;color:#d7d8e0;font-weight:450;
+    box-shadow:0 16px 40px -10px rgba(0,0,0,.9);pointer-events:none}
 
   /* Scale the whole UI up on large displays — at a fixed 13px base the app
      reads as a small window in the corner of a 27"+ screen. draw() multiplies
@@ -449,13 +491,13 @@
       </div>
 
       <div class="sec">
-        <h2>Media <span class="sp"></span><button class="mini" id="clearAll" type="button">Clear all</button></h2>
+        <h2>Media <button class="info" type="button" data-tip="Up to three screenshots. Drop files anywhere, paste with ⌘V, or click a slot to browse.">i</button> <span class="sp"></span><button class="mini" id="clearAll" type="button">Clear all</button></h2>
         <div class="slots" id="slots"></div>
         <input type="file" id="file" accept="image/*" multiple hidden>
       </div>
 
       <div class="sec">
-        <h2>Style</h2>
+        <h2>Style <button class="info" type="button" data-tip="The frame drawn around your screenshot — cards, glass, inset, macOS windows and browser chrome.">i</button></h2>
         <div class="tiles" id="styleTiles"></div>
       </div>
 
@@ -475,7 +517,7 @@
       </div>
 
       <div class="sec">
-        <h2>Shadow</h2>
+        <h2>Shadow <button class="info" type="button" data-tip="The shadow the mockup casts. Set its softness and opacity, then steer it with the light angle and distance.">i</button></h2>
         <div class="tiles c4" id="shadowTiles"></div>
         <div class="ctrl" style="margin-top:12px">
           <div class="lab"><span>Opacity</span><i data-out="shOpacity" data-suffix="%"></i></div>
@@ -506,8 +548,14 @@
     <!-- ---------- FRAME ---------- -->
     <div id="tab-frame" hidden>
       <div class="sec">
-        <h2>Canvas size</h2>
-        <div class="ctrl"><select data-key="ratio" id="ratioSel"></select></div>
+        <h2>Canvas size <button class="info" type="button" data-tip="The exported image's dimensions. Auto keeps a stable frame around your content; pick a social preset for exact pixels.">i</button></h2>
+        <div class="ctrl">
+          <button class="rsel" id="ratioBtn" type="button">
+            <span class="rbx" id="ratioBtnBox"></span>
+            <span class="rlab" id="ratioBtnLab">Auto — fit content</span>
+            <span class="rchev">⌄</span>
+          </button>
+        </div>
         <div class="ctrl row" id="customSize" hidden>
           <input type="number" data-key="cw" min="64" max="8000" step="1" placeholder="Width">
           <span style="color:var(--faint);font-size:11px">×</span>
@@ -520,7 +568,7 @@
       </div>
 
       <div class="sec">
-        <h2>Background</h2>
+        <h2>Background <button class="info" type="button" data-tip="150+ built-in backdrops. Magic builds one from your screenshot's colours, and Blur softens any of them with one click.">i</button></h2>
         <div class="bgquick">
           <button class="bgq" data-q="none" type="button" title="Transparent">
             <span class="ico chk"></span><b>None</b></button>
@@ -539,7 +587,7 @@
       </div>
 
       <div class="sec">
-        <h2>Watermark</h2>
+        <h2>Watermark <button class="info" type="button" data-tip="Stamp text or your own uploaded logo on every export.">i</button></h2>
         <div class="check" style="margin-bottom:8px"><span>Enabled</span>
           <button class="switch" data-key="wmOn" type="button"></button></div>
         <div class="ctrl">
@@ -577,7 +625,7 @@
     <!-- ---------- EFFECTS ---------- -->
     <div id="tab-fx" hidden>
       <div class="sec">
-        <h2>Cinematic VFX</h2>
+        <h2>Cinematic VFX <button class="info" type="button" data-tip="Film-style colour grades applied to the whole image. Dial the intensity to taste — they render at full quality in exports.">i</button></h2>
         <div class="seg wrap" data-key="vfx">
           <button data-v="none" type="button">None</button>
           <button data-v="cine" type="button">Cinematic</button>
@@ -611,7 +659,7 @@
       </div>
 
       <div class="sec">
-        <h2>Scene</h2>
+        <h2>Scene <button class="info" type="button" data-tip="Decorative 3-D props behind the mockup, tinted to match your background, with shadows that follow the light angle.">i</button></h2>
         <div class="seg wrap" data-key="scene">
           <button data-v="none" type="button">None</button>
           <button data-v="floor" type="button">Floor</button>
@@ -632,7 +680,7 @@
     <!-- ---------- LAYOUT ---------- -->
     <div id="tab-layout" hidden>
       <div class="sec">
-        <h2>Images</h2>
+        <h2>Images <button class="info" type="button" data-tip="Show one, two or three screenshots side by side, fanned, or stacked.">i</button></h2>
         <div class="seg" data-key="count">
           <button data-v="1" type="button">One</button>
           <button data-v="2" type="button">Two</button>
@@ -653,7 +701,7 @@
       </div>
 
       <div class="sec">
-        <h2>Transform <span class="sp"></span><button class="mini" id="resetTf" type="button">Reset</button></h2>
+        <h2>Transform <button class="info" type="button" data-tip="Position the composition in 3-D. Tip: drag the image right on the canvas, grab a corner chip to resize, or nudge with the arrow keys.">i</button> <span class="sp"></span><button class="mini" id="resetTf" type="button">Reset</button></h2>
         <div class="ctrl">
           <div class="lab"><span>Zoom</span><i data-out="zoom" data-suffix="%"></i></div>
           <input type="range" data-key="zoom" min="20" max="200" step="1">
@@ -681,7 +729,7 @@
       </div>
 
       <div class="sec">
-        <h2>Layout presets</h2>
+        <h2>Layout presets <button class="info" type="button" data-tip="One-click camera angles — they glide into place. Also available on ⌥1–9.">i</button></h2>
         <div class="lps" id="lps"></div>
       </div>
     </div>
@@ -689,7 +737,7 @@
     <!-- ---------- MOTION ---------- -->
     <div id="tab-motion" hidden>
       <div class="sec">
-        <h2>Motion preset</h2>
+        <h2>Motion preset <button class="info" type="button" data-tip="Animate the whole composition. Preview with Space, then export a WebM video or an infinitely-looping GIF.">i</button></h2>
         <div class="seg wrap" data-key="anim">
           <button data-v="none" type="button">None</button>
           <button data-v="push" type="button">Push In</button>
@@ -762,8 +810,10 @@
     <canvas id="preview"></canvas>
     <input type="text" id="annInput" placeholder="Type, then Enter" maxlength="80" hidden>
     <div id="handles" hidden>
-      <div class="h" data-h="tl"></div><div class="h" data-h="tr"></div>
-      <div class="h" data-h="bl"></div><div class="h" data-h="br"></div>
+      <div class="h" data-h="tl" title="Drag to resize">
+        <svg viewBox="0 0 16 16"><path d="M13 13 3 3M3 8V3h5M13 8v5H8"/></svg></div>
+      <div class="h" data-h="br" title="Drag to resize">
+        <svg viewBox="0 0 16 16"><path d="M13 13 3 3M3 8V3h5M13 8v5H8"/></svg></div>
     </div>
     <div class="overlay" id="overlay"><div>Drop your screenshot</div></div>
   </div>
@@ -1939,8 +1989,18 @@ function frameLayout(){
   }else if(S.ratio==="custom"){
     W = clamp(+S.cw||1920,64,8000); H = clamp(+S.ch||1080,64,8000);
   }else if(S.ratio==="auto"){
-    const pad = m*Math.min(bb.w,bb.h)/(1-2*m);
-    W = bb.w+pad*2; H = bb.h+pad*2;
+    // Auto is a *stable* frame: sized from the untransformed, plain-styled
+    // content, so switching layout presets or mockup styles never resizes the
+    // canvas — the composition simply moves inside it.
+    const keep = S;
+    S = Object.assign({},S,{tiltX:0,tiltY:0,rotate:0,offX:0,offY:0,style:"plain"});
+    let bb0;
+    try{
+      const items0 = buildItems();
+      bb0 = sceneBBox(items0,makeProjector(items0));
+    }finally{ S = keep; }
+    const pad0 = m*Math.min(bb0.w,bb0.h)/(1-2*m);
+    W = bb0.w+pad0*2; H = bb0.h+pad0*2;
   }else{
     const [rw,rh] = S.ratio.split(":").map(Number);
     const ar = rw/rh;
@@ -2942,6 +3002,7 @@ async function exportVideo(){
   RECORDING = true;
   clearTimeout(thumbT);
   if(raf){ cancelAnimationFrame(raf); raf = 0; }
+  if(tweenRaf){ cancelAnimationFrame(tweenRaf); tweenRaf = 0; }
   rec.start(200);
   const dur = Math.max(1,S.animDur)*1000;
   await new Promise(res=>{
@@ -3081,6 +3142,7 @@ async function exportGif(){
   RECORDING = true;
   clearTimeout(thumbT);
   if(raf){ cancelAnimationFrame(raf); raf = 0; }
+  if(tweenRaf){ cancelAnimationFrame(tweenRaf); tweenRaf = 0; }
   try{
     const F = frameLayout();
     const kg = Math.min(exportScale(F), 800/Math.max(F.W,F.H));
@@ -3355,6 +3417,7 @@ function pushHistory(){
   },420);
 }
 function applySnap(s){
+  if(tweenRaf){ cancelAnimationFrame(tweenRaf); tweenRaf = 0; }
   S = Object.assign({},DEFAULTS,JSON.parse(s));
   setPlaying(ANIM.playing);                          // stops if anim became "none"
   renderSlots(); buildSwatches();
@@ -3373,6 +3436,7 @@ document.getElementById("redoBtn").addEventListener("click",redo);
    14. Controls
    ══════════════════════════════════════════════════════════ */
 function setKey(k,v){
+  if(tweenRaf){ cancelAnimationFrame(tweenRaf); tweenRaf = 0; }  // manual edit wins
   S[k] = v;
   if(k==="count") renderSlots();
   if(k==="radiusMode") S.radius = v==="sharp" ? 0 : v==="curved" ? 22 : 64;
@@ -3399,14 +3463,92 @@ document.querySelectorAll(".switch[data-key]").forEach(b=>{
   b.addEventListener("click",()=>setKey(b.dataset.key, !S[b.dataset.key]));
 });
 
-const ratioSel = document.getElementById("ratioSel");
-RATIOS.forEach(([group,items])=>{
-  const og = document.createElement("optgroup"); og.label = group;
-  items.forEach(([v,label])=>{
-    const o = document.createElement("option"); o.value=v; o.textContent=label; og.appendChild(o);
-  });
-  ratioSel.appendChild(og);
+/* ── visual canvas-size picker ─────────────────────────────
+   A popover of proportioned chips, grouped like the old dropdown but scannable
+   at a glance — each chip is drawn at its actual aspect ratio. */
+const ratioPop = document.createElement("div");
+ratioPop.className = "rpop"; ratioPop.hidden = true;
+document.body.appendChild(ratioPop);
+function ratioAspect(v){
+  const fx = fixedSize(v);
+  if(fx) return fx.w/fx.h;
+  if(v==="auto" || v==="custom") return null;
+  const [a,b] = v.split(":").map(Number);
+  return (a>0 && b>0) ? a/b : null;
+}
+function ratioLabel(v){
+  for(const [,items] of RATIOS) for(const it of items) if(it[0]===v) return it[1];
+  return v;
+}
+function buildRatioPop(){
+  ratioPop.innerHTML = "";
+  for(const [group,items] of RATIOS){
+    const h = document.createElement("h3"); h.textContent = group;
+    ratioPop.appendChild(h);
+    const g = document.createElement("div"); g.className = "rgrid";
+    for(const [v,label] of items){
+      const [name,sub] = label.includes(" — ") ? label.split(" — ") : [label,""];
+      const b = document.createElement("button");
+      b.type = "button"; b.className = "rchip"; b.dataset.v = v; b.title = label;
+      const ar = ratioAspect(v);
+      let w = 34, hh = 24, inner = v==="auto" ? "✦" : v==="custom" ? "…" : "";
+      if(ar){
+        if(ar>=1){ w = Math.min(52, Math.round(22*Math.min(ar,2.6))+16); hh = Math.max(11,Math.round(w/ar)); }
+        else{ hh = 34; w = Math.max(14,Math.round(34*ar)); }
+        if(!v.startsWith("px:")) inner = v;
+      }
+      b.innerHTML = `<span class="shape" style="width:${w}px;height:${hh}px">${inner}</span><b></b>`
+                  + (v.startsWith("px:") ? `<i>${sub}</i>` : "");
+      b.querySelector("b").textContent =
+        v.startsWith("px:") || v==="auto" || v==="custom" ? name : (sub||name);
+      b.addEventListener("click",()=>{ setKey("ratio",v); closeRatioPop(); });
+      g.appendChild(b);
+    }
+    ratioPop.appendChild(g);
+  }
+}
+function openRatioPop(){
+  buildRatioPop();
+  ratioPop.querySelectorAll(".rchip").forEach(c=>
+    c.setAttribute("aria-pressed",String(c.dataset.v===S.ratio)));
+  ratioPop.hidden = false;
+  const r = document.getElementById("ratioBtn").getBoundingClientRect();
+  ratioPop.style.left = Math.max(10,Math.min(r.left, window.innerWidth-296-10))+"px";
+  const ph = Math.min(ratioPop.scrollHeight, Math.min(560, window.innerHeight*.72));
+  let top = r.bottom+8;
+  if(top+ph > window.innerHeight-10) top = Math.max(10, window.innerHeight-10-ph);
+  ratioPop.style.top = top+"px";
+}
+function closeRatioPop(){ ratioPop.hidden = true; }
+document.getElementById("ratioBtn").addEventListener("click",e=>{
+  e.stopPropagation();
+  ratioPop.hidden ? openRatioPop() : closeRatioPop();
 });
+document.addEventListener("pointerdown",e=>{
+  if(!ratioPop.hidden && !ratioPop.contains(e.target) && !e.target.closest("#ratioBtn"))
+    closeRatioPop();
+});
+
+/* ── info tooltips ── */
+const tipbox = document.createElement("div");
+tipbox.id = "tipbox"; tipbox.hidden = true;
+document.body.appendChild(tipbox);
+let tipEl = null;
+document.addEventListener("mouseover",e=>{
+  const t = e.target.closest("[data-tip]");
+  if(t===tipEl) return;
+  tipEl = t;
+  if(!t){ tipbox.hidden = true; return; }
+  tipbox.textContent = t.dataset.tip;
+  tipbox.hidden = false;
+  tipbox.style.left = "0px"; tipbox.style.top = "0px";
+  const r = t.getBoundingClientRect(), tw = tipbox.offsetWidth, th = tipbox.offsetHeight;
+  const x = Math.min(Math.max(10,r.left), window.innerWidth-tw-10);
+  let y = r.bottom+8;
+  if(y+th > window.innerHeight-8) y = r.top-th-8;
+  tipbox.style.left = x+"px"; tipbox.style.top = y+"px";
+});
+window.addEventListener("scroll",()=>{ tipEl = null; tipbox.hidden = true; },true);
 
 const TAB_IDS = ["mockup","layout","frame","fx","motion"];
 function selectTab(name){
@@ -3561,11 +3703,21 @@ document.getElementById("magicNext").addEventListener("click",()=>applyMagic(1))
 document.getElementById("magicPrev").addEventListener("click",()=>applyMagic(-1));
 
 window.addEventListener("keydown",e=>{
+  if((e.key||"")==="Escape" && !ratioPop.hidden){ closeRatioPop(); return; }
   if((e.key||"")==="Escape" && !tplModal.hidden){ closeTpl(); return; }
   if((e.key||"")==="Escape" && ANN.on){ setAnnotate(false); return; }
   if(/input|textarea|select/i.test(e.target.tagName)) return;
   const mod = e.metaKey||e.ctrlKey;
   const key = (e.key||"").toLowerCase();
+  if(!mod && !e.altKey && key.startsWith("arrow")){          // nudge position
+    e.preventDefault();
+    const d = e.shiftKey ? 5 : 1;
+    if(key==="arrowleft")  S.offX = clamp(S.offX-d,-45,45);
+    if(key==="arrowright") S.offX = clamp(S.offX+d,-45,45);
+    if(key==="arrowup")    S.offY = clamp(S.offY-d,-45,45);
+    if(key==="arrowdown")  S.offY = clamp(S.offY+d,-45,45);
+    S.preset = -1; update(); return;
+  }
   if(mod && key==="z"){ e.preventDefault(); e.shiftKey ? redo() : undo(); }
   else if(mod && key==="s"){ e.preventDefault(); document.getElementById("exportBtn").click(); }
   else if(mod && e.shiftKey && key==="c"){ e.preventDefault(); document.getElementById("copyBtn").click(); }
@@ -3591,6 +3743,13 @@ function syncUI(){
     o.textContent = (Math.round(S[o.dataset.out]*10)/10) + (o.dataset.suffix||"");
   });
   document.querySelectorAll("select[data-key]").forEach(el=>{ el.value = S[el.dataset.key]; });
+  document.getElementById("ratioBtnLab").textContent = ratioLabel(S.ratio);
+  {
+    const ar = ratioAspect(S.ratio), box = document.getElementById("ratioBtnBox");
+    let w = 22, h = 15;
+    if(ar){ if(ar>=1){ w = 22; h = Math.max(8,Math.round(22/ar)); } else{ h = 20; w = Math.max(9,Math.round(20*ar)); } }
+    box.style.width = w+"px"; box.style.height = h+"px";
+  }
   document.querySelectorAll(".seg[data-key]").forEach(g=>{
     g.querySelectorAll("button[data-v]").forEach(b=>
       b.setAttribute("aria-pressed", String(String(S[g.dataset.key])===b.dataset.v)));
