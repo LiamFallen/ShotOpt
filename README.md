@@ -20,7 +20,9 @@ claim is enforced by the browser rather than just promised.
 - 26 one-click **templates** (product promo, UI showcase, minimal, abstract),
   including animated ones — thumbnails preview your own screenshot live
 - **Motion**: 8 animation presets (push, pan, sweep, showcase orbit, float…)
-  with live preview and in-browser **WebM video export**
+  with live preview and in-browser **WebM video and looping GIF export**
+  (the GIF encoder is built in — no third-party libraries, in keeping with
+  the same-origin CSP)
 - **VFX**: Cinematic (teal & orange + letterbox), VHS, Noir, Vintage, Dream —
   all GPU-accelerated, with an intensity dial
 - **Scenes**: floor, glow, glossy 3-D spheres, blobs, prisms, clouds and a
