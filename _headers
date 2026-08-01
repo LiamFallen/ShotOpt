@@ -4,13 +4,11 @@
   X-Frame-Options: DENY
   Permissions-Policy: camera=(), microphone=(), geolocation=(), usb=(), payment=()
   Cross-Origin-Opener-Policy: same-origin
-  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://pbs.twimg.com https://abs.twimg.com; font-src 'self'; connect-src 'self' https://cdn.syndication.twimg.com; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self'; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'
 
 # The app is one inline-script file, so 'unsafe-inline' is required for scripts.
-# Everything else is locked to same-origin, with one deliberate exception: the
-# "X post" importer fetches the public post JSON from cdn.syndication.twimg.com
-# and its media from *.twimg.com — only when the user pastes a link and asks.
-# Your own images still never leave the browser.
+# Everything else is locked to same-origin: there is no network path off this
+# page, which is what makes the "nothing leaves your browser" claim enforceable.
 
 /index.html
   Cache-Control: no-cache

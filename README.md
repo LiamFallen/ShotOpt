@@ -14,29 +14,25 @@ claim is enforced by the browser rather than just promised.
 ## Features
 
 - Drag-and-drop, paste (⌘V) or file-pick — up to 3 images at once
-- **X post import**: paste an x.com link and a clean post card (avatar,
-  verified badge, photo grid, counts) is generated as your media — the app's
-  single, opt-in external request, scoped in the CSP to X's public CDNs
 - 15 mockup styles: Card, Glass, Inset, Outline, Retro, Stack, macOS Window, Browser…
-- 6 procedural **device frames** — iPhone (dark/silver), iPad, MacBook,
-  Studio-style Display, Watch — drawn in code, no image assets, with
-  device-accurate shadows cast by the real silhouette (lid + deck, stand…)
-- **Annotate mode**: arrows, lines, rectangles, ellipses and freehand pen in
-  five colours and three weights — undoable, saved with your settings, and
-  rendered into every export including video and GIF
+- **Annotate mode**: arrows, lines, rectangles, ellipses, freehand pen and
+  text labels in five colours and three weights — undoable, saved with your
+  settings, and rendered into every export including video and GIF
 - 140+ backgrounds across 10 categories, plus custom colour, your own image,
   transparent, and **Magic** (a palette derived from your screenshot)
 - 26 one-click **templates** (product promo, UI showcase, minimal, abstract),
   including animated ones — thumbnails preview your own screenshot live
-- **Motion**: 8 animation presets (push, pan, sweep, showcase orbit, float…)
-  with live preview and in-browser **WebM video and looping GIF export**
-  (the GIF encoder is built in — no third-party libraries, in keeping with
-  the same-origin CSP)
-- **VFX**: Cinematic (teal & orange + letterbox), VHS, Noir, Vintage, Dream —
-  all GPU-accelerated, with an intensity dial
-- **Scenes**: floor, glow, glossy 3-D spheres, blobs, prisms, clouds and a
-  podium with perspective grid — props take their colours from the background
-  and cast soft shadows that follow the global light angle
+- **Motion**: 11 animation presets (push, pan, sweep, showcase orbit, float,
+  reveal, swing, drift…) with live preview, smoothly-tweened layout changes,
+  and in-browser **WebM video and looping GIF export** (the GIF encoder is
+  built in — no third-party libraries, in keeping with the same-origin CSP)
+- **VFX**: Cinematic (teal & orange + letterbox), VHS, Noir, Vintage, Dream,
+  Duotone (tinted from your background) and Frost — all GPU-accelerated, with
+  an intensity dial
+- **Scenes**: floor, glow, glossy 3-D spheres, blobs, prisms, clouds, bokeh,
+  light rays, confetti and a podium with perspective grid — props take their
+  colours from the background and cast soft shadows that follow the global
+  light angle
 - 8 shadow types with opacity, size, light angle and distance
 - GPU-accelerated perspective: tilt X/Y, rotate, zoom, offset
 - Direct manipulation on the canvas: drag the screenshot to move it, grab the

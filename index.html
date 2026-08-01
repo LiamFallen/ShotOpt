@@ -146,13 +146,13 @@
   /* tiles */
   .tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
   .tiles.c4{grid-template-columns:repeat(4,1fr)}
-  .tile{border:1px solid var(--line);background:var(--card);border-radius:11px;padding:5px 5px 6px;
+  .tile{border:1px solid var(--line);background:var(--card);border-radius:12px;padding:5px 5px 6px;
     display:flex;flex-direction:column;gap:5px;transition:.15s var(--ease);position:relative}
   .tile:hover{border-color:var(--line-2);background:var(--card-2);transform:translateY(-1px)}
   .tile[aria-pressed=true]{border-color:transparent;background:var(--card-2);
-    box-shadow:0 0 0 1.5px #fff,0 4px 14px -6px rgba(0,0,0,.9)}
-  .tile canvas{width:100%;height:48px;display:block;border-radius:7px;background:#0c0c0f}
-  .tiles.c4 .tile canvas{height:42px}
+    box-shadow:0 0 0 2px var(--accent),0 4px 14px -6px rgba(0,0,0,.9)}
+  .tile canvas{width:100%;height:54px;display:block;border-radius:8px;background:#e9eaee}
+  .tiles.c4 .tile canvas{height:44px}
   .tile b{font-weight:500;font-size:9.5px;color:var(--dim);white-space:nowrap;overflow:hidden;
     text-overflow:ellipsis;text-align:center;letter-spacing:.01em}
   .tile[aria-pressed=true] b{color:#fff;font-weight:600}
@@ -190,7 +190,7 @@
     line-height:0;transition:.15s var(--ease)}
   .sw canvas{width:100%;height:100%;display:block}
   .sw:hover{transform:translateY(-2px);border-color:var(--line-2)}
-  .sw[aria-pressed=true]{box-shadow:0 0 0 2px var(--panel),0 0 0 3.5px #fff}
+  .sw[aria-pressed=true]{box-shadow:0 0 0 2px var(--panel),0 0 0 4px var(--accent)}
   .sw .cap{position:absolute;left:0;right:0;bottom:0;font-size:8px;line-height:1.85;text-align:center;
     background:linear-gradient(transparent,rgba(0,0,0,.72));color:#fff;font-weight:550;
     opacity:0;transition:.15s;padding-top:6px}
@@ -306,14 +306,10 @@
     box-shadow:0 0 0 1px rgba(255,255,255,.25)}
   .annbar .wdot i{display:block;border-radius:50%;background:currentColor}
   .stage.annotating #preview{cursor:crosshair !important}
-
-  /* corner status chips */
-  .chip{position:absolute;bottom:24px;z-index:5;display:flex;align-items:center;gap:7px;
-    padding:6px 11px;border-radius:10px;font-size:10px;color:var(--faint);
-    background:rgba(14,14,19,.72);border:1px solid var(--line);backdrop-filter:blur(10px)}
-  .chip.lb{left:24px}
-  .chip.rb{right:24px;font-variant-numeric:tabular-nums}
-  .chip i{font-style:normal;opacity:.5}
+  #annInput{position:absolute;z-index:7;min-width:150px;max-width:340px;padding:7px 11px;
+    background:rgba(12,12,17,.92);border:1.5px solid var(--accent);border-radius:9px;
+    font-size:13px;font-weight:650;color:#fff;outline:0;backdrop-filter:blur(8px);
+    box-shadow:0 10px 30px -8px rgba(0,0,0,.8);transform:translate(-4px,-50%)}
 
   /* buttons */
   .btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:10px 14px;border-radius:11px;
@@ -327,15 +323,16 @@
   .dims{font-size:10px;color:var(--faint);font-variant-numeric:tabular-nums;letter-spacing:.01em;
     padding:0 6px;text-align:right}
 
-  /* layout presets */
-  .lps{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-  .lp{border-radius:11px;overflow:hidden;border:1px solid var(--line);line-height:0;
-    transition:.15s var(--ease);position:relative}
+  /* layout presets — one generous stacked column, like a filmstrip */
+  .lps{display:grid;grid-template-columns:1fr;gap:10px}
+  .lp{border-radius:14px;overflow:hidden;border:1px solid var(--line);line-height:0;
+    transition:.18s var(--ease);position:relative}
   .lp canvas{width:100%;display:block;aspect-ratio:4/3}
-  .lp:hover{transform:translateY(-2px);border-color:var(--line-2)}
-  .lp[aria-pressed=true]{box-shadow:0 0 0 2px var(--panel),0 0 0 3.5px #fff}
-  .lp .cap{position:absolute;left:0;right:0;bottom:0;font-size:8.5px;line-height:1.9;text-align:center;
-    background:linear-gradient(transparent,rgba(0,0,0,.75));color:#fff;font-weight:550;padding-top:8px}
+  .lp:hover{transform:translateY(-2px);border-color:var(--line-3);
+    box-shadow:0 12px 30px -12px rgba(0,0,0,.7)}
+  .lp[aria-pressed=true]{box-shadow:0 0 0 2px var(--panel),0 0 0 4px var(--accent)}
+  .lp .cap{position:absolute;left:0;right:0;bottom:0;font-size:10px;line-height:2.4;text-align:center;
+    background:linear-gradient(transparent,rgba(0,0,0,.78));color:#fff;font-weight:600;padding-top:10px}
 
   .toast{position:fixed;left:50%;bottom:92px;transform:translate(-50%,16px);background:#1d1d24;
     border:1px solid var(--line-2);border-radius:11px;padding:10px 17px;font-size:12px;font-weight:550;
@@ -409,7 +406,6 @@
     .side.l{width:100%;order:2}
     .side .scroll{max-height:none}
     .main{order:1;flex:0 0 auto;height:72vh}
-    .chip{display:none}
   }
 </style>
 </head>
@@ -421,7 +417,7 @@
   <div class="brand">
     <div class="mark"></div>
     <h1>ShotOpt</h1>
-    <span class="badge">OFFLINE</span>
+    <span class="badge" id="privBadge" title="Everything renders in your browser — your images are never uploaded anywhere.">🔒 Private</span>
   </div>
   <div class="tabs" id="ptabs">
     <button data-tab="mockup" type="button" title="Mockup style">
@@ -456,27 +452,11 @@
         <h2>Media <span class="sp"></span><button class="mini" id="clearAll" type="button">Clear all</button></h2>
         <div class="slots" id="slots"></div>
         <input type="file" id="file" accept="image/*" multiple hidden>
-        <div class="ctrl" style="margin-top:10px;margin-bottom:0">
-          <div class="row">
-            <input type="text" id="xUrl" placeholder="Paste an X post link…" spellcheck="false">
-            <div class="seg" style="flex:0 0 84px" id="xTheme">
-              <button data-v="dark" type="button" aria-pressed="true">Dark</button>
-              <button data-v="light" type="button">Light</button>
-            </div>
-          </div>
-          <button class="ghost" id="xGo" type="button" style="margin-top:7px">𝕏&nbsp; Generate post card</button>
-          <div class="dims" style="margin-top:5px;text-align:left">Fetches the public post from X — only when you ask</div>
-        </div>
       </div>
 
       <div class="sec">
         <h2>Style</h2>
         <div class="tiles" id="styleTiles"></div>
-      </div>
-
-      <div class="sec">
-        <h2>Device frames</h2>
-        <div class="tiles" id="deviceTiles"></div>
       </div>
 
       <div class="sec">
@@ -605,6 +585,8 @@
           <button data-v="noir" type="button">Noir</button>
           <button data-v="vintage" type="button">Vintage</button>
           <button data-v="dream" type="button">Dream</button>
+          <button data-v="duo" type="button">Duotone</button>
+          <button data-v="frost" type="button">Frost</button>
         </div>
         <div class="ctrl" id="vfxAmtCtrl" style="margin-top:12px">
           <div class="lab"><span>Intensity</span><i data-out="vfxAmt" data-suffix="%"></i></div>
@@ -640,6 +622,9 @@
           <button data-v="prisms" type="button">Prisms</button>
           <button data-v="clouds" type="button">Clouds</button>
           <button data-v="podium" type="button">Podium</button>
+          <button data-v="bokeh" type="button">Bokeh</button>
+          <button data-v="rays" type="button">Rays</button>
+          <button data-v="confetti" type="button">Confetti</button>
         </div>
       </div>
     </div>
@@ -715,6 +700,9 @@
           <button data-v="orbit" type="button">Showcase</button>
           <button data-v="float" type="button">Float</button>
           <button data-v="pulse" type="button">Pulse</button>
+          <button data-v="reveal" type="button">Reveal</button>
+          <button data-v="swing" type="button">Swing</button>
+          <button data-v="drift" type="button">Drift</button>
         </div>
         <div id="motionExtra" style="margin-top:14px">
           <div class="ctrl">
@@ -749,6 +737,7 @@
       <button class="iconbtn" id="redoBtn" type="button" title="Redo (⇧⌘Z)">↻</button>
       <div class="vr"></div>
       <button class="pill" id="startOver" type="button">Start over</button>
+      <span class="zoomlab" id="zoomlab" title="Preview zoom — exports are always full resolution">—</span>
     </div>
     <div class="tbspace"></div>
     <div class="cluster">
@@ -771,6 +760,7 @@
 
   <div class="stage" id="stage">
     <canvas id="preview"></canvas>
+    <input type="text" id="annInput" placeholder="Type, then Enter" maxlength="80" hidden>
     <div id="handles" hidden>
       <div class="h" data-h="tl"></div><div class="h" data-h="tr"></div>
       <div class="h" data-h="bl"></div><div class="h" data-h="br"></div>
@@ -784,6 +774,7 @@
     <button data-t="rect" type="button" title="Rectangle">▢</button>
     <button data-t="ellipse" type="button" title="Ellipse">◯</button>
     <button data-t="pen" type="button" title="Freehand">✎</button>
+    <button data-t="text" type="button" title="Text label"><b style="font-weight:800">T</b></button>
     <span class="dvr"></span>
     <button class="cdot" data-c="#ff4757" type="button" style="--c:#ff4757" aria-pressed="true"></button>
     <button class="cdot" data-c="#ffd32a" type="button" style="--c:#ffd32a"></button>
@@ -805,8 +796,6 @@
     <button id="annBtn" type="button">✏ Annotate</button>
     <button id="playBtn" type="button">▶ Animate</button>
   </div>
-  <div class="chip lb"><kbd>⌘V</kbd> paste <i>·</i> drag to move <i>·</i> corners resize <i>·</i> <kbd>Space</kbd> play</div>
-  <div class="chip rb"><span id="zoomlab">—</span><i>·</i><span id="renderer">—</span></div>
 </main>
 </div>
 
@@ -1013,16 +1002,6 @@ const STYLES = [
   {id:"macD",    name:"Window Dark", chrome:"dark"},
   {id:"browser", name:"Browser",     chrome:"browser"}
 ];
-/* Device frames are drawn procedurally — no image assets — and adapt to the
-   media's aspect ratio, like every other style. */
-STYLES.push(
-  {id:"devPhone",  name:"iPhone",        device:"iphone", dark:true},
-  {id:"devPhoneS", name:"iPhone Silver", device:"iphone", dark:false},
-  {id:"devPad",    name:"iPad",          device:"ipad"},
-  {id:"devMac",    name:"MacBook",       device:"macbook"},
-  {id:"devDisp",   name:"Display",       device:"display"},
-  {id:"devWatch",  name:"Watch",         device:"watch"}
-);
 const SHADOWS = [
   {id:"none",     name:"None"},
   {id:"spread",   name:"Spread",   blur:2.2, dist:.55, spread:1},
@@ -1089,17 +1068,17 @@ function fixedSize(id){
    3. State
    ══════════════════════════════════════════════════════════ */
 const DEFAULTS = {
-  ratio:"auto", cw:1920, ch:1080, pad:9,
-  bg:"mesh-sunset-pop", custom:"#111827",
-  grain:22, vignette:0, bgBlur:0, scene:"none",
+  ratio:"auto", cw:1920, ch:1080, pad:10,
+  bg:"mesh-midnight-bloom", custom:"#111827",
+  grain:14, vignette:0, bgBlur:0, scene:"none",
   vfx:"none", vfxAmt:70,
   anim:"none", animDur:6, vidFmt:"webm",
   wmOn:false, wmMode:"text", wmText:"Made with ShotOpt", wmPos:"br", wmOpacity:55, wmSize:18,
   style:"plain", radiusMode:"curved", radius:22,
-  shadow:"spread", shOpacity:42, shSize:58, shAngle:180, shDist:34,
+  shadow:"diffuse", shOpacity:40, shSize:62, shAngle:180, shDist:30,
   hideMockup:false, sheen:true, edge:true,
   count:1, arrange:"grid", gap:6, annots:[],
-  zoom:92, tiltX:0, tiltY:0, rotate:0, offX:0, offY:0, preset:0,
+  zoom:97, tiltX:6, tiltY:-8, rotate:2, offX:0, offY:1, preset:6,
   scale:2, format:"png"
 };
 const KEY = "shotopt.v1";
@@ -1432,6 +1411,49 @@ function drawScene(ctx,W,H,kind){
     puff(W*.16,H*.18,D*.05,.5); puff(W*.85,H*.12,D*.04,.42);
     puff(W*.08,H*.8,D*.045,.36); puff(W*.9,H*.85,D*.055,.46);
   }
+  if(kind==="bokeh"){
+    const dots = [[.08,.14,.10,c1,.5],[.2,.06,.05,c2,.4],[.9,.1,.08,c3,.45],[.96,.4,.045,c1,.35],
+                  [.05,.7,.06,c2,.4],[.12,.9,.09,c3,.5],[.88,.8,.11,c1,.45],[.7,.95,.05,c2,.35],
+                  [.35,.03,.04,c3,.3],[.6,.05,.06,c1,.35]];
+    for(const [px,py,r,c,al] of dots){
+      ctx.save();
+      if(FILTER_OK) ctx.filter = `blur(${D*.012}px)`;
+      ctx.fillStyle = rgba(c,al);
+      ctx.beginPath(); ctx.arc(px*W,py*H,r*D*.8,0,Math.PI*2); ctx.fill();
+      ctx.restore();
+    }
+  }
+  if(kind==="rays"){
+    ctx.save();
+    ctx.translate(W*.5,-H*.1); ctx.rotate(-.5);
+    for(const [off,w2,al] of [[-.34,.10,.16],[-.06,.16,.12],[.24,.08,.18]]){
+      const g = ctx.createLinearGradient(0,0,0,H*1.6);
+      g.addColorStop(0,`rgba(255,255,255,${al})`);
+      g.addColorStop(1,"rgba(255,255,255,0)");
+      ctx.fillStyle = g;
+      ctx.save();
+      if(FILTER_OK) ctx.filter = `blur(${D*.014}px)`;
+      ctx.fillRect(off*W,0,w2*W,H*1.7);
+      ctx.restore();
+    }
+    ctx.restore();
+  }
+  if(kind==="confetti"){
+    for(let i=0;i<26;i++){
+      const n = ((i*73856093)^((i+7)*19349663))>>>0;             // deterministic
+      const px = (n%1000)/1000, py = ((n>>10)%1000)/1000;
+      if(px>.24 && px<.76 && py>.2 && py<.8) continue;           // keep centre clear
+      const c = [c1,c2,c3][i%3];
+      const sz = D*(.006+((n>>20)%10)/10*.01);
+      ctx.save();
+      ctx.translate(px*W,py*H);
+      ctx.rotate((n%360)*Math.PI/180);
+      ctx.fillStyle = rgba(c,.85);
+      if(FILTER_OK) ctx.filter = `blur(${D*.0012}px)`;
+      roundRect(ctx,-sz/2,-sz,sz,sz*2,sz*.4); ctx.fill();
+      ctx.restore();
+    }
+  }
   if(kind==="podium"){
     const hz = H*.62;
     const g = ctx.createLinearGradient(0,hz,0,H);
@@ -1620,6 +1642,33 @@ function applyVFX(canvas){
     ctx.filter = "none";
     ctx.globalCompositeOperation = "source-over";
   }
+  else if(S.vfx==="duo"){
+    // two-tone from the current background's own accents
+    const [c1,c2] = bgAccents();
+    const mixc = (h,t,f)=>{ const p = hexRgb(h), q = hexRgb(t);
+      return `rgb(${p.r+(q.r-p.r)*f|0},${p.g+(q.g-p.g)*f|0},${p.b+(q.b-p.b)*f|0})`; };
+    ctx.filter = "grayscale(1) contrast(1.06)";
+    ctx.drawImage(src,0,0);
+    ctx.filter = "none";
+    ctx.globalCompositeOperation = "multiply";        // highlights → light tone
+    ctx.fillStyle = mixc(c1,"#ffffff",.35); ctx.fillRect(0,0,W,H);
+    ctx.globalCompositeOperation = "screen";          // shadows → dark tone
+    ctx.fillStyle = mixc(c2,"#000000",.62); ctx.fillRect(0,0,W,H);
+    ctx.globalCompositeOperation = "source-over";
+    if(a<1){ ctx.globalAlpha = 1-a; ctx.drawImage(src,0,0); ctx.globalAlpha = 1; }
+  }
+  else if(S.vfx==="frost"){
+    ctx.filter = `saturate(${1-.16*a}) brightness(1.04) blur(${(.7*u*a).toFixed(2)}px)`;
+    ctx.drawImage(src,0,0);
+    ctx.filter = "none";
+    ctx.globalCompositeOperation = "screen";
+    ctx.fillStyle = rgba("#bcd8f0",.10*a); ctx.fillRect(0,0,W,H);
+    ctx.globalCompositeOperation = "source-over";
+    const g2 = ctx.createRadialGradient(W/2,H/2,Math.min(W,H)*.34,W/2,H/2,Math.max(W,H)*.74);
+    g2.addColorStop(0,"rgba(255,255,255,0)");
+    g2.addColorStop(1,`rgba(222,236,250,${.34*a})`);   // frosted edges
+    ctx.fillStyle = g2; ctx.fillRect(0,0,W,H);
+  }
   // Transparent exports: overlays and additive passes must not invent pixels
   // outside the original silhouette.
   if(bgDef(S.bg).kind==="none"){
@@ -1634,39 +1683,44 @@ function applyVFX(canvas){
    5. Mockup texture
    ══════════════════════════════════════════════════════════ */
 const PLACEHOLDER = {w:1600,h:1000};
-const slotSize = i => IMGS[i] ? {w:IMGS[i].w,h:IMGS[i].h} : PLACEHOLDER;
+/* Style/shadow tiles render a neutral light demo UI instead of the user's
+   media — a dark screenshot at 50px tall made every tile an unreadable
+   black-on-black blob. */
+let USE_DEMO = false;
+let DEMO_EL = null;
+function demoImg(){
+  if(DEMO_EL) return DEMO_EL;
+  const c = document.createElement("canvas");
+  c.width = 640; c.height = 400;
+  const x = c.getContext("2d");
+  x.fillStyle = "#f6f7fa"; x.fillRect(0,0,640,400);
+  x.fillStyle = "#ffffff"; x.fillRect(0,0,640,52);
+  x.fillStyle = "#e4e6ee";
+  [0,1,2].forEach(i=>{ x.beginPath(); x.arc(26+i*20,26,6,0,Math.PI*2); x.fill(); });
+  roundRect(x,470,15,150,22,11); x.fill();
+  const g = x.createLinearGradient(24,80,340,300);
+  g.addColorStop(0,"#8b7bff"); g.addColorStop(1,"#22d3ee");
+  x.fillStyle = g; roundRect(x,24,80,330,220,14); x.fill();
+  x.fillStyle = "#ffffff";
+  roundRect(x,378,80,238,102,12); x.fill();
+  roundRect(x,378,198,238,102,12); x.fill();
+  x.fillStyle = "#d7dae4";
+  roundRect(x,398,102,150,14,7); x.fill();
+  roundRect(x,398,126,190,10,5); x.fill();
+  roundRect(x,398,220,150,14,7); x.fill();
+  roundRect(x,398,244,190,10,5); x.fill();
+  x.fillStyle = "#c9cdda";
+  roundRect(x,24,324,180,16,8); x.fill();
+  roundRect(x,24,352,280,10,5); x.fill();
+  return (DEMO_EL = c);
+}
+const slotSize = i => USE_DEMO ? {w:640,h:400}
+                   : IMGS[i] ? {w:IMGS[i].w,h:IMGS[i].h} : PLACEHOLDER;
 
 function texMetrics(i){
   const {w,h} = slotSize(i);
   const st = styleDef();
   const s = Math.min(w,h);
-  if(st.device){
-    // margins from the screen edge out to the texture edge, per device
-    const d = st.device;
-    let mL,mR,mT,mB,oR,silh = null;
-    if(d==="iphone"){ const t=.045*s; mL=mR=mT=mB=t; oR=.12*s; }
-    else if(d==="ipad"){ const t=.055*s; mL=mR=mT=mB=t; oR=.08*s; }
-    else if(d==="watch"){ const t=.10*s; mL=mT=mB=t; mR=t+.032*s; oR=.28*s; }
-    else if(d==="macbook"){ const t=.030*s; mT=t; mL=mR=t+.11*s; mB=t+.058*s; oR=.040*s; }
-    else{ const t=.028*s; mL=mR=t; mT=t; mB=t+.26*s; oR=.030*s; }   // display
-    const tw = w+mL+mR, th = h+mT+mB;
-    // shadow silhouette: [u0,v0,u1,v1,cornerRadius] rects in texture space —
-    // the visible body, not the (partly transparent) texture bounds
-    if(d==="watch") silh = [[0,0,(tw-.030*s)/tw,1,oR]];
-    else if(d==="macbook"){
-      const deckH = .058*s, lidIn = .11*s;
-      silh = [[lidIn/tw,0,1-lidIn/tw,(th-deckH)/th,oR],
-              [0,(th-deckH)/th,1,1,.016*s]];
-    }
-    else if(d==="display"){
-      const baseH = .030*s, baseW = .46*tw;
-      silh = [[0,0,1,(h+2*.028*s)/th,oR],
-              [(tw-baseW)/2/tw,(th-baseH)/th,(tw+baseW)/2/tw,1,baseH*.4]];
-    }
-    return { tw, th, ix:mL, iy:mT, iw:w, ih:h,
-             pad:0, chrome:0, stackM:0, hardX:0, hardY:0, s, oR, dev:d,
-             silh: silh || [[0,0,1,1,oR]] };
-  }
   const pad = (st.padF||0)*s;
   const chrome = st.chrome ? Math.max(s*.052,26)*(st.chrome==="browser"?1.9:1) : 0;
   const stackM = st.stack ? (st.stepF*s)*(st.stack-1) : 0;
@@ -1679,122 +1733,6 @@ function texMetrics(i){
     oR, silh: [[0,0,1,1,oR]]
   };
 }
-/** Aluminium / titanium gradient for device bodies. */
-function metal(ctx,x,y,w,h,dark){
-  const g = ctx.createLinearGradient(x,y,x,y+h);
-  if(dark){ g.addColorStop(0,"#5b5b62"); g.addColorStop(.08,"#3b3b41");
-            g.addColorStop(.92,"#2a2a2f"); g.addColorStop(1,"#4b4b52"); }
-  else{ g.addColorStop(0,"#f4f4f7"); g.addColorStop(.08,"#d9d9df");
-        g.addColorStop(.92,"#bfbfc7"); g.addColorStop(1,"#e9e9ee"); }
-  return g;
-}
-function drawDevice(ctx,m,st,drawContent){
-  const d = m.dev, s = m.s;
-  const dark = st.dark!==false && d!=="ipad" && d!=="macbook" && d!=="display";
-  const scr = (r)=>{ ctx.save(); roundRect(ctx,m.ix,m.iy,m.iw,m.ih,r); ctx.clip();
-                     drawContent(); ctx.restore(); };
-  if(d==="iphone" || d==="ipad"){
-    const isPhone = d==="iphone";
-    ctx.fillStyle = metal(ctx,0,0,m.tw,m.th, isPhone ? st.dark : false);
-    roundRect(ctx,0,0,m.tw,m.th,m.oR); ctx.fill();
-    ctx.strokeStyle = "rgba(255,255,255,.35)"; ctx.lineWidth = Math.max(1,s*.0016);
-    roundRect(ctx,s*.001,s*.001,m.tw-s*.002,m.th-s*.002,m.oR); ctx.stroke();
-    const bi = m.ix*.42;                                    // black bezel inset
-    ctx.fillStyle = "#050507";
-    roundRect(ctx,bi,bi,m.tw-bi*2,m.th-bi*2,m.oR-bi*.8); ctx.fill();
-    scr(Math.max(s*.015, m.oR-m.ix*.85));
-    if(isPhone){                                            // Dynamic Island
-      const iw2 = Math.min(m.iw*.32, s*.30), ih2 = s*.036;
-      const px = m.ix+m.iw/2-iw2/2, py = m.iy+s*.016;
-      ctx.fillStyle = "#050507";
-      roundRect(ctx,px,py,iw2,ih2,ih2/2); ctx.fill();
-      ctx.fillStyle = "#101018";
-      ctx.beginPath(); ctx.arc(px+iw2-ih2*.52,py+ih2/2,ih2*.26,0,Math.PI*2); ctx.fill();
-    }else{                                                  // iPad camera
-      ctx.fillStyle = "#101016";
-      ctx.beginPath(); ctx.arc(m.tw/2,m.iy*.5,s*.009,0,Math.PI*2); ctx.fill();
-    }
-    return;
-  }
-  if(d==="watch"){
-    const crownW = s*.030;
-    ctx.fillStyle = metal(ctx,0,0,m.tw,m.th,true);          // crown + button
-    roundRect(ctx,m.tw-crownW-s*.004,m.th*.26,crownW+s*.004,m.th*.14,s*.012); ctx.fill();
-    roundRect(ctx,m.tw-crownW-s*.002,m.th*.46,crownW,m.th*.20,s*.012); ctx.fill();
-    const g = ctx.createLinearGradient(0,0,0,m.th);
-    g.addColorStop(0,"#3e3e44"); g.addColorStop(.5,"#191920"); g.addColorStop(1,"#34343a");
-    ctx.fillStyle = g;
-    roundRect(ctx,0,0,m.tw-crownW,m.th,m.oR); ctx.fill();
-    ctx.strokeStyle = "rgba(255,255,255,.28)"; ctx.lineWidth = Math.max(1,s*.002);
-    roundRect(ctx,s*.002,s*.002,m.tw-crownW-s*.004,m.th-s*.004,m.oR); ctx.stroke();
-    scr(m.oR*.78);
-    return;
-  }
-  if(d==="macbook"){
-    const deckH = m.th-m.ih-m.iy*2;                          // bottom deck height
-    const bodyX = m.ix - m.iy;                               // screen block left
-    const bw = m.iw + m.iy*2;                                // screen block width
-    // screen block (lid, front view)
-    ctx.fillStyle = "#0b0b0f";
-    roundRect(ctx,bodyX,0,bw,m.th-deckH+s*.008,m.oR); ctx.fill();
-    ctx.strokeStyle = "rgba(255,255,255,.22)"; ctx.lineWidth = Math.max(1,s*.0014);
-    roundRect(ctx,bodyX+s*.001,s*.001,bw-s*.002,m.th-deckH,m.oR); ctx.stroke();
-    scr(s*.014);
-    // notch
-    const nw = s*.13, nh = s*.016;
-    ctx.fillStyle = "#0b0b0f";
-    roundRect(ctx,m.ix+m.iw/2-nw/2,m.iy-1,nw,nh,nh*.45);
-    ctx.fill();
-    // deck
-    const dy = m.th-deckH;
-    ctx.fillStyle = metal(ctx,0,dy,m.tw,deckH,false);
-    roundRect(ctx,0,dy,m.tw,deckH,s*.016); ctx.fill();
-    const hg = ctx.createLinearGradient(0,dy,0,dy+deckH*.4);
-    hg.addColorStop(0,"rgba(0,0,0,.34)"); hg.addColorStop(1,"rgba(0,0,0,0)");
-    ctx.fillStyle = hg; ctx.fillRect(0,dy,m.tw,deckH*.4);
-    // thumb scoop
-    const sw2 = m.tw*.13;
-    ctx.fillStyle = "rgba(0,0,0,.18)";
-    ctx.beginPath();
-    ctx.ellipse(m.tw/2,dy+deckH*.10,sw2/2,deckH*.22,0,0,Math.PI);
-    ctx.fill();
-    ctx.fillStyle = "rgba(0,0,0,.25)";
-    ctx.fillRect(0,m.th-s*.006,m.tw,s*.006);
-    return;
-  }
-  // display / studio monitor
-  {
-    const standH = m.th-m.ih-m.iy-m.ix;
-    const sy = m.th-standH;
-    // stand behind screen: neck + base
-    const neckW = m.tw*.24, baseW = m.tw*.46, baseH = s*.030;
-    ctx.fillStyle = metal(ctx,0,sy,m.tw,standH,false);
-    ctx.beginPath();
-    ctx.moveTo(m.tw/2-neckW/2, sy-s*.01);
-    ctx.lineTo(m.tw/2+neckW/2, sy-s*.01);
-    ctx.lineTo(m.tw/2+neckW/2*1.12, m.th-baseH);
-    ctx.lineTo(m.tw/2-neckW/2*1.12, m.th-baseH);
-    ctx.closePath(); ctx.fill();
-    const ng = ctx.createLinearGradient(0,sy,0,sy+standH*.5);
-    ng.addColorStop(0,"rgba(0,0,0,.35)"); ng.addColorStop(1,"rgba(0,0,0,0)");
-    ctx.fillStyle = ng;
-    ctx.fillRect(m.tw/2-neckW/2*1.12, sy, neckW*1.12, standH*.5);
-    ctx.fillStyle = metal(ctx,0,m.th-baseH,m.tw,baseH,false);
-    roundRect(ctx,m.tw/2-baseW/2,m.th-baseH,baseW,baseH,baseH*.4); ctx.fill();
-    ctx.fillStyle = "rgba(0,0,0,.28)";
-    ctx.fillRect(m.tw/2-baseW/2,m.th-s*.006,baseW,s*.006);
-    // screen slab
-    ctx.fillStyle = metal(ctx,0,0,m.tw,m.ih+m.iy*2,false);
-    roundRect(ctx,0,0,m.tw,m.ih+m.iy*2,m.oR); ctx.fill();
-    ctx.fillStyle = "#050507";
-    const bi = m.iy*.34;
-    roundRect(ctx,bi,bi,m.tw-bi*2,m.ih+m.iy*2-bi*2,m.oR*.7); ctx.fill();
-    scr(s*.012);
-    ctx.fillStyle = "#14141a";
-    ctx.beginPath(); ctx.arc(m.tw/2,m.iy*.5,s*.006,0,Math.PI*2); ctx.fill();
-    return;
-  }
-}
 function buildTexture(i,kx){
   const m = texMetrics(i), st = styleDef();
   const W = Math.max(2,Math.round(m.tw*kx)), H = Math.max(2,Math.round(m.th*kx));
@@ -1802,21 +1740,6 @@ function buildTexture(i,kx){
   c.width = W; c.height = H;
   const ctx = c.getContext("2d");
   ctx.scale(W/m.tw, H/m.th);
-
-  if(st.device){
-    drawDevice(ctx,m,st,()=>{
-      if(IMGS[i]) ctx.drawImage(IMGS[i].el,m.ix,m.iy,m.iw,m.ih);
-      else drawPlaceholder(ctx,m.ix,m.iy,m.iw,m.ih);
-      if(S.sheen){
-        const g = ctx.createLinearGradient(m.ix,m.iy,m.ix+m.iw*.36,m.iy+m.ih*.56);
-        g.addColorStop(0,"rgba(255,255,255,.13)");
-        g.addColorStop(.45,"rgba(255,255,255,.03)");
-        g.addColorStop(1,"rgba(255,255,255,0)");
-        ctx.fillStyle = g; ctx.fillRect(m.ix,m.iy,m.iw,m.ih);
-      }
-    });
-    return c;
-  }
 
   const R = m.oR;
   const innerR = Math.max(0, R - m.pad*.85);
@@ -1879,7 +1802,8 @@ function buildTexture(i,kx){
   ctx.save();
   roundRect(ctx,m.ix,m.iy,m.iw,m.ih, st.chrome ? Math.min(innerR,R*.35) : innerR);
   ctx.clip();
-  if(IMGS[i]) ctx.drawImage(IMGS[i].el,m.ix,m.iy,m.iw,m.ih);
+  if(USE_DEMO) ctx.drawImage(demoImg(),m.ix,m.iy,m.iw,m.ih);
+  else if(IMGS[i]) ctx.drawImage(IMGS[i].el,m.ix,m.iy,m.iw,m.ih);
   else drawPlaceholder(ctx,m.ix,m.iy,m.iw,m.ih);
   if(S.sheen){
     const g = ctx.createLinearGradient(m.ix,m.iy,m.ix+m.iw*.36,m.iy+m.ih*.56);
@@ -1906,23 +1830,39 @@ function buildTexture(i,kx){
   return c;
 }
 function drawPlaceholder(ctx,x,y,w,h){
-  ctx.fillStyle = "#0e0e12"; ctx.fillRect(x,y,w,h);
   const f = Math.min(w,h);
-  ctx.textAlign = "center"; ctx.textBaseline = "middle";
-  ctx.fillStyle = "rgba(255,255,255,.28)";
-  ctx.font = `600 ${f*.10}px -apple-system,BlinkMacSystemFont,Inter,sans-serif`;
-  ctx.fillText("Drop or Paste",x+w/2,y+h/2+f*.03);
-  ctx.fillStyle = "rgba(255,255,255,.15)";
-  ctx.font = `500 ${f*.042}px -apple-system,BlinkMacSystemFont,Inter,sans-serif`;
-  ctx.fillText("Click to browse · PNG · JPG · WEBP · GIF",x+w/2,y+h/2+f*.13);
-  const br = f*.055, cy = y+h/2-f*.13;
-  ctx.beginPath(); ctx.arc(x+w/2,cy,br,0,Math.PI*2);
-  ctx.fillStyle = "rgba(255,255,255,.9)"; ctx.fill();
-  ctx.strokeStyle = "#0e0e12"; ctx.lineWidth = Math.max(1,br*.16); ctx.lineCap = "round";
+  const g = ctx.createLinearGradient(x,y,x,y+h);
+  g.addColorStop(0,"#14141b"); g.addColorStop(1,"#0b0b10");
+  ctx.fillStyle = g; ctx.fillRect(x,y,w,h);
+  const sheen = ctx.createRadialGradient(x+w*.5,y-h*.2,0,x+w*.5,y-h*.2,h*1.1);
+  sheen.addColorStop(0,"rgba(139,123,255,.13)"); sheen.addColorStop(.55,"rgba(34,211,238,.04)");
+  sheen.addColorStop(1,"rgba(0,0,0,0)");
+  ctx.fillStyle = sheen; ctx.fillRect(x,y,w,h);
+  ctx.save();
+  ctx.strokeStyle = "rgba(255,255,255,.14)";
+  ctx.lineWidth = Math.max(1.5,f*.004);
+  ctx.setLineDash([f*.024,f*.018]);
+  roundRect(ctx,x+f*.045,y+f*.045,w-f*.09,h-f*.09,f*.045); ctx.stroke();
+  ctx.restore();
+  // upload glyph in a gradient ring
+  const br = f*.075, cy = y+h/2-f*.14, cx = x+w/2;
+  const rg = ctx.createLinearGradient(cx-br,cy-br,cx+br,cy+br);
+  rg.addColorStop(0,"#22d3ee"); rg.addColorStop(1,"#8b7bff");
+  ctx.strokeStyle = rg; ctx.lineWidth = Math.max(2,br*.14); ctx.lineCap = "round";
+  ctx.beginPath(); ctx.arc(cx,cy,br,0,Math.PI*2); ctx.stroke();
+  ctx.strokeStyle = "rgba(255,255,255,.92)";
+  ctx.lineWidth = Math.max(2,br*.17);
   ctx.beginPath();
-  ctx.moveTo(x+w/2-br*.44,cy); ctx.lineTo(x+w/2+br*.44,cy);
-  ctx.moveTo(x+w/2,cy-br*.44); ctx.lineTo(x+w/2,cy+br*.44);
+  ctx.moveTo(cx,cy+br*.42); ctx.lineTo(cx,cy-br*.40);
+  ctx.moveTo(cx-br*.30,cy-br*.08); ctx.lineTo(cx,cy-br*.42); ctx.lineTo(cx+br*.30,cy-br*.08);
   ctx.stroke();
+  ctx.textAlign = "center"; ctx.textBaseline = "middle";
+  ctx.fillStyle = "rgba(255,255,255,.9)";
+  ctx.font = `650 ${f*.085}px -apple-system,BlinkMacSystemFont,"Segoe UI",Inter,sans-serif`;
+  ctx.fillText("Drop, paste or click",x+w/2,y+h/2+f*.045);
+  ctx.fillStyle = "rgba(255,255,255,.34)";
+  ctx.font = `500 ${f*.040}px -apple-system,BlinkMacSystemFont,"Segoe UI",Inter,sans-serif`;
+  ctx.fillText("PNG · JPG · WEBP · GIF — or hit Templates below",x+w/2,y+h/2+f*.135);
 }
 
 /* ══════════════════════════════════════════════════════════
@@ -2010,7 +1950,10 @@ function frameLayout(){
   const over = Math.max(W,H)/MAX_DIM;
   if(over>1){ W/=over; H/=over; }
   const pad = m*Math.min(W,H);
-  const fit = (S.ratio==="auto") ? 1 : Math.min((W-pad*2)/bb.w,(H-pad*2)/bb.h);
+  // Computed for every ratio: in auto mode this is exactly 1 — unless the
+  // frame was clamped to MAX_DIM above, in which case the content must shrink
+  // with it (three side-by-side screenshots used to get their outer edges cut).
+  const fit = Math.min((W-pad*2)/bb.w,(H-pad*2)/bb.h);
   const scale = fit*(S.zoom/100);
   return {
     W:Math.round(W), H:Math.round(H), items, P, bb, scale,
@@ -2391,15 +2334,16 @@ let raf = 0;
 let RECORDING = false;               // video export owns the main thread
 const schedule = () => { if(RECORDING) return; if(!raf) raf = requestAnimationFrame(()=>{ raf=0; draw(); }); };
 
-function thumb(canvas,patch){
+function thumb(canvas,patch,useDemo){
   const r = canvas.getBoundingClientRect();
   if(r.width<4) return;
   const dpr = Math.min(window.devicePixelRatio||1,2);
   const W = Math.max(64,Math.round(r.width*dpr)), H = Math.max(64,Math.round(r.height*dpr));
   const keep = S;
   S = Object.assign({},S,patch,{ratio:"custom",cw:W,ch:H});
+  USE_DEMO = !!useDemo;
   try{ render(canvas,1); }catch(e){}
-  finally{ S = keep; }
+  finally{ S = keep; USE_DEMO = false; }
 }
 const NEUTRAL = {tiltX:0,tiltY:0,rotate:0,offX:0,offY:0,count:1,grain:0,vignette:0,
                  bgBlur:0,scene:"none",wmOn:false,arrange:"grid",hideMockup:false,vfx:"none",annots:[]};
@@ -2416,17 +2360,17 @@ function paintThumbs(){
     ctx.clearRect(0,0,c.width,c.height);
     drawBg(ctx,c.width,c.height,bgDef(c.parentNode.dataset.id));
   });
-  document.querySelectorAll("#styleTiles .tile, #deviceTiles .tile").forEach(t=>{
+  document.querySelectorAll("#styleTiles .tile").forEach(t=>{
     thumb(t.querySelector("canvas"), Object.assign({},NEUTRAL,{
       style:t.dataset.v, pad:6, zoom:124, offY:13,
       bg:"solid-mist", shadow:"hug", shOpacity:34, shSize:40, shDist:22
-    }));
+    }), true);
   });
   document.querySelectorAll("#shadowTiles .tile").forEach(t=>{
     thumb(t.querySelector("canvas"), Object.assign({},NEUTRAL,{
       shadow:t.dataset.v, pad:16, zoom:80, bg:"solid-mist", style:"plain",
       shOpacity:Math.max(S.shOpacity,34)
-    }));
+    }), true);
   });
   document.querySelectorAll("#lps .lp canvas").forEach(c=>{
     const p = LAYOUTS[+c.parentNode.dataset.i];
@@ -2664,247 +2608,6 @@ function renderWmSlot(){
 }
 
 /* ══════════════════════════════════════════════════════════
-   11b. X post importer
-   ──────────────────────────────────────────────────────────
-   Pastes an x.com/twitter.com status link, fetches the public post JSON from
-   X's syndication CDN (the endpoint that powers embedded tweets; CORS-open),
-   and renders a clean post card straight onto a canvas. This is the app's one
-   and only external request, made strictly on user action.
-   ══════════════════════════════════════════════════════════ */
-let xTheme = "dark";
-document.getElementById("xTheme").addEventListener("click",e=>{
-  const b = e.target.closest("button[data-v]"); if(!b) return;
-  xTheme = b.dataset.v;
-  document.querySelectorAll("#xTheme button").forEach(x=>
-    x.setAttribute("aria-pressed",String(x===b)));
-});
-async function fetchTweet(url){
-  const m = String(url).match(/(?:twitter\.com|x\.com)\/[^/]+\/status(?:es)?\/(\d+)/i);
-  if(!m) throw new Error("bad-url");
-  const id = m[1];
-  // Same token derivation the official embed widget uses.
-  const token = ((Number(id)/1e15)*Math.PI).toString(36).replace(/(0+|\.)/g,"");
-  const r = await fetch(`https://cdn.syndication.twimg.com/tweet-result?id=${id}&token=${token}&lang=en`);
-  if(!r.ok) throw new Error("fetch-failed");
-  return r.json();
-}
-const corsImg = src => new Promise(res=>{
-  if(!src) return res(null);
-  const im = new Image();
-  im.crossOrigin = "anonymous";
-  im.onload = ()=>res(im); im.onerror = ()=>res(null);
-  im.src = src;
-});
-function ordinal(n){
-  const s = n%100;
-  return n + (s>=11&&s<=13 ? "th" : ["th","st","nd","rd"][Math.min(n%10,4)]||"th");
-}
-/** Cover-crop draw into a rounded rect. */
-function coverImg(ctx,im,x,y,w,h,r){
-  ctx.save();
-  roundRect(ctx,x,y,w,h,r); ctx.clip();
-  const k = Math.max(w/im.width, h/im.height);
-  ctx.drawImage(im, x+(w-im.width*k)/2, y+(h-im.height*k)/2, im.width*k, im.height*k);
-  ctx.restore();
-  ctx.strokeStyle = "rgba(128,128,128,.25)"; ctx.lineWidth = 2;
-  roundRect(ctx,x+1,y+1,w-2,h-2,r); ctx.stroke();
-}
-async function renderTweetCard(t,theme){
-  const W = 1200, P = 64;
-  const dark = theme!=="light";
-  const C = dark
-    ? {bg:"#101014", txt:"#f2f3f5", dim:"#7c8894", line:"rgba(255,255,255,.12)"}
-    : {bg:"#ffffff", txt:"#0f1419", dim:"#657786", line:"rgba(0,0,0,.12)"};
-  const user = t.user||{};
-  let text = String(t.text||"").replace(/\s*https:\/\/t\.co\/\w+\s*$/,"").trim();
-
-  const [avatar, ...photos] = await Promise.all([
-    corsImg((user.profile_image_url_https||"").replace("_normal","_x96")),
-    ...(t.photos||[]).slice(0,4).map(p=>corsImg(p.url)),
-    ]);
-  const poster = (!photos.filter(Boolean).length && t.video) ? await corsImg(t.video.poster) : null;
-  const media = photos.filter(Boolean);
-  if(poster) media.push(poster);
-
-  // ── measure ──
-  const mc = document.createElement("canvas");
-  const mx = mc.getContext("2d");
-  const setF = (wgt,sz)=>{ mx.font = `${wgt} ${sz}px -apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,sans-serif`; };
-  setF(400,46);
-  const words = text.split(/\s+/).filter(Boolean);
-  const lines = [];
-  let line = "";
-  for(const w of words){
-    const trial = line ? line+" "+w : w;
-    if(mx.measureText(trial).width > W-P*2 && line){ lines.push(line); line = w; }
-    else line = trial;
-  }
-  if(line) lines.push(line);
-  const lineH = 62;
-  let mediaH = 0;
-  const gap = 18, mw = W-P*2;
-  const n = media.length;
-  if(n===1){
-    const ar = media[0].width/media[0].height;
-    mediaH = Math.min(mw/Math.max(ar,.72), mw*1.15);
-  }
-  else if(n===2) mediaH = mw*.52;
-  else if(n===3) mediaH = mw*.62;
-  else if(n>=4) mediaH = mw*.78;
-  const H = Math.round(P + 96 + 44 + lines.length*lineH + (n?26+mediaH:0) + 40 + 40 + P);
-
-  // ── draw ──
-  const c = document.createElement("canvas");
-  c.width = W; c.height = H;
-  const x = c.getContext("2d");
-  x.fillStyle = C.bg;
-  roundRect(x,0,0,W,H,44); x.fill();
-  const F = (wgt,sz)=>{ x.font = `${wgt} ${sz}px -apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,sans-serif`; };
-
-  // avatar
-  const ay = P, ar2 = 48;
-  if(avatar){
-    x.save();
-    x.beginPath(); x.arc(P+ar2,ay+ar2,ar2,0,Math.PI*2); x.clip();
-    x.drawImage(avatar,P,ay,ar2*2,ar2*2);
-    x.restore();
-  }else{
-    x.fillStyle = dark?"#22303c":"#e1e8ed";
-    x.beginPath(); x.arc(P+ar2,ay+ar2,ar2,0,Math.PI*2); x.fill();
-    x.fillStyle = C.dim; F(700,44); x.textAlign = "center"; x.textBaseline = "middle";
-    x.fillText((user.name||"?")[0].toUpperCase(),P+ar2,ay+ar2+2);
-  }
-  // name + badge + handle
-  x.textAlign = "left"; x.textBaseline = "alphabetic";
-  x.fillStyle = C.txt; F(700,40);
-  const name = user.name||"";
-  x.fillText(name, P+ar2*2+26, ay+40);
-  if(user.is_blue_verified || user.verified){
-    const bx = P+ar2*2+26+x.measureText(name).width+30, by = ay+26;
-    x.fillStyle = "#1d9bf0";
-    x.beginPath();
-    for(let i=0;i<16;i++){                       // scalloped seal
-      const a = i/16*Math.PI*2, r = 20+(i%2?0:2.5);
-      i ? x.lineTo(bx+Math.cos(a)*r,by+Math.sin(a)*r) : x.moveTo(bx+r,by);
-    }
-    x.closePath(); x.fill();
-    x.strokeStyle = "#fff"; x.lineWidth = 4.6; x.lineCap = "round"; x.lineJoin = "round";
-    x.beginPath();
-    x.moveTo(bx-8.4,by+.5); x.lineTo(bx-2.4,by+6.8); x.lineTo(bx+9,by-6.4);
-    x.stroke();
-  }
-  x.fillStyle = C.dim; F(400,34);
-  x.fillText("@"+(user.screen_name||""), P+ar2*2+26, ay+84);
-  // X logo
-  x.fillStyle = C.txt; F(800,64);
-  x.textAlign = "right";
-  x.fillText("𝕏", W-P, ay+58);
-  x.textAlign = "left";
-
-  // text
-  x.fillStyle = C.txt; F(400,46);
-  let ty = ay+96+58;
-  for(const l of lines){ x.fillText(l,P,ty); ty += lineH; }
-  ty -= lineH-26;
-
-  // media grid
-  if(n){
-    const r = 26;
-    if(n===1){
-      const ar3 = media[0].width/media[0].height;
-      const w1 = Math.min(mw, mediaH*ar3);
-      coverImg(x,media[0],P+(mw-w1)/2,ty,w1,mediaH,r);
-    }else if(n===2){
-      const cw2 = (mw-gap)/2;
-      coverImg(x,media[0],P,ty,cw2,mediaH,r);
-      coverImg(x,media[1],P+cw2+gap,ty,cw2,mediaH,r);
-    }else if(n===3){
-      const cw2 = (mw-gap)/2, hh = (mediaH-gap)/2;
-      coverImg(x,media[0],P,ty,cw2,mediaH,r);
-      coverImg(x,media[1],P+cw2+gap,ty,cw2,hh,r);
-      coverImg(x,media[2],P+cw2+gap,ty+hh+gap,cw2,hh,r);
-    }else{
-      const cw2 = (mw-gap)/2, hh = (mediaH-gap)/2;
-      coverImg(x,media[0],P,ty,cw2,hh,r);
-      coverImg(x,media[1],P+cw2+gap,ty,cw2,hh,r);
-      coverImg(x,media[2],P,ty+hh+gap,cw2,hh,r);
-      coverImg(x,media[3],P+cw2+gap,ty+hh+gap,cw2,hh,r);
-    }
-    if(poster){                                   // play button over video poster
-      x.fillStyle = "rgba(0,0,0,.55)";
-      x.beginPath(); x.arc(W/2,ty+mediaH/2,64,0,Math.PI*2); x.fill();
-      x.fillStyle = "#fff";
-      x.beginPath();
-      x.moveTo(W/2-18,ty+mediaH/2-30); x.lineTo(W/2+34,ty+mediaH/2); x.lineTo(W/2-18,ty+mediaH/2+30);
-      x.closePath(); x.fill();
-    }
-    ty += mediaH+26;
-  }
-
-  // footer: replies, likes, date
-  ty += 44;
-  x.fillStyle = C.dim; F(400,34);
-  let fx2 = P;
-  const bubble = (cx,cy)=>{
-    x.save(); x.strokeStyle = C.dim; x.lineWidth = 3.4; x.lineJoin = "round";
-    x.beginPath(); x.arc(cx,cy-4,15,Math.PI*.55,Math.PI*2.28);
-    x.lineTo(cx-9,cy+16); x.lineTo(cx-8,cy+9);
-    x.stroke(); x.restore();
-  };
-  const heart = (cx,cy)=>{
-    x.save(); x.strokeStyle = C.dim; x.lineWidth = 3.4; x.lineJoin = "round"; x.lineCap = "round";
-    x.beginPath();
-    x.moveTo(cx,cy+13);
-    x.bezierCurveTo(cx-22,cy-4,cx-13,cy-18,cx,cy-8);
-    x.bezierCurveTo(cx+13,cy-18,cx+22,cy-4,cx,cy+13);
-    x.stroke(); x.restore();
-  };
-  if(t.conversation_count!=null){
-    bubble(fx2+16,ty-10);
-    x.fillText(String(t.conversation_count.toLocaleString()), fx2+44, ty);
-    fx2 += 44+x.measureText(String(t.conversation_count.toLocaleString())).width+44;
-  }
-  if(t.favorite_count!=null){
-    heart(fx2+16,ty-10);
-    x.fillText(String(t.favorite_count.toLocaleString()), fx2+44, ty);
-    fx2 += 44+x.measureText(String(t.favorite_count.toLocaleString())).width+44;
-  }
-  if(t.created_at){
-    const d = new Date(t.created_at);
-    const mo = d.toLocaleString("en-US",{month:"long"});
-    let hr = d.getHours()%12||12;
-    const ap = d.getHours()>=12?"PM":"AM";
-    x.fillText(`${mo} ${ordinal(d.getDate())}, ${d.getFullYear()} at ${hr}:${String(d.getMinutes()).padStart(2,"0")} ${ap}`, fx2, ty);
-  }
-  return c;
-}
-async function importXPost(){
-  const inp = document.getElementById("xUrl");
-  const btn = document.getElementById("xGo");
-  const url = inp.value.trim();
-  if(!url){ toast("Paste an X post link first"); inp.focus(); return; }
-  btn.disabled = true;
-  const old = btn.textContent;
-  btn.textContent = "Fetching…";
-  try{
-    const t = await fetchTweet(url);
-    const card = await renderTweetCard(t,xTheme);
-    const blob = await new Promise(r=>card.toBlob(r,"image/png"));
-    loadInto(0,new File([blob],`x-${(t.user||{}).screen_name||"post"}.png`,{type:"image/png"}));
-    toast("Post card generated");
-  }catch(e){
-    toast(e.message==="bad-url" ? "That doesn't look like an X post link"
-                                : "Couldn't fetch that post from X");
-  }finally{
-    btn.disabled = false; btn.textContent = old;
-  }
-}
-document.getElementById("xGo").addEventListener("click",importXPost);
-document.getElementById("xUrl").addEventListener("keydown",e=>{
-  if(e.key==="Enter"){ e.preventDefault(); importXPost(); }
-});
-
-/* ══════════════════════════════════════════════════════════
    12. Export
    ══════════════════════════════════════════════════════════ */
 function exportCanvas(){
@@ -2970,6 +2673,15 @@ function drawAnnots(ctx,W,H){
     ctx.shadowColor = "rgba(0,0,0,.3)"; ctx.shadowBlur = a.w*u*1.4;
     const P = a.p.map(p=>[p[0]*W,p[1]*H]);
     const [x0,y0] = P[0], [x1,y1] = P[P.length-1];
+    if(a.t==="text"){
+      const fs = (a.w*5.2+.016)*u;
+      ctx.font = `700 ${fs}px -apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,sans-serif`;
+      ctx.textBaseline = "middle";
+      ctx.shadowBlur = fs*.22;
+      ctx.fillText(a.str||"",x0,y0);
+      ctx.restore();
+      continue;
+    }
     if(a.t==="pen"){
       ctx.beginPath();
       P.forEach((p,i)=> i ? ctx.lineTo(p[0],p[1]) : ctx.moveTo(p[0],p[1]));
@@ -3031,9 +2743,43 @@ document.getElementById("annUndo").addEventListener("click",()=>{
 document.getElementById("annClear").addEventListener("click",()=>{
   if(S.annots.length){ S.annots = []; update(); toast("Annotations cleared"); }
 });
+/* Text labels: click to place, type, Enter commits. */
+function openAnnText(cx,cy){
+  const inp = document.getElementById("annInput");
+  const r = preview.getBoundingClientRect();
+  if(!r.width) return;
+  const fx = clamp((cx-r.left)/r.width,0,1), fy = clamp((cy-r.top)/r.height,0,1);
+  const sr = stage.getBoundingClientRect();
+  inp.style.left = (cx-sr.left)+"px";
+  inp.style.top  = (cy-sr.top)+"px";
+  inp.style.color = ANN.color==="#0f1014" ? "#fff" : ANN.color;
+  inp.value = "";
+  inp.hidden = false;
+  inp.focus();
+  let done = false;
+  const commit = ()=>{
+    if(done) return; done = true;
+    const str = inp.value.trim();
+    inp.hidden = true;
+    inp.removeEventListener("keydown",key); inp.removeEventListener("blur",commit);
+    if(str){
+      S.annots = S.annots.concat([{t:"text",c:ANN.color,w:ANN.width,p:[[fx,fy]],str}]);
+      update();
+    }
+  };
+  const key = ev=>{
+    ev.stopPropagation();
+    if(ev.key==="Enter"){ ev.preventDefault(); commit(); }
+    else if(ev.key==="Escape"){ done = true; inp.hidden = true;
+      inp.removeEventListener("keydown",key); inp.removeEventListener("blur",commit); }
+  };
+  inp.addEventListener("keydown",key);
+  inp.addEventListener("blur",commit);
+}
 preview.addEventListener("pointerdown",e=>{
   if(!ANN.on || ANIM.playing) return;
   e.preventDefault(); e.stopPropagation();
+  if(ANN.tool==="text"){ openAnnText(e.clientX,e.clientY); return; }
   preview.setPointerCapture(e.pointerId);
   const rect = preview.getBoundingClientRect();
   const pt = ev=>[clamp((ev.clientX-rect.left)/rect.width,0,1),
@@ -3077,7 +2823,10 @@ const MOTIONS = {
   sweep: t=>({tiltY:lerp(-13,13,easeIO(t))}),
   orbit: t=>({tiltY:11*Math.sin(t*TAU), tiltX:4*Math.cos(t*TAU), zoom:2*Math.sin(t*TAU)}),
   float: t=>({offY:1.8*Math.sin(t*TAU), rotate:1.4*Math.sin(t*TAU+1.2)}),
-  pulse: t=>({zoom:3.2*Math.sin(t*TAU)})
+  pulse: t=>({zoom:3.2*Math.sin(t*TAU)}),
+  reveal:t=>({zoom:lerp(-9,2,easeIO(t)), offY:lerp(4,-1,easeIO(t)), tiltX:lerp(7,0,easeIO(t))}),
+  swing: t=>({rotate:2.6*Math.sin(t*TAU), tiltY:7*Math.sin(t*TAU)}),
+  drift: t=>({offX:2.6*Math.sin(t*TAU), offY:1.6*Math.sin(t*TAU*2+1.3), zoom:1.5*Math.sin(t*TAU+.7)})
 };
 const LIMITS = {zoom:[20,200], tiltX:[-45,45], tiltY:[-45,45], rotate:[-45,45], offX:[-45,45], offY:[-45,45]};
 function animPatch(t){
@@ -3098,6 +2847,39 @@ function animPatch(t){
   return p;
 }
 const ANIM = {playing:false, raf:0, t0:0};
+
+/* ── smooth transitions ─────────────────────────────────────
+   Layout presets, templates and the shuffle used to snap — the whole canvas
+   jumped to the new transform (and, in auto ratio, a new size) in one frame.
+   Numeric keys now ease over ~0.4s; everything else applies instantly. */
+const TWEENABLE = ["zoom","tiltX","tiltY","rotate","offX","offY","pad","gap"];
+let tweenRaf = 0;
+function animateTo(patch,dur){
+  dur = dur||420;
+  if(tweenRaf){ cancelAnimationFrame(tweenRaf); tweenRaf = 0; }
+  const from = {}, to = {};
+  const inst = Object.assign({},patch);
+  for(const key of TWEENABLE){
+    if(key in patch && typeof patch[key]==="number" && patch[key]!==S[key]){
+      from[key] = S[key]; to[key] = patch[key];
+      delete inst[key];
+    }
+  }
+  Object.assign(S,inst);
+  const keys = Object.keys(to);
+  if(!keys.length || ANIM.playing || RECORDING){
+    Object.assign(S,patch); update(); return;
+  }
+  syncUI(); scheduleThumbs();
+  const t0 = performance.now();
+  const step = now=>{
+    const t = Math.min(1,(now-t0)/dur), e = easeIO(t);
+    for(const key of keys) S[key] = from[key]+(to[key]-from[key])*e;
+    if(t<1){ draw(); tweenRaf = requestAnimationFrame(step); }
+    else{ tweenRaf = 0; update(); }
+  };
+  tweenRaf = requestAnimationFrame(step);
+}
 function setPlaying(on){
   ANIM.playing = !!on && S.anim!=="none";
   const pt = document.getElementById("playToggle");
@@ -3465,11 +3247,12 @@ function buildTpl(){
   });
 }
 function applyTemplate(t){
-  Object.assign(S, tplPatch(t));
-  revealBg(S.bg);
-  buildSwatches(); update();
+  const p = tplPatch(t);
+  revealBg(p.bg||S.bg);
   closeTpl();
-  setPlaying(!!t.anim);
+  if(t.anim){ Object.assign(S,p); update(); setPlaying(true); }   // motion takes over
+  else animateTo(p);
+  buildSwatches();
   toast(`Template — ${t.name}`);
 }
 function openTpl(){ tplModal.hidden = false; buildTpl(); }
@@ -3639,14 +3422,13 @@ document.getElementById("ptabs").addEventListener("click",e=>{
 document.querySelector("#ptabs button").setAttribute("aria-pressed","true");
 
 const styleTiles = document.getElementById("styleTiles");
-const deviceTiles = document.getElementById("deviceTiles");
 STYLES.forEach(st=>{
   const b = document.createElement("button");
   b.className="tile"; b.type="button"; b.dataset.v=st.id; b.title=st.name;
   b.innerHTML = `<canvas></canvas><b></b>`;
   b.querySelector("b").textContent = st.name;
   b.addEventListener("click",()=>setKey("style",st.id));
-  (st.device ? deviceTiles : styleTiles).appendChild(b);
+  styleTiles.appendChild(b);
 });
 const shadowTiles = document.getElementById("shadowTiles");
 SHADOWS.forEach(sh=>{
@@ -3729,11 +3511,10 @@ LAYOUTS.forEach((p,i)=>{
 });
 function applyPreset(i){
   const p = LAYOUTS[i];
-  Object.assign(S,{zoom:p.zoom,tiltX:p.tiltX,tiltY:p.tiltY,rotate:p.rotate,offX:p.offX,offY:p.offY,preset:i});
-  update();
+  animateTo({zoom:p.zoom,tiltX:p.tiltX,tiltY:p.tiltY,rotate:p.rotate,offX:p.offX,offY:p.offY,preset:i});
 }
 document.getElementById("resetTf").addEventListener("click",()=>{
-  Object.assign(S,{zoom:92,tiltX:0,tiltY:0,rotate:0,offX:0,offY:0,preset:0}); update();
+  animateTo({zoom:92,tiltX:0,tiltY:0,rotate:0,offX:0,offY:0,preset:0});
 });
 document.getElementById("resetBtn").addEventListener("click",()=>{
   S = Object.assign({},DEFAULTS);
@@ -3767,10 +3548,10 @@ let magicIdx = -1;
 function applyMagic(step){
   magicIdx = (magicIdx + step + MAGIC.length) % MAGIC.length;
   const p = MAGIC[magicIdx], l = LAYOUTS[p.preset];
-  Object.assign(S,{bg:p.bg,style:p.style,shadow:p.shadow,grain:p.grain,scene:p.scene,
-    zoom:l.zoom,tiltX:l.tiltX,tiltY:l.tiltY,rotate:l.rotate,offX:l.offX,offY:l.offY,preset:p.preset});
   revealBg(p.bg);
-  buildSwatches(); update();
+  animateTo({bg:p.bg,style:p.style,shadow:p.shadow,grain:p.grain,scene:p.scene,
+    zoom:l.zoom,tiltX:l.tiltX,tiltY:l.tiltY,rotate:l.rotate,offX:l.offX,offY:l.offY,preset:p.preset});
+  buildSwatches();
   const label = `${bgDef(p.bg).name} · ${(STYLES.find(s=>s.id===p.style)||{}).name} · ${l.name}`;
   document.getElementById("magicName").textContent = `${magicIdx+1}/${MAGIC.length} — ${label}`;
   toast(label);
@@ -3816,7 +3597,7 @@ function syncUI(){
   });
   document.querySelectorAll(".switch[data-key]").forEach(b=>
     b.setAttribute("aria-pressed", String(!!S[b.dataset.key])));
-  document.querySelectorAll("#styleTiles .tile, #deviceTiles .tile").forEach(t=>
+  document.querySelectorAll("#styleTiles .tile").forEach(t=>
     t.setAttribute("aria-pressed", String(t.dataset.v===S.style)));
   document.querySelectorAll("#shadowTiles .tile").forEach(t=>
     t.setAttribute("aria-pressed", String(t.dataset.v===S.shadow)));
@@ -3858,9 +3639,9 @@ buildSwatches();
 syncUI();
 draw();
 paintThumbs();
-document.getElementById("renderer").textContent =
-  GPU.init() ? "GPU perspective · nothing leaves your browser"
-             : "CPU perspective · nothing leaves your browser";
+document.getElementById("privBadge").title =
+  `Everything renders in your browser (${GPU.init() ? "GPU" : "CPU"} perspective) — ` +
+  `your images are never uploaded anywhere.`;
 
 /* Offline support. Registered only on a secure origin (https / localhost);
    opening index.html straight off disk simply skips it. */
