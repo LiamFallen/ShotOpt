@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>ShotOpt — Screenshot Beautifier</title>
-<meta name="description" content="Turn plain screenshots into polished images. Gradients, mockup styles, 3D tilt and one-click PNG export — entirely in your browser, nothing uploaded.">
+<meta name="description" content="Turn plain screenshots into polished images and motion mockups. 140+ backgrounds, templates, 3D scenes, VFX, animated video export — entirely in your browser, nothing uploaded.">
 <meta name="theme-color" content="#08080a">
 <meta name="color-scheme" content="dark">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
@@ -294,6 +294,67 @@
     box-shadow:0 18px 46px -12px rgba(0,0,0,.9);opacity:0;pointer-events:none;transition:.24s var(--ease);z-index:60}
   .toast.on{opacity:1;transform:translate(-50%,0)}
 
+  /* wrapping chip grid — same skin as .seg, but flows in rows */
+  .seg.wrap{grid-auto-flow:row;grid-template-columns:repeat(3,1fr)}
+  .seg.wrap button{padding:8px 4px}
+
+  /* tab panes ease in on switch */
+  #tab-mockup,#tab-frame,#tab-fx{animation:tabin .22s var(--ease)}
+  @keyframes tabin{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+
+  /* ───── resize handles ───── */
+  #handles{position:absolute;pointer-events:none;z-index:4;
+    outline:1px dashed rgba(255,255,255,.0);border-radius:2px;transition:outline-color .15s}
+  #handles.hot{outline-color:rgba(255,255,255,.28)}
+  #handles .h{position:absolute;width:12px;height:12px;border-radius:50%;background:#fff;
+    box-shadow:0 0 0 1.5px rgba(0,0,0,.55),0 2px 8px rgba(0,0,0,.6);pointer-events:auto;
+    opacity:.0;transform:scale(.6);transition:.16s var(--ease)}
+  #handles.hot .h,#handles .h:hover{opacity:1;transform:scale(1)}
+  #handles .h:hover{background:var(--accent)}
+  #handles .h[data-h=tl]{left:-6px;top:-6px;cursor:nwse-resize}
+  #handles .h[data-h=tr]{right:-6px;top:-6px;cursor:nesw-resize}
+  #handles .h[data-h=bl]{left:-6px;bottom:-6px;cursor:nesw-resize}
+  #handles .h[data-h=br]{right:-6px;bottom:-6px;cursor:nwse-resize}
+
+  /* ───── motion play button ───── */
+  .playfab{position:absolute;left:50%;bottom:18px;transform:translateX(-50%);z-index:6;
+    width:44px;height:44px;border-radius:50%;font-size:15px;color:#fff;
+    background:rgba(20,20,26,.82);border:1px solid rgba(255,255,255,.16);
+    backdrop-filter:blur(10px);box-shadow:0 10px 30px -8px rgba(0,0,0,.8);
+    display:grid;place-items:center;transition:.16s var(--ease)}
+  .playfab:hover{transform:translateX(-50%) scale(1.08);border-color:rgba(255,255,255,.3)}
+
+  /* ───── templates modal ───── */
+  .modal{position:fixed;inset:0;z-index:50;display:grid;place-items:center;
+    background:rgba(4,4,6,.68);backdrop-filter:blur(9px)}
+  .modal-card{width:min(1060px,94vw);height:min(780px,92vh);display:flex;flex-direction:column;
+    background:linear-gradient(180deg,#121217,#0c0c10);border:1px solid rgba(255,255,255,.10);
+    border-radius:20px;box-shadow:0 50px 140px -30px rgba(0,0,0,.95),0 0 0 1px rgba(0,0,0,.6);
+    overflow:hidden;animation:pop .22s var(--ease)}
+  @keyframes pop{from{opacity:0;transform:translateY(14px) scale(.985)}to{opacity:1;transform:none}}
+  .modal-head{display:flex;align-items:center;gap:14px;padding:16px 18px;
+    border-bottom:1px solid var(--line);flex:0 0 auto}
+  .modal-head h2{margin:0;font-size:16px;font-weight:650;letter-spacing:-.015em}
+  .modal-head .sp{flex:1}
+  .modal-body{flex:1;overflow-y:auto;padding:6px 18px 26px}
+  .tpl-cat{font-size:11px;font-weight:650;letter-spacing:.09em;text-transform:uppercase;
+    color:var(--faint);margin:20px 2px 10px}
+  .tpl-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(216px,1fr));gap:12px}
+  .tpl{position:relative;border:1px solid var(--line);border-radius:14px;overflow:hidden;
+    background:var(--card);line-height:0;transition:.18s var(--ease);text-align:left}
+  .tpl:hover{transform:translateY(-3px);border-color:var(--line-3);
+    box-shadow:0 16px 40px -14px rgba(0,0,0,.8)}
+  .tpl canvas{width:100%;aspect-ratio:16/10;display:block;background:#0c0c0f}
+  .tpl .nm{display:flex;align-items:center;gap:7px;padding:9px 11px;font-size:11.5px;
+    font-weight:550;color:var(--dim);line-height:1.3}
+  .tpl:hover .nm{color:#fff}
+  .tpl .anim-badge{position:absolute;top:9px;left:9px;font-size:9.5px;font-weight:650;
+    letter-spacing:.03em;color:#fff;background:rgba(8,8,12,.72);border:1px solid rgba(255,255,255,.2);
+    padding:3px 8px;border-radius:20px;backdrop-filter:blur(6px);line-height:1.2}
+
+  /* recording state */
+  .btn.rec{background:linear-gradient(100deg,#ff2d2d,#ff2d75);border-color:transparent;color:#fff}
+
   /* Scale the whole UI up on large displays — at a fixed 13px base the app
      reads as a small window in the corner of a 27"+ screen. draw() multiplies
      the canvas backing store by the same factor so the preview stays sharp. */
@@ -324,6 +385,7 @@
   <div class="tabs" id="ptabs">
     <button data-tab="mockup" type="button">Mockup</button>
     <button data-tab="frame" type="button">Frame</button>
+    <button data-tab="fx" type="button">Effects</button>
   </div>
 
   <div class="scroll">
@@ -423,39 +485,26 @@
             <span class="ico">✦</span><b>Magic</b></button>
         </div>
         <div id="bgList"></div>
-      </div>
-
-      <div class="sec">
-        <h2>Effects</h2>
-        <div class="ctrl">
-          <div class="lab"><span>Grain</span><i data-out="grain" data-suffix="%"></i></div>
-          <input type="range" data-key="grain" min="0" max="100" step="1">
-        </div>
-        <div class="ctrl">
-          <div class="lab"><span>Vignette</span><i data-out="vignette" data-suffix="%"></i></div>
-          <input type="range" data-key="vignette" min="0" max="100" step="1">
-        </div>
-        <div class="ctrl">
-          <div class="lab"><span>Background blur</span><i data-out="bgBlur" data-suffix="%"></i></div>
-          <input type="range" data-key="bgBlur" min="0" max="100" step="1">
-        </div>
-      </div>
-
-      <div class="sec">
-        <h2>Scene</h2>
-        <div class="seg" data-key="scene">
-          <button data-v="none" type="button">None</button>
-          <button data-v="floor" type="button">Floor</button>
-          <button data-v="shapes" type="button">Shapes</button>
-          <button data-v="glow" type="button">Glow</button>
-        </div>
+        <div class="check" style="margin-top:12px"><span>Blur backdrop</span>
+          <button class="switch" id="blurQuick" type="button" title="One-click background blur"></button></div>
       </div>
 
       <div class="sec">
         <h2>Watermark</h2>
         <div class="check" style="margin-bottom:8px"><span>Enabled</span>
           <button class="switch" data-key="wmOn" type="button"></button></div>
-        <div class="ctrl"><input type="text" data-key="wmText" placeholder="Made with ShotOpt" maxlength="60"></div>
+        <div class="ctrl">
+          <div class="seg" data-key="wmMode">
+            <button data-v="text" type="button">Text</button>
+            <button data-v="logo" type="button">Logo</button>
+          </div>
+        </div>
+        <div class="ctrl" id="wmTextCtrl"><input type="text" data-key="wmText" placeholder="Made with ShotOpt" maxlength="60"></div>
+        <div class="ctrl" id="wmLogoCtrl" hidden>
+          <div class="slot" id="wmLogoSlot"><div class="plus">+</div><b class="t">Upload your logo</b>
+            <span class="s">PNG with transparency works best</span></div>
+          <input type="file" id="wmLogoFile" accept="image/*" hidden>
+        </div>
         <div class="ctrl">
           <div class="seg" data-key="wmPos">
             <button data-v="tl" type="button" title="Top left">↖</button>
@@ -475,6 +524,56 @@
         </div>
       </div>
     </div>
+
+    <!-- ---------- EFFECTS ---------- -->
+    <div id="tab-fx" hidden>
+      <div class="sec">
+        <h2>Cinematic VFX</h2>
+        <div class="seg wrap" data-key="vfx">
+          <button data-v="none" type="button">None</button>
+          <button data-v="cine" type="button">Cinematic</button>
+          <button data-v="vhs" type="button">VHS</button>
+          <button data-v="noir" type="button">Noir</button>
+          <button data-v="vintage" type="button">Vintage</button>
+          <button data-v="dream" type="button">Dream</button>
+        </div>
+        <div class="ctrl" id="vfxAmtCtrl" style="margin-top:12px">
+          <div class="lab"><span>Intensity</span><i data-out="vfxAmt" data-suffix="%"></i></div>
+          <input type="range" data-key="vfxAmt" min="0" max="100" step="1">
+        </div>
+      </div>
+
+      <div class="sec">
+        <h2>Texture</h2>
+        <div class="ctrl">
+          <div class="lab"><span>Grain</span><i data-out="grain" data-suffix="%"></i></div>
+          <input type="range" data-key="grain" min="0" max="100" step="1">
+        </div>
+        <div class="ctrl">
+          <div class="lab"><span>Vignette</span><i data-out="vignette" data-suffix="%"></i></div>
+          <input type="range" data-key="vignette" min="0" max="100" step="1">
+        </div>
+        <div class="ctrl">
+          <div class="lab"><span>Background blur</span><i data-out="bgBlur" data-suffix="%"></i></div>
+          <input type="range" data-key="bgBlur" min="0" max="100" step="1">
+        </div>
+      </div>
+
+      <div class="sec">
+        <h2>Scene</h2>
+        <div class="seg wrap" data-key="scene">
+          <button data-v="none" type="button">None</button>
+          <button data-v="floor" type="button">Floor</button>
+          <button data-v="glow" type="button">Glow</button>
+          <button data-v="shapes" type="button">Shapes</button>
+          <button data-v="spheres" type="button">Spheres</button>
+          <button data-v="blobs" type="button">Blobs</button>
+          <button data-v="prisms" type="button">Prisms</button>
+          <button data-v="clouds" type="button">Clouds</button>
+          <button data-v="podium" type="button">Podium</button>
+        </div>
+      </div>
+    </div>
   </div>
 </aside>
 
@@ -486,19 +585,26 @@
     <div class="vr"></div>
     <button class="pill" id="startOver" type="button">Start over</button>
     <div class="tbspace"></div>
-    <button class="pill magic" id="magicBtn" type="button">✨ Magic preset</button>
+    <button class="pill magic" id="tplBtn" type="button">✦ Templates</button>
+    <button class="pill" id="magicBtn" type="button">✨ Shuffle</button>
     <div class="tbspace"></div>
     <span class="zoomlab" id="zoomlab">—</span>
   </div>
 
   <div class="stage" id="stage">
     <canvas id="preview"></canvas>
+    <div id="handles" hidden>
+      <div class="h" data-h="tl"></div><div class="h" data-h="tr"></div>
+      <div class="h" data-h="bl"></div><div class="h" data-h="br"></div>
+    </div>
+    <button class="playfab" id="playBtn" type="button" hidden title="Play / pause motion">▶</button>
     <div class="overlay" id="overlay"><div>Drop your screenshot</div></div>
   </div>
 
   <div class="foot">
     <span><kbd>⌘V</kbd> paste</span><span><kbd>⌘S</kbd> export</span>
-    <span><kbd>⇧⌘C</kbd> copy</span><span><kbd>⌘Z</kbd> undo</span><span><kbd>⌥1–9</kbd> layout</span>
+    <span><kbd>⇧⌘C</kbd> copy</span><span><kbd>⌘Z</kbd> undo</span>
+    <span><kbd>Space</kbd> play</span><span>drag to move · corners resize</span>
     <span class="sp"></span><span id="renderer">—</span>
   </div>
 </main>
@@ -515,6 +621,7 @@
         <button data-v="1" type="button">1×</button>
         <button data-v="2" type="button">2×</button>
         <button data-v="3" type="button">3×</button>
+        <button data-v="4" type="button">4×</button>
       </div>
       <select data-key="format" style="width:92px">
         <option value="png">PNG</option>
@@ -551,7 +658,7 @@
       <h2>Transform <span class="sp"></span><button class="mini" id="resetTf" type="button">Reset</button></h2>
       <div class="ctrl">
         <div class="lab"><span>Zoom</span><i data-out="zoom" data-suffix="%"></i></div>
-        <input type="range" data-key="zoom" min="30" max="160" step="1">
+        <input type="range" data-key="zoom" min="20" max="200" step="1">
       </div>
       <div class="ctrl">
         <div class="lab"><span>Tilt X</span><i data-out="tiltX" data-suffix="°"></i></div>
@@ -576,6 +683,34 @@
     </div>
 
     <div class="sec">
+      <h2>Motion</h2>
+      <div class="seg wrap" data-key="anim">
+        <button data-v="none" type="button">None</button>
+        <button data-v="push" type="button">Push In</button>
+        <button data-v="pull" type="button">Pull Out</button>
+        <button data-v="pan" type="button">Pan</button>
+        <button data-v="rise" type="button">Rise</button>
+        <button data-v="sweep" type="button">Sweep</button>
+        <button data-v="orbit" type="button">Showcase</button>
+        <button data-v="float" type="button">Float</button>
+        <button data-v="pulse" type="button">Pulse</button>
+      </div>
+      <div id="motionExtra" style="margin-top:12px">
+        <div class="ctrl">
+          <div class="lab"><span>Duration</span><i data-out="animDur" data-suffix="s"></i></div>
+          <input type="range" data-key="animDur" min="2" max="15" step="0.5">
+        </div>
+        <div class="row">
+          <button class="ghost" id="playToggle" type="button" style="flex:1">▶ Preview motion</button>
+        </div>
+        <div class="row" style="margin-top:8px">
+          <button class="btn" id="videoBtn" type="button" style="flex:1">⬇ Export video</button>
+        </div>
+        <div class="dims" id="videoHint" style="margin-top:6px">WebM · renders in your browser</div>
+      </div>
+    </div>
+
+    <div class="sec">
       <h2>Layout presets</h2>
       <div class="lps" id="lps"></div>
     </div>
@@ -585,6 +720,23 @@
     </div>
   </div>
 </aside>
+</div>
+
+<!-- ══════════════ TEMPLATES ══════════════ -->
+<div class="modal" id="tplModal" hidden>
+  <div class="modal-card">
+    <div class="modal-head">
+      <h2>Templates</h2>
+      <div class="seg" id="tplFilters" style="width:280px">
+        <button data-f="all" type="button" aria-pressed="true">All</button>
+        <button data-f="image" type="button">Image</button>
+        <button data-f="anim" type="button">Animated</button>
+      </div>
+      <div class="sp"></div>
+      <button class="iconbtn" id="tplClose" type="button" title="Close">✕</button>
+    </div>
+    <div class="modal-body" id="tplBody"></div>
+  </div>
 </div>
 
 <div class="toast" id="toast"></div>
@@ -605,7 +757,10 @@ const b = (x,y,r,c) => ({x,y,r,c});
 
 [["Snow","#ffffff"],["Bone","#f4f1ec"],["Mist","#e6e8ec"],["Steel","#9aa4b2"],
  ["Slate","#334155"],["Charcoal","#242428"],["Ink","#0b0b0e"],["Midnight","#0f172a"],
- ["Plum","#3b1d4e"],["Forest","#14312a"],["Wine","#4a1220"],["Sand","#e8d9c0"]
+ ["Plum","#3b1d4e"],["Forest","#14312a"],["Wine","#4a1220"],["Sand","#e8d9c0"],
+ ["Porcelain","#fbfbf9"],["Sage","#9caf88"],["Butter","#f7e8b5"],["Blush","#f3d7d7"],
+ ["Sky","#bcd8f0"],["Navy","#101d3c"],["Cocoa","#3d2b23"],["Olive","#3a4130"],
+ ["Terracotta","#c96f4a"],["Teal","#0f4c4c"],["Lavender","#d6cdf0"],["Coal","#17171b"]
 ].forEach(([n,c])=>SO("Solid",n,c));
 
 L("Gradient","Sunset",135,"#ff8a00","#ff2d75","#7b2ff7");
@@ -620,6 +775,26 @@ L("Gradient","Royal",145,"#4facfe","#00f2fe");
 L("Gradient","Flare",130,"#f83600","#f9d423");
 L("Gradient","Graphite",145,"#2b2b33","#111114");
 L("Gradient","Paper",160,"#f8fafc","#e2e8f0");
+L("Gradient","Aurora Sky",135,"#00c6ff","#0072ff","#7b2ff7");
+L("Gradient","Cherry",130,"#eb3349","#f45c43");
+L("Gradient","Midnight City",145,"#232526","#414345","#232526");
+L("Gradient","Lush",140,"#56ab2f","#a8e063");
+L("Gradient","Flamingo",125,"#f857a6","#ff5858");
+L("Gradient","Deep Sea",160,"#02111f","#0f3854","#2a7b9b");
+L("Gradient","Mango",120,"#ffe259","#ffa751");
+L("Gradient","Iris",140,"#5f0a87","#a4508b","#e07be0");
+L("Gradient","Nordic",155,"#2e3440","#4c566a","#88c0d0");
+L("Gradient","Rosewood",150,"#2d0a13","#6d1f36","#c65f7b");
+L("Gradient","Lemonade",115,"#fceabb","#f8b500");
+L("Gradient","Twilight",165,"#0f0c29","#302b63","#24243e");
+L("Gradient","Emberfall",130,"#200122","#6f0000","#ff7b54");
+L("Gradient","Glacier Blue",150,"#83a4d4","#b6fbff");
+L("Gradient","Neon Night",135,"#12c2e9","#c471ed","#f64f59");
+L("Gradient","Pastel Dream",125,"#fbc2eb","#a6c1ee");
+L("Gradient","Honey Dew",140,"#43cea2","#185a9d");
+L("Gradient","Sundown",180,"#1e130c","#9a8478");
+L("Gradient","Ultra",145,"#3f0d7e","#7b2ff7","#ff2d75","#ff8a00");
+L("Gradient","Cool Steel",155,"#e6e9f0","#eef1f5","#cfd9df");
 
 M("Mesh","Sunset Pop","#ff2d75",[b(.02,.02,.85,"#ff8a00"),b(.98,.10,.75,"#ff2d75"),b(1,1,.95,"#7b2ff7"),b(.3,1.05,.8,"#c026d3")]);
 M("Mesh","Aurora","#0f172a",[b(.10,.05,.85,"#22d3ee"),b(.92,.18,.8,"#6366f1"),b(.65,1.05,.95,"#10b981"),b(.05,1,.75,"#3b82f6")]);
@@ -629,6 +804,14 @@ M("Mesh","Lime Soda","#ecfccb",[b(.1,.15,.8,"#a3e635"),b(.9,.2,.7,"#22d3ee"),b(.
 M("Mesh","Blueprint","#0b1220",[b(.2,.1,.9,"#1d4ed8"),b(.85,.9,.85,"#0ea5e9"),b(.5,.5,.5,"#312e81")]);
 M("Mesh","Coral Reef","#fff1f2",[b(.05,.9,.85,"#fb7185"),b(.95,.15,.8,"#fdba74"),b(.55,.5,.6,"#f472b6")]);
 M("Mesh","Vapor","#faf5ff",[b(.15,.2,.85,"#c4b5fd"),b(.9,.35,.75,"#67e8f9"),b(.5,1,.8,"#f0abfc")]);
+M("Mesh","Peach Fuzz","#fff7f0",[b(.1,.1,.8,"#ffb997"),b(.9,.25,.7,"#f67e7d"),b(.5,1.05,.85,"#ffd8be")]);
+M("Mesh","Ultraviolet","#14001f",[b(.15,.2,.8,"#7b2ff7"),b(.9,.3,.7,"#c026d3"),b(.5,1.05,.9,"#4c1d95")]);
+M("Mesh","Golden Hour","#fff3e0",[b(.1,.85,.9,"#fb923c"),b(.85,.15,.75,"#fde047"),b(.6,.5,.5,"#f97316")]);
+M("Mesh","Rose Quartz","#fdf2f4",[b(.2,.15,.8,"#fda4af"),b(.85,.35,.7,"#e8b4d8"),b(.5,1,.85,"#fecdd3")]);
+M("Mesh","North Sea","#0a1626",[b(.15,.2,.8,"#155e75"),b(.85,.4,.7,"#1e40af"),b(.5,1.05,.9,"#0e7490")]);
+M("Mesh","Sorbet","#fefce8",[b(.1,.15,.75,"#fda4af"),b(.9,.2,.7,"#a7f3d0"),b(.5,1,.8,"#fef08a")]);
+M("Mesh","Midnight Bloom","#0d0a1f",[b(.2,.85,.85,"#7c3aed"),b(.85,.2,.7,"#db2777"),b(.55,.45,.5,"#312e81")]);
+M("Mesh","Seafoam","#effdf5",[b(.12,.2,.8,"#6ee7b7"),b(.88,.3,.7,"#67e8f9"),b(.5,1.05,.85,"#a7f3d0")]);
 
 M("Cosmic","Nebula","#07070d",[b(.25,.2,.75,"#4c1d95"),b(.8,.35,.65,"#be185d"),b(.5,1,.8,"#1e1b4b")]);
 M("Cosmic","Deep Space","#05060a",[b(.15,.85,.8,"#1e3a8a"),b(.85,.15,.7,"#5b21b6"),b(.5,.5,.45,"#0c4a6e")]);
@@ -636,6 +819,10 @@ M("Cosmic","Solar Wind","#0a0a0f",[b(.5,1.1,.95,"#7c3aed"),b(.1,.1,.6,"#0891b2")
 M("Cosmic","Event Horizon","#000000",[b(.5,.5,.62,"#4338ca"),b(.5,.5,.34,"#f472b6"),b(.5,.5,.16,"#fef3c7")]);
 M("Cosmic","Cold Star","#04070c",[b(.3,.25,.8,"#0ea5e9"),b(.8,.8,.7,"#1e40af"),b(.6,.1,.4,"#a5f3fc")]);
 M("Cosmic","Magma","#0c0603",[b(.5,1.12,.9,"#ea580c"),b(.2,.4,.55,"#7f1d1d"),b(.9,.6,.5,"#b45309")]);
+M("Cosmic","Pulsar","#03040a",[b(.5,.5,.5,"#22d3ee"),b(.5,.5,.22,"#e0f2fe"),b(.15,.85,.6,"#0e7490")]);
+M("Cosmic","Andromeda","#070312",[b(.3,.3,.7,"#a21caf"),b(.75,.65,.6,"#4338ca"),b(.5,.5,.25,"#f0abfc")]);
+M("Cosmic","Red Shift","#0a0406",[b(.2,.2,.7,"#be123c"),b(.85,.75,.65,"#7f1d1d"),b(.55,.5,.3,"#fda4af")]);
+M("Cosmic","Void","#010103",[b(.5,.55,.5,"#1e293b"),b(.5,.5,.2,"#475569")]);
 
 M("Mystic","Dawn","#fff7ed",[b(.5,1.15,.95,"#c4b5fd"),b(.2,.05,.6,"#fed7aa")]);
 M("Mystic","Halo","#f8fafc",[b(.5,.95,.85,"#818cf8"),b(.5,.1,.5,"#e0e7ff")]);
@@ -643,6 +830,10 @@ M("Mystic","Blush","#fdf4ff",[b(.5,1.1,.9,"#f0abfc"),b(.1,.15,.55,"#fbcfe8")]);
 M("Mystic","Serene","#f0fdfa",[b(.5,1.1,.9,"#5eead4"),b(.85,.1,.5,"#bae6fd")]);
 M("Mystic","Lilac Fog","#f5f3ff",[b(.5,1.05,.95,"#a78bfa"),b(.15,.2,.5,"#ddd6fe")]);
 M("Mystic","Warm Sand","#fffbeb",[b(.5,1.1,.9,"#fcd34d"),b(.15,.1,.55,"#fde68a")]);
+M("Mystic","Moonrise","#0e1220",[b(.5,.1,.6,"#94a3b8"),b(.5,1.05,.9,"#1e293b")]);
+M("Mystic","Ember Glow","#1a0f0a",[b(.5,1.1,.9,"#f59e0b"),b(.2,.15,.5,"#78350f")]);
+M("Mystic","Mint Air","#f0fdf4",[b(.5,1.05,.9,"#86efac"),b(.85,.1,.5,"#dcfce7")]);
+M("Mystic","Cloud Nine","#f8fafc",[b(.5,1.15,1,"#cbd5e1"),b(.25,.1,.55,"#f1f5f9")]);
 
 add({cat:"Glass",name:"Silk",kind:"rays",base:"#0f172a",cols:["#60a5fa","#a78bfa","#0f172a"],n:26,warp:.55,angle:24});
 add({cat:"Glass",name:"Amber Ray",kind:"rays",base:"#7c2d12",cols:["#fbbf24","#f97316","#7c2d12"],n:20,warp:.4,angle:-18});
@@ -650,6 +841,10 @@ add({cat:"Glass",name:"Prism",kind:"rays",base:"#111827",cols:["#f472b6","#38bdf
 add({cat:"Glass",name:"Tide",kind:"waves",base:"#082f49",cols:["#0ea5e9","#22d3ee","#082f49"],n:9,amp:.14});
 add({cat:"Glass",name:"Dune",kind:"waves",base:"#fef3c7",cols:["#fbbf24","#f59e0b","#fef3c7"],n:7,amp:.2});
 add({cat:"Glass",name:"Velvet",kind:"rays",base:"#1e1b4b",cols:["#818cf8","#c084fc","#1e1b4b"],n:16,warp:.3,angle:8});
+add({cat:"Glass",name:"Emerald Ray",kind:"rays",base:"#022c22",cols:["#34d399","#a7f3d0","#022c22"],n:22,warp:.5,angle:-30});
+add({cat:"Glass",name:"Rose Ray",kind:"rays",base:"#4c0519",cols:["#fb7185","#fecdd3","#4c0519"],n:18,warp:.45,angle:38});
+add({cat:"Glass",name:"Swell",kind:"waves",base:"#1e1b4b",cols:["#818cf8","#c4b5fd","#1e1b4b"],n:8,amp:.17});
+add({cat:"Glass",name:"Mirage",kind:"waves",base:"#0c1a12",cols:["#34d399","#0d9488","#0c1a12"],n:10,amp:.12});
 
 L("Scenic","Big Sur",180,"#0b3d91","#1e6fd9","#7dd3fc","#fde68a");
 L("Scenic","Monterey",175,"#1e1b4b","#4338ca","#7c3aed","#f0abfc");
@@ -657,6 +852,12 @@ L("Scenic","Sonoma",180,"#0f172a","#155e75","#0891b2","#fbbf24");
 L("Scenic","Ventura",185,"#312e81","#6d28d9","#db2777","#fb923c");
 M("Scenic","Horizon","#38bdf8",[b(.5,1.25,1,"#f8fafc"),b(.5,-.15,.7,"#1e40af")]);
 M("Scenic","Dusk Ridge","#1e293b",[b(.5,1.2,1,"#f97316"),b(.5,-.1,.75,"#0f172a"),b(.8,.75,.4,"#7c2d12")]);
+L("Scenic","Sequoia",178,"#14200f","#3f6212","#a3b18a","#fefae0");
+L("Scenic","Tahoe",182,"#0a1a2f","#1b4965","#5fa8d3","#cae9ff");
+L("Scenic","Mojave",176,"#2b1d12","#8a5a44","#e0a96d","#ffe8c2");
+L("Scenic","Sierra",180,"#231942","#5e548e","#9f86c0","#e0b1cb");
+M("Scenic","Alpenglow","#2b2d42",[b(.5,1.15,1,"#ef8354"),b(.5,-.1,.7,"#1d1e2c"),b(.2,.8,.45,"#bc4b51")]);
+M("Scenic","Polar Night","#0b132b",[b(.5,1.2,1,"#3a506b"),b(.5,-.05,.6,"#020408"),b(.75,.7,.4,"#5bc0be")]);
 
 M("Abstract","Bloom","#fafafa",[b(.25,.3,.5,"#f43f5e"),b(.7,.35,.45,"#8b5cf6"),b(.5,.85,.5,"#06b6d4")]);
 M("Abstract","Ink Drop","#111114",[b(.35,.4,.45,"#e11d48"),b(.7,.65,.4,"#4f46e5")]);
@@ -664,6 +865,12 @@ add({cat:"Abstract",name:"Ripple",kind:"rings",base:"#0f172a",cols:["#22d3ee","#
 add({cat:"Abstract",name:"Sunburst",kind:"conic",cols:["#f97316","#ec4899","#8b5cf6","#06b6d4","#f97316"]});
 add({cat:"Abstract",name:"Spectrum",kind:"conic",cols:["#ef4444","#f59e0b","#84cc16","#06b6d4","#6366f1","#ec4899","#ef4444"]});
 add({cat:"Abstract",name:"Halftone",kind:"dots",base:"#0ea5e9",dot:"#f0f9ff",size:.03});
+M("Abstract","Splash","#f0f9ff",[b(.3,.35,.4,"#0ea5e9"),b(.75,.6,.35,"#f59e0b"),b(.5,.15,.25,"#ec4899")]);
+M("Abstract","Lava Lamp","#180a24",[b(.35,.75,.4,"#f43f5e"),b(.65,.3,.35,"#fb923c"),b(.5,.55,.2,"#fde047")]);
+add({cat:"Abstract",name:"Ripple Dark",kind:"rings",base:"#080a12",cols:["#334155","#64748b"],n:18});
+add({cat:"Abstract",name:"Pulse",kind:"rings",base:"#2e1065",cols:["#a78bfa","#f0abfc"],n:12});
+add({cat:"Abstract",name:"Prism Wheel",kind:"conic",cols:["#6366f1","#0ea5e9","#10b981","#f59e0b","#ef4444","#ec4899","#6366f1"]});
+M("Abstract","Duo","#101014",[b(.0,.5,.75,"#ff2d75"),b(1,.5,.75,"#7b5cff")]);
 
 L("Earth","Sahara",165,"#f6e0b5","#e0a96d","#a86523");
 L("Earth","Glacier",170,"#e0f2fe","#93c5fd","#1e3a8a");
@@ -671,6 +878,12 @@ L("Earth","Moss",155,"#dcfce7","#4ade80","#14532d");
 L("Earth","Clay",150,"#fde8e4","#e8a598","#8c4a3f");
 L("Earth","Basalt",140,"#4b5563","#1f2937","#030712");
 L("Earth","Sunbaked",160,"#fcd34d","#f97316","#7c2d12");
+L("Earth","Redwood",150,"#3e2723","#6d4c41","#a1887f");
+L("Earth","Lichen",145,"#e9f5db","#95d5b2","#40916c");
+L("Earth","Slate Rain",165,"#8d99ae","#5c677d","#2b2d42");
+L("Earth","Dune Rose",155,"#f7d6bf","#d5a68c","#8a5a44");
+M("Earth","Oasis","#e0f2e9",[b(.2,.2,.7,"#74c69d"),b(.85,.8,.75,"#f4a261"),b(.5,.5,.4,"#2a9d8f")]);
+M("Earth","Canyon","#331b12",[b(.15,.85,.85,"#bc6c25"),b(.85,.2,.7,"#dda15e"),b(.5,.5,.4,"#606c38")]);
 
 add({cat:"Texture",name:"Grid",kind:"grid",base:"#0f1115",line:"rgba(255,255,255,.07)",size:.045});
 add({cat:"Texture",name:"Grid Light",kind:"grid",base:"#f4f5f7",line:"rgba(0,0,0,.07)",size:.045});
@@ -678,6 +891,12 @@ add({cat:"Texture",name:"Dots",kind:"dots",base:"#101014",dot:"rgba(255,255,255,
 add({cat:"Texture",name:"Stripes",kind:"stripes",base:"#111827",alt:"#0b1220",n:26,angle:45});
 add({cat:"Texture",name:"Linen",kind:"stripes",base:"#f5f2ea",alt:"#efe9dc",n:70,angle:0});
 add({cat:"Texture",name:"Carbon",kind:"stripes",base:"#141418",alt:"#0d0d10",n:90,angle:45});
+add({cat:"Texture",name:"Dots Light",kind:"dots",base:"#f6f7f9",dot:"rgba(0,0,0,.13)",size:.035});
+add({cat:"Texture",name:"Blueprint",kind:"grid",base:"#0d2149",line:"rgba(160,200,255,.14)",size:.045});
+add({cat:"Texture",name:"Graph",kind:"grid",base:"#fcfcf9",line:"rgba(60,120,80,.13)",size:.03});
+add({cat:"Texture",name:"Pinstripe",kind:"stripes",base:"#1c2431",alt:"#161d28",n:120,angle:90});
+add({cat:"Texture",name:"Candy Cane",kind:"stripes",base:"#fdf2f8",alt:"#fce7f3",n:34,angle:-45});
+add({cat:"Texture",name:"Night Grid",kind:"grid",base:"#030308",line:"rgba(123,92,255,.16)",size:.06});
 
 BG.forEach(x => x.id = (x.cat+"-"+x.name).toLowerCase().replace(/[^a-z0-9]+/g,"-"));
 [{id:"magic",cat:"Magic",name:"Magic",kind:"magic"},
@@ -775,7 +994,9 @@ const DEFAULTS = {
   ratio:"auto", cw:1920, ch:1080, pad:9,
   bg:"mesh-sunset-pop", custom:"#111827",
   grain:22, vignette:0, bgBlur:0, scene:"none",
-  wmOn:false, wmText:"Made with ShotOpt", wmPos:"br", wmOpacity:55, wmSize:18,
+  vfx:"none", vfxAmt:70,
+  anim:"none", animDur:6,
+  wmOn:false, wmMode:"text", wmText:"Made with ShotOpt", wmPos:"br", wmOpacity:55, wmSize:18,
   style:"plain", radiusMode:"curved", radius:22,
   shadow:"spread", shOpacity:42, shSize:58, shAngle:180, shDist:34,
   hideMockup:false, sheen:true, edge:true,
@@ -984,9 +1205,69 @@ function drawVignette(ctx,W,H,amount){
   g.addColorStop(1,`rgba(0,0,0,${amount/100*.75})`);
   ctx.fillStyle = g; ctx.fillRect(0,0,W,H);
 }
+/** Accent colours for scene props, pulled from whatever background is active
+    so the props always feel like part of the composition. */
+function bgAccents(){
+  const def = bgDef(S.bg);
+  let cols = null;
+  if(def.kind==="magic" && magicPalette) cols = magicPalette.slice(0,3);
+  else if(def.stops) cols = def.stops.map(s=>s[1]);
+  else if(def.blobs) cols = def.blobs.map(x=>x.c);
+  else if(def.cols) cols = def.cols;
+  else if(def.kind==="solid") cols = [def.id==="custom" ? S.custom : def.color];
+  else if(magicPalette) cols = magicPalette.slice(0,3);
+  cols = (cols||[]).slice(0,3);
+  while(cols.length<3) cols.push(cols[cols.length-1]||"#7b5cff");
+  return cols;
+}
+/** Soft "contact" shadow for scene props — a blurred silhouette on the ground
+    plane, offset by the global light angle so props share the mockup's light. */
+function propShadow(ctx,x,y,rx,ry,D,alpha){
+  const a = (S.shAngle-90)*Math.PI/180;
+  const ox = Math.cos(a)*D*.012, oy = Math.abs(Math.sin(a))*D*.008+D*.004;
+  ctx.save();
+  if(FILTER_OK) ctx.filter = `blur(${Math.max(1,D*.011)}px)`;
+  ctx.fillStyle = `rgba(0,0,0,${alpha})`;
+  ctx.beginPath(); ctx.ellipse(x+ox,y+oy,rx,ry,0,0,Math.PI*2); ctx.fill();
+  ctx.restore();
+}
+/** Glossy 3-D sphere: base shade, offset key light, hot specular, rim light. */
+function drawSphere(ctx,x,y,r,col,D){
+  propShadow(ctx,x,y+r*1.06,r*.92,r*.26,D,.30);
+  const lx = x-r*.38, ly = y-r*.42;
+  const g = ctx.createRadialGradient(lx,ly,r*.06,x,y,r);
+  g.addColorStop(0,rgba("#ffffff",.92));
+  g.addColorStop(.22,col);
+  g.addColorStop(.75,rgba(col,1));
+  g.addColorStop(1,"rgba(0,0,0,.55)");
+  ctx.fillStyle = g;
+  ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2); ctx.fill();
+  const rim = ctx.createRadialGradient(x,y,r*.82,x,y,r);
+  rim.addColorStop(0,"rgba(255,255,255,0)"); rim.addColorStop(1,"rgba(255,255,255,.22)");
+  ctx.fillStyle = rim;
+  ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2); ctx.fill();
+}
+/** Rounded 3-D capsule/slab with a lit top face and shaded side. */
+function drawSlab(ctx,x,y,w,h,rot,col,D){
+  propShadow(ctx,x,y+h*.62,w*.5,h*.16,D,.26);
+  ctx.save();
+  ctx.translate(x,y); ctx.rotate(rot*Math.PI/180);
+  const r = Math.min(w,h)*.32;
+  const g = ctx.createLinearGradient(-w/2,-h/2,w/2,h/2);
+  g.addColorStop(0,rgba("#ffffff",.55)); g.addColorStop(.35,col); g.addColorStop(1,"rgba(0,0,0,.38)");
+  ctx.fillStyle = g;
+  roundRect(ctx,-w/2,-h/2,w,h,r); ctx.fill();
+  const sh = ctx.createLinearGradient(0,-h/2,0,h/2);
+  sh.addColorStop(0,"rgba(255,255,255,.30)"); sh.addColorStop(.4,"rgba(255,255,255,0)");
+  sh.addColorStop(1,"rgba(0,0,0,.18)");
+  ctx.fillStyle = sh;
+  roundRect(ctx,-w/2,-h/2,w,h,r); ctx.fill();
+  ctx.restore();
+}
 function drawScene(ctx,W,H,kind){
   if(kind==="none") return;
   const D = Math.max(W,H);
+  const [c1,c2,c3] = bgAccents();
   if(kind==="floor"){
     const g = ctx.createLinearGradient(0,H*.52,0,H);
     g.addColorStop(0,"rgba(0,0,0,0)"); g.addColorStop(1,"rgba(0,0,0,.34)");
@@ -1012,11 +1293,111 @@ function drawScene(ctx,W,H,kind){
       ctx.restore();
     }
   }
+  if(kind==="spheres"){
+    drawSphere(ctx, W*.085, H*.20, D*.072, c1, D);
+    drawSphere(ctx, W*.92,  H*.14, D*.046, c2, D);
+    drawSphere(ctx, W*.10,  H*.86, D*.038, c3, D);
+    drawSphere(ctx, W*.905, H*.82, D*.085, c1, D);
+    drawSphere(ctx, W*.54,  H*.055,D*.026, c2, D);
+  }
+  if(kind==="blobs"){
+    // big out-of-focus blobs behind, crisp glossy ones in front
+    for(const [x,y,r,c] of [[.03,.1,.24,c1],[.97,.2,.19,c2],[.1,.95,.21,c3],[.94,.9,.24,c1]]){
+      ctx.save();
+      if(FILTER_OK) ctx.filter = `blur(${D*.028}px)`;
+      ctx.fillStyle = rgba(c,.65);
+      ctx.beginPath(); ctx.arc(x*W,y*H,r*D*.62,0,Math.PI*2); ctx.fill();
+      ctx.restore();
+    }
+    drawSphere(ctx, W*.075, H*.78, D*.055, c2, D);
+    drawSphere(ctx, W*.93,  H*.26, D*.042, c3, D);
+  }
+  if(kind==="prisms"){
+    drawSlab(ctx, W*.09, H*.18, D*.14, D*.055, -24, c1, D);
+    drawSlab(ctx, W*.91, H*.15, D*.09,  D*.09,  18, c2, D);
+    drawSlab(ctx, W*.08, H*.85, D*.075, D*.075, 12, c3, D);
+    drawSlab(ctx, W*.90, H*.83, D*.16,  D*.06, -12, c1, D);
+    drawSphere(ctx, W*.53, H*.06, D*.022, c2, D);
+  }
+  if(kind==="clouds"){
+    const puff = (x,y,r,a)=>{
+      ctx.save();
+      if(FILTER_OK) ctx.filter = `blur(${D*.02}px)`;
+      ctx.fillStyle = `rgba(255,255,255,${a})`;
+      ctx.beginPath();
+      ctx.ellipse(x,y,r*1.6,r,0,0,Math.PI*2);
+      ctx.ellipse(x-r*1.1,y+r*.28,r*.9,r*.6,0,0,Math.PI*2);
+      ctx.ellipse(x+r*1.2,y+r*.3,r*1.0,r*.62,0,0,Math.PI*2);
+      ctx.fill();
+      ctx.restore();
+    };
+    puff(W*.16,H*.18,D*.05,.5); puff(W*.85,H*.12,D*.04,.42);
+    puff(W*.08,H*.8,D*.045,.36); puff(W*.9,H*.85,D*.055,.46);
+  }
+  if(kind==="podium"){
+    const hz = H*.62;
+    const g = ctx.createLinearGradient(0,hz,0,H);
+    g.addColorStop(0,"rgba(0,0,0,.28)"); g.addColorStop(1,"rgba(0,0,0,.05)");
+    ctx.fillStyle = g; ctx.fillRect(0,hz,W,H-hz);
+    ctx.save();
+    ctx.strokeStyle = "rgba(255,255,255,.10)";
+    ctx.lineWidth = Math.max(1,D*.0011);
+    ctx.beginPath();
+    for(let i=0;i<=14;i++){                          // receding perspective grid
+      const t = i/14;
+      ctx.moveTo(W/2+(t-.5)*W*2.4, H+2); ctx.lineTo(W/2+(t-.5)*W*.5, hz);
+    }
+    for(let j=0;j<7;j++){
+      const y = hz+(H-hz)*(j*j/49+.02);
+      ctx.moveTo(0,y); ctx.lineTo(W,y);
+    }
+    ctx.stroke();
+    ctx.restore();
+    const spot = ctx.createRadialGradient(W/2,hz,0,W/2,hz,D*.5);
+    spot.addColorStop(0,rgba(c1,.20)); spot.addColorStop(1,"rgba(0,0,0,0)");
+    ctx.fillStyle = spot; ctx.fillRect(0,0,W,H);
+    propShadow(ctx,W/2,H*.87,W*.3,H*.035,D,.32);
+  }
 }
+/* Logo watermark — kept in-memory as an <img>, persisted as a data URL when it
+   is small enough for localStorage to take it. */
+let wmLogo = null;
+const LOGO_KEY = "shotopt.logo";
+function setWmLogo(dataUrl,persist){
+  if(!dataUrl){ wmLogo = null; try{ localStorage.removeItem(LOGO_KEY); }catch(e){} return; }
+  const el = new Image();
+  el.onload = ()=>{ wmLogo = el; syncUI(); schedule(); };
+  el.src = dataUrl;
+  if(persist){
+    try{ if(dataUrl.length < 400000) localStorage.setItem(LOGO_KEY,dataUrl); }catch(e){}
+  }
+}
+try{ const d = localStorage.getItem(LOGO_KEY); if(d) setWmLogo(d,false); }catch(e){}
+
 function drawWatermark(ctx,W,H){
-  if(!S.wmOn || !String(S.wmText).trim()) return;
-  const size = S.wmSize/1000*Math.min(W,H);
+  if(!S.wmOn) return;
   const m = Math.min(W,H)*.035;
+  if(S.wmMode==="logo"){
+    if(!wmLogo) return;
+    const h = S.wmSize/1000*Math.min(W,H)*2.4;
+    const w = h*(wmLogo.naturalWidth/Math.max(1,wmLogo.naturalHeight));
+    let x,y;
+    if(S.wmPos==="tl"){ x=m; y=m; }
+    else if(S.wmPos==="tr"){ x=W-m-w; y=m; }
+    else if(S.wmPos==="bl"){ x=m; y=H-m-h; }
+    else if(S.wmPos==="bc"){ x=(W-w)/2; y=H-m-h; }
+    else { x=W-m-w; y=H-m-h; }
+    ctx.save();
+    ctx.globalAlpha = S.wmOpacity/100;
+    ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = "high";
+    ctx.shadowColor = "rgba(0,0,0,.35)";
+    ctx.shadowBlur = h*.14;
+    ctx.drawImage(wmLogo,x,y,w,h);
+    ctx.restore();
+    return;
+  }
+  if(!String(S.wmText).trim()) return;
+  const size = S.wmSize/1000*Math.min(W,H);
   ctx.save();
   ctx.font = `600 ${size}px -apple-system,BlinkMacSystemFont,"Segoe UI",Inter,sans-serif`;
   ctx.textBaseline = "middle";
@@ -1035,6 +1416,119 @@ function drawWatermark(ctx,W,H){
   ctx.globalAlpha = S.wmOpacity/100;
   ctx.fillStyle = "#fff";
   ctx.fillText(S.wmText,x,y);
+  ctx.restore();
+}
+
+/* ══════════════════════════════════════════════════════════
+   4b. VFX — cinematic post-processing
+   ──────────────────────────────────────────────────────────
+   Every effect is built from ctx.filter grades, blend-mode overlays and
+   pattern fills — all GPU-accelerated — so a 4× export costs the same as a
+   plain one. No per-pixel loops.
+   ══════════════════════════════════════════════════════════ */
+let scanTile = null;
+function getScanTile(){
+  if(scanTile) return scanTile;
+  const c = document.createElement("canvas");
+  c.width = 4; c.height = 4;
+  const g = c.getContext("2d");
+  g.fillStyle = "rgba(0,0,0,.55)"; g.fillRect(0,0,4,1);
+  g.fillStyle = "rgba(255,255,255,.05)"; g.fillRect(0,2,4,1);
+  return (scanTile = c);
+}
+/** Multiply the frame by a colour to isolate channels (× #f00 keeps red…). */
+function channel(src,hex){
+  const c = document.createElement("canvas");
+  c.width = src.width; c.height = src.height;
+  const g = c.getContext("2d");
+  g.drawImage(src,0,0);
+  g.globalCompositeOperation = "multiply";
+  g.fillStyle = hex; g.fillRect(0,0,c.width,c.height);
+  return c;
+}
+function applyVFX(canvas){
+  if(S.vfx==="none" || S.vfxAmt<=0 || !FILTER_OK) return;
+  const W = canvas.width, H = canvas.height;
+  if(W<4||H<4) return;
+  const ctx = canvas.getContext("2d");
+  const a = S.vfxAmt/100;
+  const u = Math.min(W,H)/1000;                       // resolution-independent unit
+  const src = document.createElement("canvas");
+  src.width = W; src.height = H;
+  src.getContext("2d").drawImage(canvas,0,0);
+  ctx.save();
+  ctx.setTransform(1,0,0,1,0,0);
+
+  if(S.vfx==="cine"){
+    ctx.filter = `contrast(${1+.10*a}) saturate(${1+.14*a}) brightness(${1+.02*a})`;
+    ctx.drawImage(src,0,0);
+    ctx.filter = "none";
+    ctx.globalCompositeOperation = "multiply";        // teal shadows
+    ctx.fillStyle = rgba("#1d5d6b",.16*a); ctx.fillRect(0,0,W,H);
+    ctx.globalCompositeOperation = "screen";          // orange highlights
+    ctx.fillStyle = rgba("#f2913d",.10*a); ctx.fillRect(0,0,W,H);
+    ctx.globalCompositeOperation = "source-over";
+    const bar = Math.round(H*.055*Math.min(1,a*1.3)); // letterbox
+    if(bar>2){ ctx.fillStyle = "#000"; ctx.fillRect(0,0,W,bar); ctx.fillRect(0,H-bar,W,bar); }
+  }
+  else if(S.vfx==="vhs"){
+    ctx.filter = `saturate(${1+.2*a}) contrast(${1+.05*a}) blur(${(.6*u*a).toFixed(2)}px)`;
+    ctx.drawImage(src,0,0);
+    ctx.filter = "none";
+    const dx = Math.max(1.5, 2.6*u)*a;                // chromatic split
+    ctx.globalCompositeOperation = "lighter";
+    ctx.globalAlpha = .5*a;
+    ctx.drawImage(channel(src,"#ff0004"),-dx,0);
+    ctx.drawImage(channel(src,"#00fbff"), dx,0);
+    ctx.globalAlpha = 1;
+    ctx.globalCompositeOperation = "source-over";
+    const p = ctx.createPattern(getScanTile(),"repeat");   // scanlines
+    if(p){
+      const cell = Math.max(2,Math.round(3*u));
+      if(p.setTransform){ try{ p.setTransform(new DOMMatrix([cell/4*4,0,0,cell,0,0])); }catch(e){} }
+      ctx.globalAlpha = .16*a;
+      ctx.fillStyle = p; ctx.fillRect(0,0,W,H);
+      ctx.globalAlpha = 1;
+    }
+    drawGrain(ctx,W,H,55*a);
+    drawVignette(ctx,W,H,26*a);
+  }
+  else if(S.vfx==="noir"){
+    ctx.filter = `grayscale(1) contrast(${1+.22*a}) brightness(${1+.03*a})`;
+    ctx.drawImage(src,0,0);
+    ctx.filter = "none";
+    drawVignette(ctx,W,H,34*a);
+  }
+  else if(S.vfx==="vintage"){
+    ctx.filter = `sepia(${.48*a}) saturate(${1-.22*a}) contrast(${1-.05*a}) brightness(1.03)`;
+    ctx.drawImage(src,0,0);
+    ctx.filter = "none";
+    ctx.globalCompositeOperation = "overlay";
+    ctx.fillStyle = rgba("#e8a24f",.12*a); ctx.fillRect(0,0,W,H);
+    ctx.globalCompositeOperation = "screen";          // faded blacks
+    ctx.fillStyle = rgba("#2a2118",.5*a); ctx.fillRect(0,0,W,H);
+    ctx.globalCompositeOperation = "source-over";
+    drawGrain(ctx,W,H,40*a);
+    drawVignette(ctx,W,H,22*a);
+  }
+  else if(S.vfx==="dream"){
+    ctx.filter = `saturate(${1+.12*a})`;
+    ctx.drawImage(src,0,0);
+    ctx.filter = `blur(${Math.max(2,9*u)}px) saturate(${1+.25*a}) brightness(1.06)`;
+    ctx.globalCompositeOperation = "screen";          // bloom
+    ctx.globalAlpha = .42*a;
+    ctx.drawImage(src,0,0);
+    ctx.globalAlpha = 1;
+    ctx.filter = "none";
+    ctx.globalCompositeOperation = "source-over";
+  }
+  // Transparent exports: overlays and additive passes must not invent pixels
+  // outside the original silhouette.
+  if(bgDef(S.bg).kind==="none"){
+    ctx.globalCompositeOperation = "destination-in";
+    ctx.drawImage(src,0,0);
+    ctx.globalCompositeOperation = "source-over";
+  }
   ctx.restore();
 }
 
@@ -1374,85 +1868,106 @@ const GPU = (()=>{
 /* ══════════════════════════════════════════════════════════
    8. Item drawing
    ══════════════════════════════════════════════════════════ */
-/** Rounded polygon through 4 points — the projected form of a rounded rect. */
+/** Rounded polygon through 4 points — the projected form of a rounded rect.
+    Corners are true circular arcs (arcTo); a quadratic curve undershoots the
+    arc enough to read as a chamfered, "cut off" corner next to the mockup's
+    own arc-rounded texture. */
 function roundPoly(ctx,p,r){
   ctx.beginPath();
+  ctx.moveTo((p[0].x+p[1].x)/2,(p[0].y+p[1].y)/2);
   for(let i=0;i<4;i++){
     const a=p[i], b=p[(i+1)%4], c=p[(i+2)%4];
-    const v1={x:a.x-b.x,y:a.y-b.y}, v2={x:c.x-b.x,y:c.y-b.y};
-    const l1=Math.hypot(v1.x,v1.y)||1, l2=Math.hypot(v2.x,v2.y)||1;
-    const rr=Math.min(r,l1/2,l2/2);
-    const p1={x:b.x+v1.x/l1*rr, y:b.y+v1.y/l1*rr};
-    const p2={x:b.x+v2.x/l2*rr, y:b.y+v2.y/l2*rr};
-    i ? ctx.lineTo(p1.x,p1.y) : ctx.moveTo(p1.x,p1.y);
-    ctx.quadraticCurveTo(b.x,b.y,p2.x,p2.y);
+    const l1=Math.hypot(b.x-a.x,b.y-a.y)||1, l2=Math.hypot(c.x-b.x,c.y-b.y)||1;
+    const rr=Math.max(0,Math.min(r,l1/2,l2/2));
+    ctx.arcTo(b.x,b.y,(b.x+c.x)/2,(b.y+c.y)/2,rr);
   }
   ctx.closePath();
 }
+/* ctx.filter is the fast, well-defined blur (CSS blur = gaussian σ); canvas
+   shadowBlur interacts with the CTM differently across engines. Detect once. */
+const FILTER_OK = (()=>{ try{
+  const c = document.createElement("canvas").getContext("2d");
+  c.filter = "blur(2px)"; return c.filter !== "none";
+}catch(e){ return false; } })();
 /**
  * Shadows are rendered offscreen and then have the mockup's own silhouette
  * punched out of them. Filling an opaque plate directly on the canvas (the
  * obvious approach) leaves black slivers at the rounded corners and shows
  * straight through translucent frames like Glass Light.
+ *
+ * Everything is drawn in *device* coordinates on the offscreen canvas — blur
+ * radii and offsets are premultiplied by the resolution — so there is no
+ * dependence on how an engine treats blur under a transform, and no low-res
+ * upscale of a hard edge (the old approach: scalloped, jagged shadow edges).
  */
 function drawShadowFor(ctx,quad,rFrac,unit,k){
   const sh = shadowDef();
   if(!sh.blur || S.shOpacity<=0 || S.shSize<=0) return;
   const a    = (S.shAngle-90)*Math.PI/180;
   const dist = S.shDist/100*sh.dist*unit*80;
-  const blur = S.shSize/100*sh.blur*unit*120;
+  const blur = Math.max(.5, S.shSize/100*sh.blur*unit*120);
   const g    = sh.spread||1;
   const mx = (quad[0].x+quad[1].x+quad[2].x+quad[3].x)/4;
   const my = (quad[0].y+quad[1].y+quad[2].y+quad[3].y)/4;
   const q  = quad.map(p=>({x:mx+(p.x-mx)*g, y:my+(p.y-my)*g}));
   const edge = Math.min(Math.hypot(q[1].x-q[0].x,q[1].y-q[0].y),
                         Math.hypot(q[3].x-q[0].x,q[3].y-q[0].y));
-  const rr = rFrac*edge;
+  const e2 = Math.min(Math.hypot(quad[1].x-quad[0].x,quad[1].y-quad[0].y),
+                      Math.hypot(quad[3].x-quad[0].x,quad[3].y-quad[0].y));
 
-  const mgn = blur*2.4+Math.abs(dist)+6;
-  const xs = q.map(p=>p.x), ys = q.map(p=>p.y);
+  const mgn = blur*2.2+Math.abs(dist)+8;
+  const xs = q.concat(quad).map(p=>p.x), ys = q.concat(quad).map(p=>p.y);
   const x0 = Math.min(...xs)-mgn, y0 = Math.min(...ys)-mgn;
   const Wl = Math.max(...xs)+mgn-x0, Hl = Math.max(...ys)+mgn-y0;
-  const sk = Math.min(k, 2400/Math.max(Wl,Hl));       // blur is smooth: cap the cost
-  const cw = Math.ceil(Wl*sk), ch = Math.ceil(Hl*sk);
+  // Blur is smooth, so the canvas can be smaller than full device res — but
+  // never so small that the tight contact pass (σ ≈ blur*.12) aliases.
+  let sr = Math.min(k, 3000/Math.max(Wl,Hl));
+  if(blur*.24*sr < 1.5) sr = Math.min(k, 1.5/(blur*.24));
+  const cw = Math.ceil(Wl*sr), ch = Math.ceil(Hl*sr);
   if(cw<2||ch<2||cw>8192||ch>8192) return;
 
   let col = "8,8,16";
   if(sh.tint && magicPalette){ const c = hexRgb(magicPalette[1]); col = `${c.r>>1},${c.g>>1},${c.b>>1}`; }
 
-  // Pass 1 — the blur, at just enough resolution to resolve its own falloff.
-  // A large-radius canvas shadow is by far the most expensive op here, and it
-  // carries no detail, so rendering it small and scaling up is free quality.
-  const skB = Math.min(sk, Math.max(.12, 6/Math.max(blur,1)));
-  const bw = Math.max(2,Math.ceil(Wl*skB)), bh = Math.max(2,Math.ceil(Hl*skB));
-  const blurC = document.createElement("canvas");
-  blurC.width = bw; blurC.height = bh;
-  const b2 = blurC.getContext("2d");
-  b2.scale(bw/Wl, bh/Hl); b2.translate(-x0,-y0);
-  b2.fillStyle = "#000";
-  b2.shadowColor = `rgba(${col},${S.shOpacity/100})`;
-  b2.shadowBlur = blur;
-  b2.shadowOffsetX = Math.cos(a)*dist;
-  b2.shadowOffsetY = Math.sin(a)*dist;
-  roundPoly(b2,q,rr); b2.fill();
-  b2.shadowBlur = blur*.28;                            // contact darkening
-  b2.shadowOffsetX = Math.cos(a)*dist*.3;
-  b2.shadowOffsetY = Math.sin(a)*dist*.3;
-  b2.fill();
-
-  // Pass 2 — punch the caster out at full resolution, so the cut lines up with
-  // the mockup edge and translucent frames see the background, not black.
   const sc = document.createElement("canvas");
   sc.width = cw; sc.height = ch;
   const s2 = sc.getContext("2d");
-  s2.imageSmoothingEnabled = true; s2.imageSmoothingQuality = "high";
-  s2.drawImage(blurC,0,0,cw,ch);
-  s2.scale(cw/Wl, ch/Hl); s2.translate(-x0,-y0);
+  const map = p=>({x:(p.x-x0)*sr, y:(p.y-y0)*sr});
+  const qd = q.map(map), casterD = quad.map(map);
+  const op = S.shOpacity/100;
+
+  const plume = (sigma,ox,oy,alpha)=>{
+    s2.save();
+    s2.translate(ox*sr,oy*sr);
+    if(FILTER_OK){
+      s2.filter = `blur(${Math.max(.5,sigma*sr)}px)`;
+      s2.fillStyle = `rgba(${col},${alpha})`;
+      roundPoly(s2,qd,rFrac*edge*sr); s2.fill();
+    }else{
+      // Fallback: shadow of a far-offscreen silhouette, all in device px with
+      // an identity CTM, which every engine agrees on.
+      s2.translate(-1e5,0);
+      s2.shadowColor = `rgba(${col},${alpha})`;
+      s2.shadowBlur = sigma*2*sr;
+      s2.shadowOffsetX = 1e5;
+      s2.fillStyle = "#000";
+      roundPoly(s2,qd,rFrac*edge*sr); s2.fill();
+    }
+    s2.restore();
+  };
+  plume(blur*.5,  Math.cos(a)*dist,     Math.sin(a)*dist,     op);      // ambient plume
+  plume(blur*.12, Math.cos(a)*dist*.3,  Math.sin(a)*dist*.3,  op*.55);  // contact darkening
+
+  // Punch the caster out so the cut lines up with the mockup edge and
+  // translucent frames see the background, not black.
   s2.globalCompositeOperation = "destination-out";
-  const e2 = Math.min(Math.hypot(quad[1].x-quad[0].x,quad[1].y-quad[0].y),
-                      Math.hypot(quad[3].x-quad[0].x,quad[3].y-quad[0].y));
-  roundPoly(s2,quad,rFrac*e2); s2.fill();
+  s2.fillStyle = "#000";
+  roundPoly(s2,casterD,rFrac*e2*sr); s2.fill();
+
+  ctx.save();
+  ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = "high";
   ctx.drawImage(sc,x0,y0,Wl,Hl);
+  ctx.restore();
 }
 
 function drawItem(ctx,it,P,tex,ox,oy,scale,unit,k,rFrac){
@@ -1563,7 +2078,10 @@ function render(canvas,k){
       drawItem(ctx,it,F.P,buildTexture(it.i,kx),F.ox,F.oy,F.scale,unit,k,rFrac);
     }
   }
-  drawWatermark(ctx,F.W,F.H);
+  ctx.restore();
+  applyVFX(canvas);
+  ctx.save(); ctx.scale(k,k);
+  drawWatermark(ctx,F.W,F.H);          // watermark stays clean above the grade
   ctx.restore();
   return F;
 }
@@ -1576,29 +2094,35 @@ const stage   = document.getElementById("stage");
 const dimsEl  = document.getElementById("dims");
 const zoomLab = document.getElementById("zoomlab");
 
-const MAX_SIDE = 8192, MAX_PX = 40e6;
+const MAX_SIDE = 8192, MAX_PX = 64e6;
 function exportScale(F){
   F = F || frameLayout();
   return Math.max(.25, Math.min(S.scale, MAX_SIDE/Math.max(F.W,F.H), Math.sqrt(MAX_PX/(F.W*F.H))));
 }
-function draw(){
-  const F = frameLayout();
-  const availW = Math.max(120, stage.clientWidth-40);
-  const availH = Math.max(120, stage.clientHeight-40);
-  const fit = Math.min(availW/F.W, availH/F.H, 1);
-  const uiZoom = parseFloat(getComputedStyle(document.body).zoom) || 1;
-  const dpr = Math.min((window.devicePixelRatio||1)*uiZoom, 3);
-  render(preview, fit*dpr);
-  preview.style.width  = Math.round(F.W*fit)+"px";
-  preview.style.height = Math.round(F.H*fit)+"px";
-  preview.classList.toggle("alpha", bgDef(S.bg).kind==="none");
-  const k = exportScale(F);
-  dimsEl.textContent = `${F.W} × ${F.H} → ${Math.round(F.W*k)} × ${Math.round(F.H*k)} ${S.format.toUpperCase()}`
-    + (k < S.scale-.001 ? ` · capped ${k.toFixed(2)}×` : "");
-  zoomLab.textContent = `Fit ${Math.round(fit*100)}%`;
+function draw(patch){
+  const keep = S;
+  if(patch) S = Object.assign({},S,patch);
+  try{
+    const F = frameLayout();
+    const availW = Math.max(120, stage.clientWidth-40);
+    const availH = Math.max(120, stage.clientHeight-40);
+    const fit = Math.min(availW/F.W, availH/F.H, 1);
+    const uiZoom = parseFloat(getComputedStyle(document.body).zoom) || 1;
+    const dpr = Math.min((window.devicePixelRatio||1)*uiZoom, 3);
+    render(preview, fit*dpr);
+    preview.style.width  = Math.round(F.W*fit)+"px";
+    preview.style.height = Math.round(F.H*fit)+"px";
+    preview.classList.toggle("alpha", bgDef(S.bg).kind==="none");
+    updateHandles(F,fit);
+    const k = exportScale(F);
+    dimsEl.textContent = `${F.W} × ${F.H} → ${Math.round(F.W*k)} × ${Math.round(F.H*k)} ${S.format.toUpperCase()}`
+      + (k < S.scale-.001 ? ` · capped ${k.toFixed(2)}×` : "");
+    zoomLab.textContent = `Fit ${Math.round(fit*100)}%`;
+  } finally { S = keep; }
 }
 let raf = 0;
-const schedule = () => { if(!raf) raf = requestAnimationFrame(()=>{ raf=0; draw(); }); };
+let RECORDING = false;               // video export owns the main thread
+const schedule = () => { if(RECORDING) return; if(!raf) raf = requestAnimationFrame(()=>{ raf=0; draw(); }); };
 
 function thumb(canvas,patch){
   const r = canvas.getBoundingClientRect();
@@ -1611,9 +2135,9 @@ function thumb(canvas,patch){
   finally{ S = keep; }
 }
 const NEUTRAL = {tiltX:0,tiltY:0,rotate:0,offX:0,offY:0,count:1,grain:0,vignette:0,
-                 bgBlur:0,scene:"none",wmOn:false,arrange:"grid",hideMockup:false};
+                 bgBlur:0,scene:"none",wmOn:false,arrange:"grid",hideMockup:false,vfx:"none"};
 let thumbT = 0;
-const scheduleThumbs = () => { clearTimeout(thumbT); thumbT = setTimeout(paintThumbs,150); };
+const scheduleThumbs = () => { clearTimeout(thumbT); if(!RECORDING) thumbT = setTimeout(paintThumbs,150); };
 
 function paintThumbs(){
   document.querySelectorAll("#bgList .sw canvas").forEach(c=>{
@@ -1640,7 +2164,7 @@ function paintThumbs(){
   document.querySelectorAll("#lps .lp canvas").forEach(c=>{
     const p = LAYOUTS[+c.parentNode.dataset.i];
     const patch = {zoom:p.zoom,tiltX:p.tiltX,tiltY:p.tiltY,rotate:p.rotate,offX:p.offX,offY:p.offY,
-                   pad:8, grain:0, wmOn:false, hideMockup:false};
+                   pad:8, grain:0, wmOn:false, hideMockup:false, vfx:"none", scene:"none"};
     // Give the tile the aspect this preset would really produce. Forcing a 4:3
     // box squashes tall or square screenshots and makes the tilt read as warping.
     const keep = S;
@@ -1781,6 +2305,7 @@ function slotAtPoint(clientX,clientY){
   return -1;
 }
 preview.addEventListener("click",e=>{
+  if(dragMoved){ dragMoved = false; return; }       // that was a drag, not a click
   const i = slotAtPoint(e.clientX,e.clientY);
   if(i>=0 && !IMGS[i]){ pendingSlot = i; fileIn.click(); }
 });
@@ -1791,7 +2316,7 @@ preview.addEventListener("mousemove",e=>{
   hoverRaf = requestAnimationFrame(()=>{
     hoverRaf = 0;
     const i = slotAtPoint(clientX,clientY);
-    preview.style.cursor = (i>=0 && !IMGS[i]) ? "pointer" : "default";
+    preview.style.cursor = i<0 ? "default" : (IMGS[i] ? "grab" : "pointer");
   });
 });
 preview.addEventListener("mouseleave",()=>{ preview.style.cursor = "default"; });
@@ -1831,6 +2356,45 @@ bgFile.addEventListener("change",e=>{
 const bgColorIn = document.getElementById("bgColor");
 bgColorIn.addEventListener("input",()=>{ S.custom = bgColorIn.value; setKey("bg","custom"); });
 
+/* one-click background blur */
+document.getElementById("blurQuick").addEventListener("click",()=>
+  setKey("bgBlur", S.bgBlur>0 ? 0 : 45));
+
+/* watermark logo upload */
+const wmLogoSlot = document.getElementById("wmLogoSlot");
+const wmLogoFile = document.getElementById("wmLogoFile");
+wmLogoSlot.addEventListener("click",e=>{
+  if(e.target.closest(".x")) return;
+  wmLogoFile.click();
+});
+wmLogoFile.addEventListener("change",e=>{
+  const f = e.target.files[0]; wmLogoFile.value = "";
+  if(!f || !f.type.startsWith("image/")){ if(f) toast("That's not an image"); return; }
+  const rd = new FileReader();
+  rd.onload = ()=>{ setWmLogo(rd.result,true); S.wmOn = true; update(); toast("Logo set"); };
+  rd.readAsDataURL(f);
+});
+let wmSlotState = "∅";
+function renderWmSlot(){
+  const cur = wmLogo ? wmLogo.src.slice(0,80) : "";
+  if(cur===wmSlotState) return;                     // avoid DOM churn on every sync
+  wmSlotState = cur;
+  if(wmLogo){
+    wmLogoSlot.className = "slot filled";
+    wmLogoSlot.innerHTML = `<img class="thumb" alt=""><div class="meta"><b>Your logo</b>
+      <span>${wmLogo.naturalWidth} × ${wmLogo.naturalHeight}</span></div>
+      <button class="x" type="button" title="Remove">✕</button>`;
+    wmLogoSlot.querySelector("img").src = wmLogo.src;
+    wmLogoSlot.querySelector(".x").addEventListener("click",ev=>{
+      ev.stopPropagation(); setWmLogo(null); syncUI(); schedule();
+    });
+  }else{
+    wmLogoSlot.className = "slot";
+    wmLogoSlot.innerHTML = `<div class="plus">+</div><b class="t">Upload your logo</b>
+      <span class="s">PNG with transparency works best</span>`;
+  }
+}
+
 /* ══════════════════════════════════════════════════════════
    12. Export
    ══════════════════════════════════════════════════════════ */
@@ -1854,9 +2418,9 @@ async function toBlob(){
     const fx = f.getContext("2d");
     fx.fillStyle = "#fff"; fx.fillRect(0,0,f.width,f.height);
     fx.drawImage(c,0,0);
-    return new Promise(r=>f.toBlob(r,"image/jpeg",.94));
+    return new Promise(r=>f.toBlob(r,"image/jpeg",.97));
   }
-  return new Promise(r=>c.toBlob(r,mime(),.95));
+  return new Promise(r=>c.toBlob(r,mime(),.97));
 }
 document.getElementById("exportBtn").addEventListener("click",async()=>{
   const blob = await toBlob();
@@ -1879,6 +2443,298 @@ document.getElementById("copyBtn").addEventListener("click",async()=>{
 });
 
 /* ══════════════════════════════════════════════════════════
+   12b. Motion — presets, live preview, video export
+   ──────────────────────────────────────────────────────────
+   A motion is a function of t ∈ [0,1] returning *deltas* that ride on top of
+   the user's current transform, so any layout can be animated as-is.
+   Sinusoidal motions loop perfectly; eased ones are a single move.
+   ══════════════════════════════════════════════════════════ */
+const easeIO = t => t<.5 ? 2*t*t : 1-Math.pow(-2*t+2,2)/2;
+const lerp = (a,b,t) => a+(b-a)*t;
+const TAU = Math.PI*2;
+const MOTIONS = {
+  push:  t=>({zoom:lerp(-7,5,easeIO(t))}),
+  pull:  t=>({zoom:lerp(5,-7,easeIO(t))}),
+  pan:   t=>({offX:lerp(-5,5,easeIO(t))}),
+  rise:  t=>({offY:lerp(4,-3,easeIO(t)), zoom:lerp(-4,3,easeIO(t))}),
+  sweep: t=>({tiltY:lerp(-13,13,easeIO(t))}),
+  orbit: t=>({tiltY:11*Math.sin(t*TAU), tiltX:4*Math.cos(t*TAU), zoom:2*Math.sin(t*TAU)}),
+  float: t=>({offY:1.8*Math.sin(t*TAU), rotate:1.4*Math.sin(t*TAU+1.2)}),
+  pulse: t=>({zoom:3.2*Math.sin(t*TAU)})
+};
+const LIMITS = {zoom:[20,200], tiltX:[-45,45], tiltY:[-45,45], rotate:[-45,45], offX:[-45,45], offY:[-45,45]};
+function animPatch(t){
+  const f = MOTIONS[S.anim];
+  if(!f) return null;
+  const d = f(t), p = {};
+  for(const key in d){
+    const [lo,hi] = LIMITS[key];
+    p[key] = clamp(S[key]+d[key],lo,hi);
+  }
+  // An auto-sized frame follows the content, so a moving mockup would change
+  // the canvas size every frame — jittery preview, and video encoders abort
+  // on a size change mid-stream. Pin it to the resting frame's size.
+  if(S.ratio==="auto"){
+    const F0 = frameLayout();
+    p.ratio = "custom"; p.cw = F0.W; p.ch = F0.H;
+  }
+  return p;
+}
+const ANIM = {playing:false, raf:0, t0:0};
+function setPlaying(on){
+  ANIM.playing = !!on && S.anim!=="none";
+  const pt = document.getElementById("playToggle");
+  const fab = document.getElementById("playBtn");
+  pt.textContent = ANIM.playing ? "⏸ Pause" : "▶ Preview motion";
+  fab.textContent = ANIM.playing ? "⏸" : "▶";
+  if(ANIM.playing && !ANIM.raf){ ANIM.t0 = performance.now(); ANIM.raf = requestAnimationFrame(animTick); }
+  if(!ANIM.playing && ANIM.raf){ cancelAnimationFrame(ANIM.raf); ANIM.raf = 0; schedule(); }
+}
+function animTick(now){
+  ANIM.raf = 0;
+  if(!ANIM.playing) return;
+  const dur = Math.max(1,S.animDur)*1000;
+  draw(animPatch(((now-ANIM.t0)%dur)/dur));
+  ANIM.raf = requestAnimationFrame(animTick);
+}
+document.getElementById("playToggle").addEventListener("click",()=>setPlaying(!ANIM.playing));
+document.getElementById("playBtn").addEventListener("click",()=>setPlaying(!ANIM.playing));
+
+async function exportVideo(){
+  if(S.anim==="none"){ toast("Pick a motion preset first"); return; }
+  const btn = document.getElementById("videoBtn");
+  if(btn.dataset.busy) return;
+  const mimes = ["video/webm;codecs=vp9","video/webm;codecs=vp8","video/webm","video/mp4"];
+  const mime = window.MediaRecorder && mimes.find(m=>MediaRecorder.isTypeSupported(m));
+  if(!mime){ toast("Video recording is not supported in this browser"); return; }
+  setPlaying(false);
+  const F = frameLayout();
+  // Software encoders stall beyond ~2k on the long side; 1920 is reliable
+  // everywhere and still crisp for social embeds.
+  const kv = Math.min(exportScale(F), 1920/Math.max(F.W,F.H));
+  const c = document.createElement("canvas");
+  const renderT = t => { const keep=S; S=Object.assign({},S,animPatch(t)); try{ render(c,kv); } finally{ S=keep; } };
+  renderT(0);
+  // Encoders want even dimensions; render() resizes its canvas per-frame, so
+  // record from a fixed even-sized canvas and blit each frame into it.
+  const rc = document.createElement("canvas");
+  rc.width = Math.max(2,c.width & ~1); rc.height = Math.max(2,c.height & ~1);
+  const rctx = rc.getContext("2d");
+  // Manual capture (rate 0 + requestFrame) — automatic capture only fires when
+  // the canvas is composited, which an offscreen canvas never is.
+  const stream = rc.captureStream(0);
+  const track = stream.getVideoTracks()[0];
+  const blit = ()=>{
+    rctx.clearRect(0,0,rc.width,rc.height); rctx.drawImage(c,0,0);
+    if(track && track.requestFrame) track.requestFrame();
+  };
+  blit();
+  const rec = new MediaRecorder(stream,{mimeType:mime, videoBitsPerSecond:14e6});
+  const chunks = [];
+  rec.ondataavailable = e=>{ if(e.data && e.data.size) chunks.push(e.data); };
+  const stopped = new Promise(r=>{ rec.onstop = r; });
+  btn.dataset.busy = "1"; btn.classList.add("rec");
+  RECORDING = true;
+  clearTimeout(thumbT);
+  if(raf){ cancelAnimationFrame(raf); raf = 0; }
+  rec.start(200);
+  const dur = Math.max(1,S.animDur)*1000;
+  await new Promise(res=>{
+    let t0 = 0;                    // clock starts at the first *rendered* frame
+    const step = now=>{
+      if(!t0) t0 = now;
+      const t = Math.min(1,(now-t0)/dur);
+      renderT(t); blit();
+      btn.textContent = `● Recording ${Math.round(t*100)}%`;
+      t<1 ? requestAnimationFrame(step) : res();
+    };
+    requestAnimationFrame(step);
+  });
+  rec.stop();
+  await stopped;
+  RECORDING = false;
+  delete btn.dataset.busy; btn.classList.remove("rec");
+  btn.textContent = "⬇ Export video";
+  scheduleThumbs();
+  const blob = new Blob(chunks,{type:mime});
+  if(!blob.size){ toast("Video export failed"); schedule(); return; }
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = `shotopt-${stamp()}.${mime.includes("mp4")?"mp4":"webm"}`;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(a.href),4000);
+  toast(`Video exported — ${rc.width} × ${rc.height}`);
+  schedule();
+}
+document.getElementById("videoBtn").addEventListener("click",exportVideo);
+
+/* ══════════════════════════════════════════════════════════
+   12c. Templates — curated one-click looks, incl. animated
+   ══════════════════════════════════════════════════════════ */
+const TPL = [
+  {cat:"Product promotion", name:"Hero Launch",    layout:6,  p:{bg:"mesh-sunset-pop",style:"macL",shadow:"spread",grain:20,pad:10}},
+  {cat:"Product promotion", name:"Big Sur Window", layout:3,  p:{bg:"scenic-big-sur",style:"browser",shadow:"diffuse",pad:11,scene:"floor"}},
+  {cat:"Product promotion", name:"Midnight Drop",  layout:1,  p:{bg:"gradient-twilight",style:"glassD",shadow:"diffuse",scene:"glow",grain:24}},
+  {cat:"Product promotion", name:"Golden Card",    layout:0,  p:{bg:"mesh-golden-hour",style:"card",shadow:"lifted",grain:14,pad:12}},
+  {cat:"Product promotion", name:"Neon Cinema",    layout:7,  p:{bg:"gradient-neon-night",style:"cardDark",shadow:"adaptive",vfx:"cine",vfxAmt:60,grain:18}},
+  {cat:"Product promotion", name:"Podium Reveal",  layout:0,  p:{bg:"cosmic-nebula",style:"glassD",shadow:"diffuse",scene:"podium",grain:20,pad:12}},
+  {cat:"UI showcase",       name:"Clean Desk",     layout:0,  p:{bg:"solid-mist",style:"macL",shadow:"hug",grain:6,pad:10}},
+  {cat:"UI showcase",       name:"Dark Mode Demo", layout:2,  p:{bg:"gradient-graphite",style:"macD",shadow:"spread",grain:16}},
+  {cat:"UI showcase",       name:"Browser Peek",   layout:10, p:{bg:"gradient-ocean",style:"browser",shadow:"spread",pad:0}},
+  {cat:"UI showcase",       name:"Isometric Grid", layout:7,  p:{bg:"texture-night-grid",style:"outline",shadow:"long",grain:10}},
+  {cat:"UI showcase",       name:"Paper Doc",      layout:0,  p:{bg:"gradient-cool-steel",style:"card",shadow:"lifted",grain:8,pad:13}},
+  {cat:"UI showcase",       name:"Glass Panel",    layout:5,  p:{bg:"glass-silk",style:"glassL",shadow:"hug",grain:12}},
+  {cat:"Minimal",           name:"Studio White",   layout:0,  p:{bg:"solid-snow",style:"plain",shadow:"diffuse",shOpacity:26,grain:0,pad:14}},
+  {cat:"Minimal",           name:"Ink on Ink",     layout:0,  p:{bg:"solid-ink",style:"insetD",shadow:"contact",grain:8,pad:13}},
+  {cat:"Minimal",           name:"Bone Frame",     layout:4,  p:{bg:"solid-bone",style:"border",shadow:"hug",grain:4,pad:12}},
+  {cat:"Minimal",           name:"Soft Sky",       layout:8,  p:{bg:"mystic-halo",style:"card",shadow:"lifted",grain:6,pad:13}},
+  {cat:"Abstract shapes",   name:"Sphere Garden",  layout:6,  p:{bg:"mesh-aurora",style:"glassD",shadow:"diffuse",scene:"spheres",grain:18,pad:13}},
+  {cat:"Abstract shapes",   name:"Blob Pop",       layout:8,  p:{bg:"mesh-candy",style:"card",shadow:"lifted",scene:"blobs",grain:12,pad:13}},
+  {cat:"Abstract shapes",   name:"Prism Space",    layout:11, p:{bg:"cosmic-andromeda",style:"outline",shadow:"adaptive",scene:"prisms",grain:20,pad:12}},
+  {cat:"Abstract shapes",   name:"Cloud Nine",     layout:9,  p:{bg:"gradient-glacier-blue",style:"card",shadow:"diffuse",scene:"clouds",grain:8,pad:8}},
+  {cat:"Animated",          name:"Showcase Orbit", layout:6,  anim:"orbit", p:{bg:"mesh-sunset-pop",style:"macL",shadow:"spread",grain:18}},
+  {cat:"Animated",          name:"Slow Push",      layout:0,  anim:"push",  p:{bg:"gradient-twilight",style:"macD",shadow:"diffuse",scene:"glow",grain:20}},
+  {cat:"Animated",          name:"Floating Card",  layout:9,  anim:"float", p:{bg:"mystic-dawn",style:"card",shadow:"lifted",grain:10,pad:12}},
+  {cat:"Animated",          name:"Tilt Reveal",    layout:1,  anim:"sweep", p:{bg:"cosmic-solar-wind",style:"glassD",shadow:"adaptive",scene:"spheres",grain:22}},
+  {cat:"Animated",          name:"Neon Pan",       layout:0,  anim:"pan",   p:{bg:"gradient-neon-night",style:"browser",shadow:"spread",vfx:"dream",vfxAmt:50}},
+  {cat:"Animated",          name:"VHS Pulse",      layout:0,  anim:"pulse", p:{bg:"texture-grid",style:"retro",shadow:"none",vfx:"vhs",vfxAmt:55,grain:0}}
+];
+function tplPatch(t){
+  const l = LAYOUTS[t.layout||0];
+  return Object.assign(
+    {zoom:l.zoom,tiltX:l.tiltX,tiltY:l.tiltY,rotate:l.rotate,offX:l.offX,offY:l.offY,
+     preset:(t.layout||0), scene:"none", vfx:"none", vfxAmt:70, grain:18, vignette:0,
+     bgBlur:0, pad:9, hideMockup:false, anim:"none"},
+    t.p||{}, t.anim ? {anim:t.anim} : {});
+}
+const tplModal = document.getElementById("tplModal");
+let tplFilter = "all";
+function buildTpl(){
+  const body = document.getElementById("tplBody");
+  body.innerHTML = "";
+  const cats = [...new Set(TPL.map(t=>t.cat))];
+  for(const cat of cats){
+    const list = TPL.filter(t=>t.cat===cat)
+      .filter(t=>tplFilter==="all" || (tplFilter==="anim" ? !!t.anim : !t.anim));
+    if(!list.length) continue;
+    const h = document.createElement("div"); h.className = "tpl-cat"; h.textContent = cat;
+    body.appendChild(h);
+    const grid = document.createElement("div"); grid.className = "tpl-grid";
+    for(const t of list){
+      const b = document.createElement("button");
+      b.className = "tpl"; b.type = "button";
+      b.innerHTML = `<canvas></canvas><span class="nm"></span>`;
+      b.querySelector(".nm").textContent = t.name;
+      if(t.anim){
+        const badge = document.createElement("span");
+        badge.className = "anim-badge"; badge.textContent = "▶ Animated";
+        b.appendChild(badge);
+      }
+      b.addEventListener("click",()=>applyTemplate(t));
+      grid.appendChild(b);
+    }
+    body.appendChild(grid);
+  }
+  requestAnimationFrame(()=>{
+    body.querySelectorAll(".tpl canvas").forEach((c,i)=>{
+      const name = c.parentNode.querySelector(".nm").textContent;
+      const t = TPL.find(x=>x.name===name);
+      if(t) thumb(c, Object.assign(tplPatch(t),{wmOn:false,count:1,anim:"none"}));
+    });
+  });
+}
+function applyTemplate(t){
+  Object.assign(S, tplPatch(t));
+  revealBg(S.bg);
+  buildSwatches(); update();
+  closeTpl();
+  setPlaying(!!t.anim);
+  toast(`Template — ${t.name}`);
+}
+function openTpl(){ tplModal.hidden = false; buildTpl(); }
+function closeTpl(){ tplModal.hidden = true; }
+document.getElementById("tplBtn").addEventListener("click",openTpl);
+document.getElementById("tplClose").addEventListener("click",closeTpl);
+tplModal.addEventListener("click",e=>{ if(e.target===tplModal) closeTpl(); });
+document.getElementById("tplFilters").addEventListener("click",e=>{
+  const b = e.target.closest("button[data-f]"); if(!b) return;
+  tplFilter = b.dataset.f;
+  document.querySelectorAll("#tplFilters button").forEach(x=>
+    x.setAttribute("aria-pressed",String(x===b)));
+  buildTpl();
+});
+
+/* ══════════════════════════════════════════════════════════
+   12d. Direct manipulation — corner resize + drag to move
+   ══════════════════════════════════════════════════════════ */
+const handles = document.getElementById("handles");
+function updateHandles(F,fit){
+  if(S.hideMockup || ANIM.playing){ handles.hidden = true; return; }
+  const x0 = (F.ox + F.bb.x0*F.scale)*fit, y0 = (F.oy + F.bb.y0*F.scale)*fit;
+  handles.hidden = false;
+  handles.style.left  = (preview.offsetLeft+x0)+"px";
+  handles.style.top   = (preview.offsetTop +y0)+"px";
+  handles.style.width  = (F.bb.w*F.scale*fit)+"px";
+  handles.style.height = (F.bb.h*F.scale*fit)+"px";
+}
+stage.addEventListener("mouseenter",()=>handles.classList.add("hot"));
+stage.addEventListener("mouseleave",()=>handles.classList.remove("hot"));
+
+handles.addEventListener("pointerdown",e=>{
+  const h = e.target.closest(".h"); if(!h) return;
+  e.preventDefault();
+  h.setPointerCapture(e.pointerId);
+  const r = handles.getBoundingClientRect();
+  const cx = r.left+r.width/2, cy = r.top+r.height/2;
+  const d0 = Math.max(8,Math.hypot(e.clientX-cx,e.clientY-cy));
+  const z0 = S.zoom;
+  const move = ev=>{
+    const d = Math.max(8,Math.hypot(ev.clientX-cx,ev.clientY-cy));
+    S.zoom = Math.round(clamp(z0*d/d0,20,200));
+    S.preset = -1;
+    syncUI(); schedule();
+  };
+  const up = ()=>{
+    h.removeEventListener("pointermove",move);
+    h.removeEventListener("pointerup",up);
+    update();
+  };
+  h.addEventListener("pointermove",move);
+  h.addEventListener("pointerup",up);
+});
+
+/* Dragging a placed screenshot moves it (offset X/Y); a plain click on an
+   empty slot still opens the file picker — the 4-px threshold separates the
+   two, and the click handler checks the flag. */
+let dragMoved = false;
+preview.addEventListener("pointerdown",e=>{
+  if(ANIM.playing) return;
+  const i = slotAtPoint(e.clientX,e.clientY);
+  if(i<0 || !IMGS[i]) return;
+  e.preventDefault();
+  preview.setPointerCapture(e.pointerId);
+  const sx = e.clientX, sy = e.clientY, ox0 = S.offX, oy0 = S.offY;
+  const r = preview.getBoundingClientRect();
+  dragMoved = false;
+  const move = ev=>{
+    const dx = ev.clientX-sx, dy = ev.clientY-sy;
+    if(!dragMoved && Math.hypot(dx,dy)<4) return;
+    dragMoved = true;
+    S.offX = Math.round(clamp(ox0 + dx/r.width*100, -45,45));
+    S.offY = Math.round(clamp(oy0 + dy/r.height*100,-45,45));
+    S.preset = -1;
+    syncUI(); schedule();
+  };
+  const up = ()=>{
+    preview.removeEventListener("pointermove",move);
+    preview.removeEventListener("pointerup",up);
+    if(dragMoved) update();
+  };
+  preview.addEventListener("pointermove",move);
+  preview.addEventListener("pointerup",up);
+});
+
+/* ══════════════════════════════════════════════════════════
    13. Undo / redo
    ══════════════════════════════════════════════════════════ */
 let hist = [JSON.stringify(S)], hi = 0, histT = 0;
@@ -1896,6 +2752,7 @@ function pushHistory(){
 }
 function applySnap(s){
   S = Object.assign({},DEFAULTS,JSON.parse(s));
+  setPlaying(ANIM.playing);                          // stops if anim became "none"
   renderSlots(); buildSwatches();
   save(); syncUI(); schedule(); scheduleThumbs(); syncHistoryUI();
 }
@@ -1917,6 +2774,7 @@ function setKey(k,v){
   if(k==="radiusMode") S.radius = v==="sharp" ? 0 : v==="curved" ? 22 : 64;
   if(k==="radius") S.radiusMode = v===0 ? "sharp" : v>=48 ? "round" : "curved";
   if(["zoom","tiltX","tiltY","rotate","offX","offY"].includes(k)) S.preset = -1;
+  if(k==="anim") setPlaying(v!=="none");            // selecting a motion previews it
   update();
 }
 document.querySelectorAll("input[data-key]").forEach(el=>{
@@ -1949,8 +2807,9 @@ RATIOS.forEach(([group,items])=>{
 document.getElementById("ptabs").addEventListener("click",e=>{
   const b = e.target.closest("button[data-tab]"); if(!b) return;
   document.querySelectorAll("#ptabs button").forEach(x=>x.setAttribute("aria-pressed",String(x===b)));
-  document.getElementById("tab-mockup").hidden = b.dataset.tab!=="mockup";
-  document.getElementById("tab-frame").hidden  = b.dataset.tab!=="frame";
+  ["mockup","frame","fx"].forEach(t=>{
+    document.getElementById("tab-"+t).hidden = b.dataset.tab!==t;
+  });
   paintThumbs();
 });
 document.querySelector("#ptabs button").setAttribute("aria-pressed","true");
@@ -2053,12 +2912,14 @@ document.getElementById("resetTf").addEventListener("click",()=>{
 });
 document.getElementById("resetBtn").addEventListener("click",()=>{
   S = Object.assign({},DEFAULTS);
+  setPlaying(false);
   expandedCats.clear(); revealBg(S.bg); renderSlots(); buildSwatches(); update(); toast("Reset to defaults");
 });
 document.getElementById("startOver").addEventListener("click",()=>{
   [0,1,2].forEach(i=>{ if(IMGS[i]?.url) URL.revokeObjectURL(IMGS[i].url); IMGS[i]=null; });
   magicPalette = null; bgImage = null;
   S = Object.assign({},DEFAULTS);
+  setPlaying(false);
   expandedCats.clear(); revealBg(S.bg); renderSlots(); buildSwatches(); update(); toast("Started over");
 });
 
@@ -2094,12 +2955,14 @@ document.getElementById("magicNext").addEventListener("click",()=>applyMagic(1))
 document.getElementById("magicPrev").addEventListener("click",()=>applyMagic(-1));
 
 window.addEventListener("keydown",e=>{
+  if((e.key||"")==="Escape" && !tplModal.hidden){ closeTpl(); return; }
   if(/input|textarea|select/i.test(e.target.tagName)) return;
   const mod = e.metaKey||e.ctrlKey;
   const key = (e.key||"").toLowerCase();
   if(mod && key==="z"){ e.preventDefault(); e.shiftKey ? redo() : undo(); }
   else if(mod && key==="s"){ e.preventDefault(); document.getElementById("exportBtn").click(); }
   else if(mod && e.shiftKey && key==="c"){ e.preventDefault(); document.getElementById("copyBtn").click(); }
+  else if(key===" " && !mod && S.anim!=="none"){ e.preventDefault(); setPlaying(!ANIM.playing); }
   else if(e.altKey && !mod && /^Digit[1-9]$/.test(e.code)){
     const i = +e.code.slice(5)-1;
     if(i<LAYOUTS.length){ e.preventDefault(); applyPreset(i); }
@@ -2141,6 +3004,13 @@ function syncUI(){
   document.getElementById("colDot").style.background = S.custom;
   document.getElementById("customSize").hidden = S.ratio!=="custom";
   document.getElementById("multiOnly").hidden = S.count<2;
+  document.getElementById("blurQuick").setAttribute("aria-pressed",String(S.bgBlur>0));
+  document.getElementById("wmTextCtrl").hidden = S.wmMode!=="text";
+  document.getElementById("wmLogoCtrl").hidden = S.wmMode!=="logo";
+  document.getElementById("vfxAmtCtrl").hidden = S.vfx==="none";
+  document.getElementById("motionExtra").hidden = S.anim==="none";
+  document.getElementById("playBtn").hidden = S.anim==="none";
+  renderWmSlot();
   syncHistoryUI();
 }
 function update(){ save(); syncUI(); schedule(); scheduleThumbs(); pushHistory(); }

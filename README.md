@@ -15,13 +15,25 @@ claim is enforced by the browser rather than just promised.
 
 - Drag-and-drop, paste (⌘V) or file-pick — up to 3 images at once
 - 15 mockup styles: Card, Glass, Inset, Outline, Retro, Stack, macOS Window, Browser…
-- 78 backgrounds across 10 categories, plus custom colour, your own image,
+- 140+ backgrounds across 10 categories, plus custom colour, your own image,
   transparent, and **Magic** (a palette derived from your screenshot)
+- 26 one-click **templates** (product promo, UI showcase, minimal, abstract),
+  including animated ones — thumbnails preview your own screenshot live
+- **Motion**: 8 animation presets (push, pan, sweep, showcase orbit, float…)
+  with live preview and in-browser **WebM video export**
+- **VFX**: Cinematic (teal & orange + letterbox), VHS, Noir, Vintage, Dream —
+  all GPU-accelerated, with an intensity dial
+- **Scenes**: floor, glow, glossy 3-D spheres, blobs, prisms, clouds and a
+  podium with perspective grid — props take their colours from the background
+  and cast soft shadows that follow the global light angle
 - 8 shadow types with opacity, size, light angle and distance
 - GPU-accelerated perspective: tilt X/Y, rotate, zoom, offset
+- Direct manipulation on the canvas: drag the screenshot to move it, grab the
+  corner handles to resize
 - 12 layout presets with live thumbnails
 - 23 canvas sizes including LinkedIn, X, Open Graph, Instagram and Story presets
-- Grain, vignette, background blur, scene lighting, watermark
+- Grain, vignette, one-click background blur, text **or logo** watermark
+- Up to 4× export in PNG, JPG or WEBP at high encoder quality
 - Undo/redo, settings persistence, installable as a PWA, works offline
 
 ## Running it locally
