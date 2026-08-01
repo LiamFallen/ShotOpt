@@ -14,7 +14,16 @@ claim is enforced by the browser rather than just promised.
 ## Features
 
 - Drag-and-drop, paste (⌘V) or file-pick — up to 3 images at once
+- **X post import**: paste an x.com link and a clean post card (avatar,
+  verified badge, photo grid, counts) is generated as your media — the app's
+  single, opt-in external request, scoped in the CSP to X's public CDNs
 - 15 mockup styles: Card, Glass, Inset, Outline, Retro, Stack, macOS Window, Browser…
+- 6 procedural **device frames** — iPhone (dark/silver), iPad, MacBook,
+  Studio-style Display, Watch — drawn in code, no image assets, with
+  device-accurate shadows cast by the real silhouette (lid + deck, stand…)
+- **Annotate mode**: arrows, lines, rectangles, ellipses and freehand pen in
+  five colours and three weights — undoable, saved with your settings, and
+  rendered into every export including video and GIF
 - 140+ backgrounds across 10 categories, plus custom colour, your own image,
   transparent, and **Magic** (a palette derived from your screenshot)
 - 26 one-click **templates** (product promo, UI showcase, minimal, abstract),
