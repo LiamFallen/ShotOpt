@@ -14,7 +14,7 @@ export default async function DashboardLayout({ children }) {
     <div className="container">
       <nav className="admin-nav">
         <Link href="/dashboard" className="wordmark">
-          ♥ {PRODUCT_NAME}
+          <span className="mark">♥</span> {PRODUCT_NAME}
         </Link>
         <Link href="/dashboard">Walls</Link>
         <Link href="/dashboard/billing">Billing</Link>

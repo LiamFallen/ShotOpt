@@ -19,31 +19,34 @@
   var PLAY = 'M8 5v14l11-7z';
 
   var THEMES = {
-    light: { bg: 'transparent', card: '#ffffff', text: '#18181b', muted: '#71717a', border: '#e4e4e7' },
-    dark: { bg: 'transparent', card: '#1a1a21', text: '#f4f4f5', muted: '#a1a1aa', border: '#2a2a33' },
+    light: { card: '#ffffff', text: '#15151b', muted: '#6d6e7e', border: '#e7e7ee' },
+    dark: { card: '#14141b', text: '#f2f2f6', muted: '#b4b5c2', border: 'rgba(255,255,255,0.09)' },
   };
 
   function injectStyles() {
     if (document.getElementById('lw-embed-css')) return;
     var css =
       '.lw-wall{font-family:inherit;color:var(--lw-text);line-height:1.5;columns:3 280px;column-gap:16px}' +
-      '.lw-card{break-inside:avoid;margin:0 0 16px;background:var(--lw-card);border:1px solid var(--lw-border);border-radius:14px;padding:18px;box-shadow:0 1px 3px rgba(0,0,0,.06)}' +
+      '.lw-card{break-inside:avoid;margin:0 0 16px;background:var(--lw-card);border:1px solid var(--lw-border);border-radius:14px;padding:18px;box-shadow:0 1px 2px rgba(0,0,0,.05),0 8px 24px rgba(0,0,0,.06);transition:transform .25s cubic-bezier(.22,.61,.36,1),box-shadow .25s cubic-bezier(.22,.61,.36,1)}' +
+      '.lw-card:hover{transform:translateY(-2px);box-shadow:0 2px 4px rgba(0,0,0,.06),0 14px 34px rgba(0,0,0,.1)}' +
       '.lw-head{display:flex;align-items:center;gap:12px;margin-bottom:10px}' +
-      '.lw-avatar{width:44px;height:44px;border-radius:50%;object-fit:cover;flex-shrink:0;background:var(--lw-border)}' +
+      '.lw-avatar{width:44px;height:44px;border-radius:50%;object-fit:cover;flex-shrink:0;background:var(--lw-border);outline:2px solid var(--lw-border);outline-offset:2px}' +
       '.lw-initials{display:flex;align-items:center;justify-content:center;color:#fff;background:var(--lw-accent);font-weight:600;font-size:16px}' +
-      '.lw-name{font-weight:600;font-size:15px;color:var(--lw-text)}' +
+      '.lw-name{font-weight:650;font-size:15px;color:var(--lw-text);letter-spacing:-.01em}' +
       '.lw-name a{color:inherit;text-decoration:none}.lw-name a:hover{text-decoration:underline}' +
       '.lw-role{color:var(--lw-muted);font-size:13px}' +
       '.lw-stars{display:inline-flex;gap:2px;margin-bottom:8px}.lw-stars svg{width:15px;height:15px}' +
       '.lw-text{margin:0;font-size:15px;white-space:pre-line;overflow-wrap:anywhere;color:var(--lw-text)}' +
       '.lw-video{margin-top:12px;border-radius:10px;overflow:hidden;position:relative;aspect-ratio:16/9;background:#000}' +
       '.lw-video iframe,.lw-video img{position:absolute;inset:0;width:100%;height:100%;border:0;object-fit:cover}' +
-      '.lw-video button{position:absolute;inset:0;width:100%;height:100%;background:rgba(0,0,0,.25);border:0;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0}' +
-      '.lw-video button:hover{background:rgba(0,0,0,.4)}' +
-      '.lw-play{width:52px;height:52px;border-radius:50%;background:var(--lw-accent);display:flex;align-items:center;justify-content:center}' +
+      '.lw-video button{position:absolute;inset:0;width:100%;height:100%;background:rgba(0,0,0,.25);border:0;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;transition:background .25s}' +
+      '.lw-video button:hover{background:rgba(0,0,0,.45)}' +
+      '.lw-play{width:52px;height:52px;border-radius:50%;background:linear-gradient(100deg,#22d3ee,#8b7bff 55%,#c26bfa);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 18px rgba(0,0,0,.45);transition:transform .25s}' +
+      '.lw-video button:hover .lw-play{transform:scale(1.08)}' +
       '.lw-play svg{width:20px;height:20px;fill:#fff;margin-left:3px}' +
       '.lw-badge{column-span:all;margin-top:16px;text-align:center}' +
       '.lw-badge a{display:inline-block;font-size:12px;color:var(--lw-muted);border:1px solid var(--lw-border);border-radius:999px;padding:5px 14px;text-decoration:none;background:var(--lw-card)}' +
+      '.lw-badge a:hover{color:var(--lw-accent);border-color:var(--lw-accent)}' +
       '.lw-empty{color:var(--lw-muted);font-size:14px;text-align:center;padding:24px;border:1px dashed var(--lw-border);border-radius:12px}';
     var el = document.createElement('style');
     el.id = 'lw-embed-css';

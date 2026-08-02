@@ -14,7 +14,7 @@ export default async function SignupPage() {
     <main className="container narrow auth-page">
       <header className="page-header">
         <Link href="/" className="wordmark">
-          ♥ {PRODUCT_NAME}
+          <span className="mark">♥</span> {PRODUCT_NAME}
         </Link>
         <h1>Create your free account</h1>
         <p>One wall, ten testimonials, no credit card. Upgrade whenever you outgrow it.</p>

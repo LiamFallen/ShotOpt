@@ -14,7 +14,7 @@ export default async function LoginPage() {
     <main className="container narrow auth-page">
       <header className="page-header">
         <Link href="/" className="wordmark">
-          ♥ {PRODUCT_NAME}
+          <span className="mark">♥</span> {PRODUCT_NAME}
         </Link>
         <h1>Welcome back</h1>
         <p>Log in to manage your walls.</p>

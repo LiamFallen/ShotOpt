@@ -1,5 +1,12 @@
 import './globals.css';
+import { Inter } from 'next/font/google';
 import { PRODUCT_NAME, appUrl } from '@/lib/config';
+
+const inter = Inter({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-sans',
+});
 
 export const metadata = {
   metadataBase: new URL(appUrl()),
@@ -17,7 +24,7 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
+    <html lang="en" className={inter.variable}>
       <body>{children}</body>
     </html>
   );

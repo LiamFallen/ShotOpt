@@ -57,30 +57,34 @@ export default async function LandingPage() {
   return (
     <>
       <nav className="site-nav">
-        <Link href="/" className="wordmark">
-          ♥ {PRODUCT_NAME}
-        </Link>
-        <div className="links">
-          <a href="#features">Features</a>
-          <a href="#pricing">Pricing</a>
-          <a href="#faq">FAQ</a>
-          {user ? (
-            <Link className="btn small" href="/dashboard">
-              Dashboard
-            </Link>
-          ) : (
-            <>
-              <Link href="/login">Log in</Link>
-              <Link className="btn small" href="/signup">
-                Start free
+        <div className="inner">
+          <Link href="/" className="wordmark">
+            <span className="mark">♥</span> {PRODUCT_NAME}
+          </Link>
+          <div className="links">
+            <a href="#features">Features</a>
+            <a href="#pricing">Pricing</a>
+            <a href="#faq">FAQ</a>
+            {user ? (
+              <Link className="btn small" href="/dashboard">
+                Dashboard
               </Link>
-            </>
-          )}
+            ) : (
+              <>
+                <Link href="/login">Log in</Link>
+                <Link className="btn small" href="/signup">
+                  Start free
+                </Link>
+              </>
+            )}
+          </div>
         </div>
       </nav>
 
       <header className="hero">
-        <span className="kicker">Testimonials that sell for you</span>
+        <span className="kicker">
+          <span>Testimonials that sell for you</span>
+        </span>
         <h1>
           Collect testimonials in minutes. <em>Show them off everywhere.</em>
         </h1>
@@ -289,7 +293,7 @@ export default async function LandingPage() {
       </section>
 
       <footer className="site">
-        ♥ {PRODUCT_NAME} — testimonial walls that sell for you ·{' '}
+        <span className="mark">♥</span> {PRODUCT_NAME} — testimonial walls that sell for you ·{' '}
         <a href="#pricing">Pricing</a> · <Link href="/login">Log in</Link> ·{' '}
         <Link href="/signup">Start free</Link>
       </footer>
