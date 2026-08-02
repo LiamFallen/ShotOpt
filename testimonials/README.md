@@ -1,70 +1,114 @@
 # Lovewall
 
-Self-hosted testimonial collection and display — a lightweight, single-service alternative to Senja.
+A testimonial-collection SaaS (a self-hostable Senja alternative): customers sign up, create
+testimonial walls, collect text + video testimonials through shareable links, and embed the
+results anywhere with one script tag.
 
-- **Collect** — every wall gets a unique public submit link (`/submit/<slug>`) with name, role/company, website/LinkedIn, star rating, text, optional photo (uploaded or fetched from a URL, resized server-side to 128px WebP) and optional video (YouTube / Vimeo / Loom). Submissions land as *pending*.
-- **Curate** — `/admin` (HTTP basic auth from `.env`) lists every wall with pending counts; approve / unapprove / delete per submission; simple analytics (totals, pending, wall views).
-- **Display** — `/w/<slug>` is a responsive masonry wall with dark mode, per-wall accent colour, custom title/description, optional "Powered by" badge, and Open Graph tags for pretty LinkedIn/X shares.
-- **Embed** — one script tag renders the wall into any page, iframe-free, inheriting the host page's font:
+## What's in the box
 
-```html
-<div data-testimonials-wall="your-slug" data-theme="auto"></div>
-<script src="https://your-host/embed.js" async></script>
-```
-
-`data-theme` accepts `light`, `dark`, or `auto` (follows the visitor's OS). `data-accent="#ff5533"` optionally overrides the wall's accent colour.
-
-**Multi-tenancy:** create as many walls as you like from the admin; each has its own slug, submit link, branding and embed. (Wall-count limits for a free tier can be added later in one place: `createWall` in `src/app/admin/actions.js`.)
+- **Marketing site** — landing page at `/` with features, pricing (driven by `src/lib/plans.js`),
+  FAQ and signup CTAs.
+- **Customer accounts** — email + password signup/login (scrypt-hashed, DB-backed sessions in an
+  httpOnly cookie) and **Google sign-in** (appears automatically once OAuth credentials are set).
+- **Dashboard** (`/dashboard`) — each user manages their own walls: create, brand (accent colour,
+  title/description, badge toggle), moderate submissions (approve / unapprove / delete), copy
+  share + embed snippets, simple analytics (submissions, pending, wall views).
+- **Free tier with enforced limits** — Free: 1 wall, 10 testimonials per wall, "Powered by" badge
+  always on. Pro ($19/mo): unlimited walls + testimonials, badge removal. Limits are enforced
+  server-side (wall creation, submission endpoint, badge rendering).
+- **Stripe billing** — Checkout for upgrading, customer portal for managing/cancelling, webhook
+  that keeps `users.plan` in sync. All wired; activates when you add your Stripe keys.
+- **Collection** — public submit page per wall: name, role/company, URL, 1–5 stars, text, photo
+  (uploaded or fetched from a URL, resized server-side to 128px WebP), YouTube/Vimeo/Loom video.
+  Honeypot spam trap. Thank-you screen with pre-filled LinkedIn share.
+- **Display** — hosted wall at `/w/<slug>` (masonry, dark mode, OG tags) and an iframe-free embed
+  (`/embed.js`) that inherits the host page's font and supports `data-theme="light|dark|auto"`.
+- **Platform admin** (`/admin`) — your operator view (basic auth from `.env`): user list with
+  plans, all walls, platform totals.
 
 ## Stack
 
-Next.js (App Router) · SQLite via libSQL (`@libsql/client`) · sharp for image resizing. Two storage modes, same code:
+Next.js (App Router) · SQLite via libSQL (`@libsql/client`) · sharp · Stripe. One service.
 
-- **Self-hosted (VPS / Docker / local dev):** everything lives in `DATA_DIR` (a local SQLite file + uploaded avatars), so backup = copy one folder. No external services.
-- **Serverless (Vercel):** the filesystem is ephemeral, so the database points at [Turso](https://turso.tech) (hosted SQLite, generous free tier) and avatars go to Vercel Blob. Enabled purely by env vars — no code changes.
+Two storage modes, selected purely by env vars:
+
+- **Self-hosted (VPS / Docker / dev):** local SQLite file + avatar uploads in `DATA_DIR`.
+- **Serverless (Vercel):** database on [Turso](https://turso.tech), avatars on Vercel Blob.
 
 ## Run locally
 
 ```bash
-cp .env.example .env   # set ADMIN_USER / ADMIN_PASSWORD
+cp .env.example .env   # set ADMIN_USER / ADMIN_PASSWORD at minimum
 npm install
 npm run dev            # http://localhost:3000
 ```
 
-Visit `/admin`, create a wall, then open its submit link.
+Sign up at `/signup`, create a wall, open its submit link. Your operator view is at `/admin`.
 
 ## Environment variables
 
 | Variable | Required | Description |
 | --- | --- | --- |
-| `ADMIN_USER` / `ADMIN_PASSWORD` | yes | Basic-auth credentials for `/admin`. Admin returns 503 until both are set. |
-| `APP_URL` | production | Public origin (e.g. `https://wall.example.com`) — used in OG tags, share links and the embed feed. |
-| `DATA_DIR` | no | Where SQLite + uploads live. Defaults to `./data`. Point it at a persistent volume in production. |
-| `PRODUCT_NAME` / `PRODUCT_URL` | no | Branding for the "Powered by" badge. |
-| `TURSO_DATABASE_URL` / `TURSO_AUTH_TOKEN` | Vercel | Hosted SQLite. When set, the local DB file is not used. |
-| `BLOB_READ_WRITE_TOKEN` | Vercel | Vercel Blob store for avatars. When set, uploads skip the local disk. |
+| `ADMIN_USER` / `ADMIN_PASSWORD` | yes | Basic auth for the platform admin at `/admin`. |
+| `APP_URL` | production | Public origin (e.g. `https://uselovewall.com`). Used in OG tags, OAuth redirects, Stripe return URLs, embed snippets. |
+| `DATA_DIR` | no | Where SQLite + uploads live (default `./data`). Persistent volume in production. |
+| `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | for Google login | See "Connect Google sign-in". |
+| `STRIPE_SECRET_KEY` / `STRIPE_PRICE_ID` / `STRIPE_WEBHOOK_SECRET` | for payments | See "Connect Stripe". |
+| `TURSO_DATABASE_URL` / `TURSO_AUTH_TOKEN` | Vercel | Hosted SQLite (skip on VPS/Docker). |
+| `BLOB_READ_WRITE_TOKEN` | Vercel | Vercel Blob for avatars (skip on VPS/Docker). |
+| `PRODUCT_NAME` / `PRODUCT_URL` | no | Rebrand the product + badge without touching code. |
+
+## Connect Google sign-in
+
+1. [console.cloud.google.com](https://console.cloud.google.com) → APIs & Services → Credentials →
+   **Create credentials → OAuth client ID** (type: Web application).
+2. Configure the consent screen if prompted (External, app name + your email is enough to start).
+3. Add an **Authorized redirect URI**: `{APP_URL}/api/auth/google/callback` — e.g.
+   `https://uselovewall.com/api/auth/google/callback` (and
+   `http://localhost:3000/api/auth/google/callback` for dev).
+4. Set `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET`.
+
+The "Continue with Google" button shows up on `/login` and `/signup` automatically. Accounts are
+linked by verified email, so someone who signed up with a password can later use Google with the
+same address.
+
+## Connect Stripe
+
+1. In the [Stripe dashboard](https://dashboard.stripe.com), create a **Product** ("Lovewall Pro")
+   with a **recurring Price** (e.g. $19/month). Copy the `price_...` id → `STRIPE_PRICE_ID`.
+2. Developers → API keys → copy the secret key → `STRIPE_SECRET_KEY`.
+3. Developers → Webhooks → **Add endpoint** `{APP_URL}/api/billing/webhook` with events
+   `checkout.session.completed`, `customer.subscription.updated`,
+   `customer.subscription.deleted`. Copy the signing secret → `STRIPE_WEBHOOK_SECRET`.
+4. Redeploy. The upgrade button on `/dashboard/billing` and the pricing CTAs go live; plan
+   changes (including cancellations) sync automatically via the webhook.
+
+Local testing: `stripe listen --forward-to localhost:3000/api/billing/webhook` (use the CLI's
+printed `whsec_...`), plus test-mode keys and card `4242 4242 4242 4242`.
+
+Changing limits or adding tiers: edit `src/lib/plans.js` — pricing page, gating and billing copy
+all read from it.
 
 ## Deploy
 
 ### Vercel
 
-1. Import the repo on [vercel.com/new](https://vercel.com/new) — it's auto-detected as Next.js, no build settings needed.
-2. Create a free database at [turso.tech](https://turso.tech): `turso db create lovewall`, then grab the URL (`turso db show lovewall --url`) and a token (`turso db tokens create lovewall`).
-3. In the Vercel project: **Storage → Create → Blob** (this auto-adds `BLOB_READ_WRITE_TOKEN`).
-4. Add env vars: `ADMIN_USER`, `ADMIN_PASSWORD`, `APP_URL` (your production URL), `TURSO_DATABASE_URL`, `TURSO_AUTH_TOKEN`.
+1. Import the repo at [vercel.com/new](https://vercel.com/new) (auto-detected Next.js).
+2. Create a free DB at [turso.tech](https://turso.tech): `turso db create lovewall`, then
+   `turso db show lovewall --url` and `turso db tokens create lovewall`.
+3. In the Vercel project: Storage → Create → **Blob** (auto-adds `BLOB_READ_WRITE_TOKEN`).
+4. Add env vars: `ADMIN_USER`, `ADMIN_PASSWORD`, `APP_URL`, `TURSO_DATABASE_URL`,
+   `TURSO_AUTH_TOKEN` (+ Google/Stripe vars when ready).
 5. Deploy. Tables are created automatically on first request.
-
-> Why the extra services? Vercel functions have a read-only, ephemeral filesystem — a local SQLite file or uploads folder would vanish between invocations. Turso *is* SQLite (libSQL), so the schema and queries are identical in both modes. If you'd rather have zero external services, Railway/Fly/Render/VPS below run the pure-local mode.
 
 ### VPS (Ubuntu/Debian + Caddy)
 
 ```bash
-# on the server (Node 20+)
 git clone <your-repo> && cd testimonials
-cp .env.example .env && nano .env       # credentials + APP_URL
+cp .env.example .env && nano .env
 npm ci && npm run build
 
-# systemd unit: /etc/systemd/system/lovewall.service
+# /etc/systemd/system/lovewall.service
 [Unit]
 Description=Lovewall
 After=network.target
@@ -80,35 +124,44 @@ WantedBy=multi-user.target
 sudo systemctl enable --now lovewall
 ```
 
-Caddyfile (automatic HTTPS):
-
-```
-wall.example.com {
-    reverse_proxy localhost:3000
-}
-```
+Caddyfile: `uselovewall.com { reverse_proxy localhost:3000 }`
 
 ### Railway / Fly.io / Render
 
-The included `Dockerfile` builds a standalone image. The only special requirement is a **persistent volume** mounted at `/data` with `DATA_DIR=/data`, plus the env vars above.
+Use the included `Dockerfile`; mount a persistent volume at `/data` with `DATA_DIR=/data`, set
+the env vars above.
 
-- **Railway** — new service from repo, add a volume mounted at `/data`, set env vars.
-- **Fly.io** — `fly launch`, then `fly volumes create data --size 1` and mount it at `/data` in `fly.toml`.
-- **Render** — Web Service from repo (Docker), add a Disk mounted at `/data`.
+## Go-live checklist
+
+- [ ] Domain + `APP_URL` set
+- [ ] `ADMIN_USER` / `ADMIN_PASSWORD` changed from defaults
+- [ ] Google OAuth redirect URI added for the production domain
+- [ ] Stripe live-mode keys + webhook endpoint on the production domain
+- [ ] Test: signup → create wall → submit → approve → embed on a test page
+- [ ] Test: upgrade with a real card, then cancel from the customer portal
 
 ## Project layout
 
 ```
-src/lib/           db.js (SQLite + queries) · media.js (avatar resize/fetch) · video.js (URL parsing) · config.js
-src/middleware.js  basic auth for /admin and /api/admin
+src/lib/            db.js (libSQL + queries) · auth.js (sessions, scrypt, Google helper)
+                    plans.js (tiers & gating — edit limits here) · billing.js (Stripe helper)
+                    media.js (avatars) · video.js (URL parsing) · config.js
+src/middleware.js   basic auth for /admin (platform operator only)
 src/app/
-  w/[slug]/        public wall (+ /wall/[slug] alias)
-  submit/[slug]/   public submission form + thank-you / LinkedIn share
-  admin/           dashboard, wall management (server actions in actions.js)
-  api/submit/      POST endpoint for submissions (multipart)
-  api/walls/       public JSON feed consumed by embed.js (CORS-enabled)
-  uploads/[name]/  serves resized avatars from DATA_DIR
-public/embed.js    the embeddable widget
+  page.js           marketing landing (features, pricing, FAQ)
+  (auth)/           login, signup, server actions, shared form
+  dashboard/        customer area: walls list/create, manage wall, billing
+  admin/            platform admin (operator view)
+  w/[slug]/         public wall · submit/[slug]/ public collection form
+  api/auth/google/  OAuth flow · api/billing/ checkout, portal, webhook
+  api/submit/       submission endpoint (multipart, plan-capped)
+  api/walls/        public JSON feed for the embed (CORS)
+  uploads/[name]/   serves avatars in local-disk mode
+public/embed.js     the embeddable widget
 ```
 
-Adding Stripe/auth later: gate `createWall` and the `hide_badge` toggle in `src/app/admin/actions.js`, and swap the basic-auth middleware for sessions — the rest of the app doesn't care who's asking.
+## Not built yet (deliberately)
+
+Password reset emails, team seats, in-browser video recording, testimonial import,
+Zapier/webhooks, AI features. The auth and billing layers are plain code (no framework lock-in),
+so all of these bolt on without rewrites.

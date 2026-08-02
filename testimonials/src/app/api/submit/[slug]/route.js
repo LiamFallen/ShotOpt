@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server';
-import { run, getWallBySlug } from '@/lib/db';
+import { run, getWallBySlug, countTestimonials } from '@/lib/db';
 import { storeAvatar, fetchAndStoreAvatar } from '@/lib/media';
 import { parseVideoUrl } from '@/lib/video';
+import { wallAtCapacity } from '@/lib/plans';
 
 export const dynamic = 'force-dynamic';
 
@@ -22,6 +23,14 @@ export async function POST(request, { params }) {
   const { slug } = await params;
   const wall = await getWallBySlug(slug);
   if (!wall) return NextResponse.json({ error: 'Wall not found' }, { status: 404 });
+
+  // Free-plan walls stop accepting once at capacity.
+  if (wallAtCapacity(wall, await countTestimonials(wall.id))) {
+    return NextResponse.json(
+      { error: 'This wall is not accepting new testimonials right now.' },
+      { status: 403 }
+    );
+  }
 
   let form;
   try {

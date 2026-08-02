@@ -4,6 +4,8 @@ import Stars from '@/components/Stars';
 import CopyLink from './copy-link';
 import { getWallById, allTestimonials } from '@/lib/db';
 import { avatarSrc } from '@/lib/media';
+import { requireUser } from '@/lib/auth';
+import { planOf } from '@/lib/plans';
 import { appUrl } from '@/lib/config';
 import { updateWall, deleteWall, setApproval, deleteTestimonial } from '../../actions';
 
@@ -12,31 +14,40 @@ export const dynamic = 'force-dynamic';
 export const metadata = { title: 'Manage wall', robots: { index: false } };
 
 export default async function ManageWallPage({ params }) {
+  const user = await requireUser();
+  const plan = planOf(user);
   const { id } = await params;
   const wall = await getWallById(Number(id));
-  if (!wall) notFound();
+  if (!wall || wall.user_id !== user.id) notFound();
   const items = await allTestimonials(wall.id);
   const pending = items.filter((t) => !t.approved).length;
   const base = appUrl();
+  const capacity = plan.maxTestimonialsPerWall;
+  const atCap = items.length >= capacity;
 
   const embedSnippet = `<div data-testimonials-wall="${wall.slug}" data-theme="light"></div>\n<script src="${base}/embed.js" async></script>`;
 
   return (
-    <main className="container">
-      <nav className="admin-nav">
+    <main>
+      <nav className="admin-nav" style={{ marginBottom: '1rem' }}>
         <h1>{wall.title}</h1>
         <span className="pill" style={{ background: pending ? 'var(--star)' : 'var(--border)' }}>
           {pending} pending
         </span>
-        <Link href="/admin" style={{ marginLeft: 'auto' }}>
+        <Link href="/dashboard" style={{ marginLeft: 'auto' }}>
           ← All walls
         </Link>
       </nav>
 
       <div className="stats">
         <div className="stat">
-          <div className="n">{items.length}</div>
-          <div className="l">Total submissions</div>
+          <div className="n">
+            {items.length}
+            {Number.isFinite(capacity) ? (
+              <span style={{ color: 'var(--muted)', fontSize: '1rem' }}> / {capacity}</span>
+            ) : null}
+          </div>
+          <div className="l">Submissions</div>
         </div>
         <div className="stat">
           <div className="n">{items.length - pending}</div>
@@ -47,6 +58,13 @@ export default async function ManageWallPage({ params }) {
           <div className="l">Wall views</div>
         </div>
       </div>
+
+      {atCap ? (
+        <div className="notice">
+          This wall is at the {plan.name} plan limit of {capacity} testimonials — new submissions
+          are paused. <Link href="/dashboard/billing">Upgrade to Pro</Link> to keep collecting.
+        </div>
+      ) : null}
 
       <h2>Share &amp; embed</h2>
       <div className="card" style={{ marginBottom: '1.5rem' }}>
@@ -83,8 +101,18 @@ export default async function ManageWallPage({ params }) {
         </div>
         <div className="field">
           <label style={{ fontWeight: 400 }}>
-            <input type="checkbox" name="hide_badge" defaultChecked={!!wall.hide_badge} /> Hide
-            “Powered by” badge <span className="hint">(will be a paid feature)</span>
+            <input
+              type="checkbox"
+              name="hide_badge"
+              defaultChecked={!!wall.hide_badge && plan.canHideBadge}
+              disabled={!plan.canHideBadge}
+            />{' '}
+            Hide “Powered by” badge{' '}
+            {plan.canHideBadge ? null : (
+              <span className="hint">
+                (<Link href="/dashboard/billing">Pro feature</Link>)
+              </span>
+            )}
           </label>
         </div>
         <button className="btn" type="submit">

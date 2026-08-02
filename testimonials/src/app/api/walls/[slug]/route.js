@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { getWallBySlug, approvedTestimonials } from '@/lib/db';
 import { avatarSrc } from '@/lib/media';
 import { parseVideoUrl } from '@/lib/video';
+import { badgeVisible } from '@/lib/plans';
 import { PRODUCT_NAME, PRODUCT_URL, appUrl } from '@/lib/config';
 
 export const dynamic = 'force-dynamic';
@@ -41,7 +42,7 @@ export async function GET(_request, { params }) {
         title: wall.title,
         description: wall.description,
         accent: wall.accent,
-        hideBadge: !!wall.hide_badge,
+        hideBadge: !badgeVisible(wall),
         url: `${base}/w/${wall.slug}`,
         submitUrl: `${base}/submit/${wall.slug}`,
       },

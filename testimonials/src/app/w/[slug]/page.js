@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation';
 import TestimonialCard from '@/components/TestimonialCard';
 import { getWallBySlug, approvedTestimonials, incrementViews } from '@/lib/db';
+import { badgeVisible } from '@/lib/plans';
 import { PRODUCT_NAME, PRODUCT_URL, appUrl } from '@/lib/config';
 
 export const dynamic = 'force-dynamic';
@@ -51,13 +52,13 @@ export default async function WallPage({ params }) {
         </a>
       </div>
 
-      {wall.hide_badge ? null : (
+      {badgeVisible(wall) ? (
         <div className="badge-row">
           <a className="powered-by" href={PRODUCT_URL} target="_blank" rel="noopener noreferrer">
             Powered by {PRODUCT_NAME}
           </a>
         </div>
-      )}
+      ) : null}
     </main>
   );
 }
