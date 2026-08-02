@@ -24,7 +24,14 @@ export default function VideoPlayer({ video, title }) {
     <div className="t-video">
       {video.thumbUrl ? (
         // eslint-disable-next-line @next/next/no-img-element
-        <img src={video.thumbUrl} alt="" loading="lazy" />
+        <img
+          src={video.thumbUrl}
+          alt=""
+          loading="lazy"
+          onError={(e) => {
+            e.currentTarget.style.display = 'none';
+          }}
+        />
       ) : null}
       <button type="button" onClick={() => setPlaying(true)} aria-label="Play video testimonial">
         <span className="play">

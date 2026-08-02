@@ -6,7 +6,7 @@ export const dynamic = 'force-dynamic';
 
 export async function generateMetadata({ params }) {
   const { slug } = await params;
-  const wall = getWallBySlug(slug);
+  const wall = await getWallBySlug(slug);
   if (!wall) return {};
   return {
     title: `Leave a testimonial — ${wall.title}`,
@@ -17,7 +17,7 @@ export async function generateMetadata({ params }) {
 
 export default async function SubmitPage({ params }) {
   const { slug } = await params;
-  const wall = getWallBySlug(slug);
+  const wall = await getWallBySlug(slug);
   if (!wall) notFound();
 
   return (

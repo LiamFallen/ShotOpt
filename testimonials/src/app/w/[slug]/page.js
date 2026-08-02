@@ -7,7 +7,7 @@ export const dynamic = 'force-dynamic';
 
 export async function generateMetadata({ params }) {
   const { slug } = await params;
-  const wall = getWallBySlug(slug);
+  const wall = await getWallBySlug(slug);
   if (!wall) return {};
   const title = wall.title;
   const description = wall.description || `What people say about ${wall.title}`;
@@ -23,10 +23,10 @@ export async function generateMetadata({ params }) {
 
 export default async function WallPage({ params }) {
   const { slug } = await params;
-  const wall = getWallBySlug(slug);
+  const wall = await getWallBySlug(slug);
   if (!wall) notFound();
-  incrementViews(wall.id);
-  const items = approvedTestimonials(wall.id);
+  await incrementViews(wall.id);
+  const items = await approvedTestimonials(wall.id);
 
   return (
     <main className="container" style={{ '--accent': wall.accent }}>

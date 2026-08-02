@@ -42,7 +42,7 @@
       '.lw-video button:hover{background:rgba(0,0,0,.4)}' +
       '.lw-play{width:52px;height:52px;border-radius:50%;background:var(--lw-accent);display:flex;align-items:center;justify-content:center}' +
       '.lw-play svg{width:20px;height:20px;fill:#fff;margin-left:3px}' +
-      '.lw-badge{margin-top:16px;text-align:center}' +
+      '.lw-badge{column-span:all;margin-top:16px;text-align:center}' +
       '.lw-badge a{display:inline-block;font-size:12px;color:var(--lw-muted);border:1px solid var(--lw-border);border-radius:999px;padding:5px 14px;text-decoration:none;background:var(--lw-card)}' +
       '.lw-empty{color:var(--lw-muted);font-size:14px;text-align:center;padding:24px;border:1px dashed var(--lw-border);border-radius:12px}';
     var el = document.createElement('style');
@@ -131,6 +131,7 @@
         thumb.src = t.video.thumbUrl;
         thumb.alt = '';
         thumb.loading = 'lazy';
+        thumb.addEventListener('error', function () { thumb.style.display = 'none'; });
         box.appendChild(thumb);
       }
       var btn = el('button');

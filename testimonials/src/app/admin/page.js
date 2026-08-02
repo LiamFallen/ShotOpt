@@ -7,8 +7,8 @@ export const dynamic = 'force-dynamic';
 
 export const metadata = { title: 'Admin', robots: { index: false } };
 
-export default function AdminPage() {
-  const walls = listWalls();
+export default async function AdminPage() {
+  const walls = await listWalls();
   const totals = walls.reduce(
     (acc, w) => ({
       total: acc.total + w.total,

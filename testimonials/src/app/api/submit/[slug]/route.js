@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getDb, getWallBySlug } from '@/lib/db';
+import { run, getWallBySlug } from '@/lib/db';
 import { storeAvatar, fetchAndStoreAvatar } from '@/lib/media';
 import { parseVideoUrl } from '@/lib/video';
 
@@ -20,7 +20,7 @@ function cleanUrl(v) {
 
 export async function POST(request, { params }) {
   const { slug } = await params;
-  const wall = getWallBySlug(slug);
+  const wall = await getWallBySlug(slug);
   if (!wall) return NextResponse.json({ error: 'Wall not found' }, { status: 404 });
 
   let form;
@@ -65,12 +65,11 @@ export async function POST(request, { params }) {
     if (avatarUrl) avatar = await fetchAndStoreAvatar(avatarUrl);
   }
 
-  getDb()
-    .prepare(
-      `INSERT INTO testimonials (wall_id, name, role, url, avatar, rating, text, video_url, approved)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0)`
-    )
-    .run(wall.id, name, role, url, avatar, rating, text, videoRaw);
+  await run(
+    `INSERT INTO testimonials (wall_id, name, role, url, avatar, rating, text, video_url, approved)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0)`,
+    [wall.id, name, role, url, avatar, rating, text, videoRaw]
+  );
 
   return NextResponse.json({ ok: true });
 }

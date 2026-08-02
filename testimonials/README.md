@@ -18,7 +18,10 @@ Self-hosted testimonial collection and display — a lightweight, single-service
 
 ## Stack
 
-Next.js (App Router) · SQLite via better-sqlite3 · sharp for image resizing. One Node process, no external services. All state lives in `DATA_DIR` (SQLite DB + uploaded avatars), so backup = copy one folder.
+Next.js (App Router) · SQLite via libSQL (`@libsql/client`) · sharp for image resizing. Two storage modes, same code:
+
+- **Self-hosted (VPS / Docker / local dev):** everything lives in `DATA_DIR` (a local SQLite file + uploaded avatars), so backup = copy one folder. No external services.
+- **Serverless (Vercel):** the filesystem is ephemeral, so the database points at [Turso](https://turso.tech) (hosted SQLite, generous free tier) and avatars go to Vercel Blob. Enabled purely by env vars — no code changes.
 
 ## Run locally
 
@@ -38,8 +41,20 @@ Visit `/admin`, create a wall, then open its submit link.
 | `APP_URL` | production | Public origin (e.g. `https://wall.example.com`) — used in OG tags, share links and the embed feed. |
 | `DATA_DIR` | no | Where SQLite + uploads live. Defaults to `./data`. Point it at a persistent volume in production. |
 | `PRODUCT_NAME` / `PRODUCT_URL` | no | Branding for the "Powered by" badge. |
+| `TURSO_DATABASE_URL` / `TURSO_AUTH_TOKEN` | Vercel | Hosted SQLite. When set, the local DB file is not used. |
+| `BLOB_READ_WRITE_TOKEN` | Vercel | Vercel Blob store for avatars. When set, uploads skip the local disk. |
 
 ## Deploy
+
+### Vercel
+
+1. Import the repo on [vercel.com/new](https://vercel.com/new) — it's auto-detected as Next.js, no build settings needed.
+2. Create a free database at [turso.tech](https://turso.tech): `turso db create lovewall`, then grab the URL (`turso db show lovewall --url`) and a token (`turso db tokens create lovewall`).
+3. In the Vercel project: **Storage → Create → Blob** (this auto-adds `BLOB_READ_WRITE_TOKEN`).
+4. Add env vars: `ADMIN_USER`, `ADMIN_PASSWORD`, `APP_URL` (your production URL), `TURSO_DATABASE_URL`, `TURSO_AUTH_TOKEN`.
+5. Deploy. Tables are created automatically on first request.
+
+> Why the extra services? Vercel functions have a read-only, ephemeral filesystem — a local SQLite file or uploads folder would vanish between invocations. Turso *is* SQLite (libSQL), so the schema and queries are identical in both modes. If you'd rather have zero external services, Railway/Fly/Render/VPS below run the pure-local mode.
 
 ### VPS (Ubuntu/Debian + Caddy)
 

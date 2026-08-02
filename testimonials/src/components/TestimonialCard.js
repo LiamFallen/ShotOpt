@@ -1,6 +1,7 @@
 import Stars from './Stars';
 import VideoPlayer from './VideoPlayer';
 import { parseVideoUrl } from '@/lib/video';
+import { avatarSrc } from '@/lib/media';
 
 function initials(name) {
   return name
@@ -19,7 +20,7 @@ export default function TestimonialCard({ t }) {
       <div className="t-head">
         {t.avatar ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img className="t-avatar" src={`/uploads/${t.avatar}`} alt="" loading="lazy" />
+          <img className="t-avatar" src={avatarSrc(t.avatar)} alt="" loading="lazy" />
         ) : (
           <span className="t-avatar initials" aria-hidden>
             {initials(t.name)}

@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import Stars from '@/components/Stars';
 import CopyLink from './copy-link';
 import { getWallById, allTestimonials } from '@/lib/db';
+import { avatarSrc } from '@/lib/media';
 import { appUrl } from '@/lib/config';
 import { updateWall, deleteWall, setApproval, deleteTestimonial } from '../../actions';
 
@@ -12,9 +13,9 @@ export const metadata = { title: 'Manage wall', robots: { index: false } };
 
 export default async function ManageWallPage({ params }) {
   const { id } = await params;
-  const wall = getWallById(Number(id));
+  const wall = await getWallById(Number(id));
   if (!wall) notFound();
-  const items = allTestimonials(wall.id);
+  const items = await allTestimonials(wall.id);
   const pending = items.filter((t) => !t.approved).length;
   const base = appUrl();
 
@@ -102,7 +103,7 @@ export default async function ManageWallPage({ params }) {
             <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', flexWrap: 'wrap' }}>
               {t.avatar ? (
                 // eslint-disable-next-line @next/next/no-img-element
-                <img className="t-avatar" src={`/uploads/${t.avatar}`} alt="" />
+                <img className="t-avatar" src={avatarSrc(t.avatar)} alt="" />
               ) : null}
               <div style={{ flex: 1, minWidth: 180 }}>
                 <strong>{t.name}</strong>

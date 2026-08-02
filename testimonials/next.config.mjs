@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  serverExternalPackages: ['better-sqlite3', 'sharp'],
+  serverExternalPackages: ['@libsql/client', 'libsql', 'sharp'],
   output: 'standalone',
 };
 
