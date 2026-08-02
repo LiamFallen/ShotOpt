@@ -56,7 +56,7 @@ export async function POST(request, { params }) {
 
   const role = clean(form.get('role'), 120);
   const url = cleanUrl(form.get('url'));
-  const videoRaw = cleanUrl(form.get('video_url'));
+  const videoRaw = wall.collect_video ? cleanUrl(form.get('video_url')) : '';
   if (videoRaw && !parseVideoUrl(videoRaw)) {
     return NextResponse.json(
       { error: 'Video link must be a YouTube, Vimeo or Loom URL.' },
@@ -65,19 +65,21 @@ export async function POST(request, { params }) {
   }
 
   let avatar = '';
-  const file = form.get('avatar');
-  if (file && typeof file === 'object' && typeof file.arrayBuffer === 'function' && file.size > 0) {
-    avatar = await storeAvatar(Buffer.from(await file.arrayBuffer()));
-  }
-  if (!avatar) {
-    const avatarUrl = cleanUrl(form.get('avatar_url'));
-    if (avatarUrl) avatar = await fetchAndStoreAvatar(avatarUrl);
+  if (wall.collect_photo) {
+    const file = form.get('avatar');
+    if (file && typeof file === 'object' && typeof file.arrayBuffer === 'function' && file.size > 0) {
+      avatar = await storeAvatar(Buffer.from(await file.arrayBuffer()));
+    }
+    if (!avatar) {
+      const avatarUrl = cleanUrl(form.get('avatar_url'));
+      if (avatarUrl) avatar = await fetchAndStoreAvatar(avatarUrl);
+    }
   }
 
   await run(
     `INSERT INTO testimonials (wall_id, name, role, url, avatar, rating, text, video_url, approved)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0)`,
-    [wall.id, name, role, url, avatar, rating, text, videoRaw]
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    [wall.id, name, role, url, avatar, rating, text, videoRaw, wall.auto_approve ? 1 : 0]
   );
 
   return NextResponse.json({ ok: true });

@@ -4,6 +4,7 @@ import AuthForm from '../auth-form';
 import { signup } from '../actions';
 import { currentUser, googleConfigured } from '@/lib/auth';
 import { PRODUCT_NAME } from '@/lib/config';
+import { IconHeartMark } from '@/components/icons';
 
 export const metadata = { title: 'Start free', robots: { index: false } };
 export const dynamic = 'force-dynamic';
@@ -11,18 +12,18 @@ export const dynamic = 'force-dynamic';
 export default async function SignupPage() {
   if (await currentUser()) redirect('/dashboard');
   return (
-    <main className="container narrow auth-page">
-      <header className="page-header">
+    <main className="auth-bg">
+      <div className="auth-box">
         <Link href="/" className="wordmark">
-          <span className="mark">♥</span> {PRODUCT_NAME}
+          <IconHeartMark /> {PRODUCT_NAME}
         </Link>
         <h1>Create your free account</h1>
-        <p>One wall, ten testimonials, no credit card. Upgrade whenever you outgrow it.</p>
-      </header>
-      <AuthForm action={signup} mode="signup" googleEnabled={googleConfigured()} />
-      <p style={{ textAlign: 'center', marginTop: '1rem' }}>
-        Already have an account? <Link href="/login">Log in</Link>
-      </p>
+        <p className="lede">One wall, ten testimonials, no credit card.</p>
+        <AuthForm action={signup} mode="signup" googleEnabled={googleConfigured()} />
+        <p className="auth-foot">
+          Already have an account? <Link href="/login">Sign in</Link>
+        </p>
+      </div>
     </main>
   );
 }

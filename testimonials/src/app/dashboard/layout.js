@@ -3,6 +3,7 @@ import { requireUser } from '@/lib/auth';
 import { planOf } from '@/lib/plans';
 import { PRODUCT_NAME } from '@/lib/config';
 import { logout } from '../(auth)/actions';
+import { IconHeartMark, IconWall, IconCard, IconLogout } from '@/components/icons';
 
 export const metadata = { title: 'Dashboard', robots: { index: false } };
 export const dynamic = 'force-dynamic';
@@ -11,24 +12,32 @@ export default async function DashboardLayout({ children }) {
   const user = await requireUser();
   const plan = planOf(user);
   return (
-    <div className="container">
-      <nav className="admin-nav">
+    <div className="shell">
+      <aside className="sidebar">
         <Link href="/dashboard" className="wordmark">
-          <span className="mark">♥</span> {PRODUCT_NAME}
+          <IconHeartMark /> {PRODUCT_NAME}
         </Link>
-        <Link href="/dashboard">Walls</Link>
-        <Link href="/dashboard/billing">Billing</Link>
-        <span className={`pill${plan.key === 'free' ? ' muted' : ''}`}>{plan.name}</span>
-        <span style={{ marginLeft: 'auto', color: 'var(--muted)', fontSize: '0.85rem' }}>
-          {user.email}
-        </span>
-        <form action={logout}>
-          <button className="btn small secondary" type="submit">
-            Log out
-          </button>
-        </form>
-      </nav>
-      {children}
+        <nav>
+          <Link className="side-link" href="/dashboard">
+            <IconWall size={17} /> Walls
+          </Link>
+          <Link className="side-link" href="/dashboard/billing">
+            <IconCard size={17} /> Billing
+          </Link>
+        </nav>
+        <div className="foot">
+          <div className="who">
+            <div className="email">{user.email}</div>
+            <div className="plan">{plan.name} plan</div>
+          </div>
+          <form action={logout}>
+            <button className="iconbtn" type="submit" title="Sign out" aria-label="Sign out">
+              <IconLogout size={16} />
+            </button>
+          </form>
+        </div>
+      </aside>
+      <div className="content">{children}</div>
     </div>
   );
 }

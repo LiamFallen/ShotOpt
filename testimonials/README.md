@@ -20,9 +20,15 @@ results anywhere with one script tag.
   that keeps `users.plan` in sync. All wired; activates when you add your Stripe keys.
 - **Collection** — public submit page per wall: name, role/company, URL, 1–5 stars, text, photo
   (uploaded or fetched from a URL, resized server-side to 128px WebP), YouTube/Vimeo/Loom video.
+  Per-wall collection settings: custom prompt, toggle the photo/video fields, auto-approve.
   Honeypot spam trap. Thank-you screen with pre-filled LinkedIn share.
-- **Display** — hosted wall at `/w/<slug>` (masonry, dark mode, OG tags) and an iframe-free embed
-  (`/embed.js`) that inherits the host page's font and supports `data-theme="light|dark|auto"`.
+- **Curation** — All/Pending/Live filter tabs, pin favourites to the top of the wall, import
+  testimonials you already have (email/social) straight from the dashboard, export any wall to
+  CSV.
+- **Display** — hosted wall at `/w/<slug>` with average-rating header, masonry layout and OG
+  tags; an iframe-free embed (`/embed.js`) that inherits the host page's font and supports
+  `data-layout="wall|carousel"` (auto-advancing carousel with arrows), `data-theme="light|dark|auto"`
+  for dark host sites, and `data-max="N"`.
 - **Platform admin** (`/admin`) — your operator view (basic auth from `.env`): user list with
   plans, all walls, platform totals.
 

@@ -50,9 +50,13 @@ async function migrate(c) {
         slug TEXT NOT NULL UNIQUE,
         title TEXT NOT NULL,
         description TEXT NOT NULL DEFAULT '',
-        accent TEXT NOT NULL DEFAULT '#6366f1',
+        accent TEXT NOT NULL DEFAULT '#635bff',
         hide_badge INTEGER NOT NULL DEFAULT 0,
         views INTEGER NOT NULL DEFAULT 0,
+        prompt TEXT NOT NULL DEFAULT '',
+        collect_photo INTEGER NOT NULL DEFAULT 1,
+        collect_video INTEGER NOT NULL DEFAULT 1,
+        auto_approve INTEGER NOT NULL DEFAULT 0,
         created_at TEXT NOT NULL DEFAULT (datetime('now'))
       )`,
       `CREATE TABLE IF NOT EXISTS testimonials (
@@ -66,6 +70,8 @@ async function migrate(c) {
         text TEXT NOT NULL,
         video_url TEXT NOT NULL DEFAULT '',
         approved INTEGER NOT NULL DEFAULT 0,
+        pinned INTEGER NOT NULL DEFAULT 0,
+        source TEXT NOT NULL DEFAULT 'form',
         created_at TEXT NOT NULL DEFAULT (datetime('now'))
       )`,
       `CREATE INDEX IF NOT EXISTS idx_testimonials_wall ON testimonials(wall_id, approved)`,
@@ -74,11 +80,23 @@ async function migrate(c) {
     ],
     'write'
   );
-  // Upgrade path for databases created before accounts existed.
-  try {
-    await c.execute('ALTER TABLE walls ADD COLUMN user_id INTEGER REFERENCES users(id)');
-  } catch {
-    // column already exists
+  // Upgrade paths for databases created by earlier versions. Each ALTER
+  // fails harmlessly once the column exists.
+  const upgrades = [
+    'ALTER TABLE walls ADD COLUMN user_id INTEGER REFERENCES users(id)',
+    "ALTER TABLE walls ADD COLUMN prompt TEXT NOT NULL DEFAULT ''",
+    'ALTER TABLE walls ADD COLUMN collect_photo INTEGER NOT NULL DEFAULT 1',
+    'ALTER TABLE walls ADD COLUMN collect_video INTEGER NOT NULL DEFAULT 1',
+    'ALTER TABLE walls ADD COLUMN auto_approve INTEGER NOT NULL DEFAULT 0',
+    'ALTER TABLE testimonials ADD COLUMN pinned INTEGER NOT NULL DEFAULT 0',
+    "ALTER TABLE testimonials ADD COLUMN source TEXT NOT NULL DEFAULT 'form'",
+  ];
+  for (const sql of upgrades) {
+    try {
+      await c.execute(sql);
+    } catch {
+      // column already exists
+    }
   }
 }
 
@@ -167,16 +185,25 @@ export function countTestimonials(wallId) {
 
 export function approvedTestimonials(wallId) {
   return all(
-    'SELECT * FROM testimonials WHERE wall_id = ? AND approved = 1 ORDER BY created_at DESC, id DESC',
+    'SELECT * FROM testimonials WHERE wall_id = ? AND approved = 1 ORDER BY pinned DESC, created_at DESC, id DESC',
     [wallId]
   );
 }
 
 export function allTestimonials(wallId) {
   return all(
-    'SELECT * FROM testimonials WHERE wall_id = ? ORDER BY approved ASC, created_at DESC, id DESC',
+    'SELECT * FROM testimonials WHERE wall_id = ? ORDER BY approved ASC, pinned DESC, created_at DESC, id DESC',
     [wallId]
   );
+}
+
+// Average rating + count of live testimonials, for the wall header and feed.
+export async function wallSummary(wallId) {
+  const r = await one(
+    'SELECT COUNT(*) AS count, AVG(rating) AS avg FROM testimonials WHERE wall_id = ? AND approved = 1',
+    [wallId]
+  );
+  return { count: r?.count ?? 0, avg: r?.avg ? Math.round(r.avg * 10) / 10 : null };
 }
 
 export function incrementViews(wallId) {

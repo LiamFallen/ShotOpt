@@ -2,7 +2,9 @@
 
 import { useState } from 'react';
 
-export default function SubmitForm({ slug, wallTitle }) {
+const STAR = 'M12 2.6l2.9 6 6.6.8-4.9 4.5 1.3 6.5L12 17.2l-5.9 3.2 1.3-6.5-4.9-4.5 6.6-.8z';
+
+export default function SubmitForm({ slug, wallTitle, collectPhoto, collectVideo, autoApprove }) {
   const [state, setState] = useState('idle'); // idle | sending | done | error
   const [error, setError] = useState('');
   const [submittedText, setSubmittedText] = useState('');
@@ -33,16 +35,17 @@ export default function SubmitForm({ slug, wallTitle }) {
   }
 
   if (state === 'done') {
-    const share = `Just shared my experience with ${wallTitle} — happy to recommend it! ⭐️\n\n“${submittedText.slice(0, 180)}${submittedText.length > 180 ? '…' : ''}”`;
+    const share = `Just shared my experience with ${wallTitle} — happy to recommend it!\n\n“${submittedText.slice(0, 180)}${submittedText.length > 180 ? '…' : ''}”`;
     const linkedinUrl = `https://www.linkedin.com/feed/?shareActive=true&text=${encodeURIComponent(share)}`;
     return (
-      <div className="card" style={{ textAlign: 'center' }}>
-        <h2 style={{ marginTop: 0 }}>Thank you! 🎉</h2>
-        <p>
-          Your testimonial has been submitted and is awaiting review. It will appear on the wall
-          once approved.
+      <div className="card" style={{ textAlign: 'center', padding: '2.2rem 1.8rem' }}>
+        <h2 style={{ marginTop: 0, fontSize: '1.3rem' }}>Thank you!</h2>
+        <p style={{ color: 'var(--gray)' }}>
+          {autoApprove
+            ? 'Your testimonial is live on the wall. We really appreciate it.'
+            : 'Your testimonial has been submitted and will appear on the wall once approved.'}
         </p>
-        <p style={{ color: 'var(--muted)', fontSize: '0.9rem' }}>
+        <p style={{ color: 'var(--faint)', fontSize: '0.88rem' }}>
           Want to spread the word a little further?
         </p>
         <a className="btn" href={linkedinUrl} target="_blank" rel="noopener noreferrer">
@@ -53,7 +56,7 @@ export default function SubmitForm({ slug, wallTitle }) {
   }
 
   return (
-    <form className="card" onSubmit={onSubmit}>
+    <form className="card" onSubmit={onSubmit} style={{ boxShadow: 'var(--shadow-lg)' }}>
       <div className="field">
         <label htmlFor="f-name">Your name *</label>
         <input id="f-name" name="name" type="text" required maxLength={100} autoComplete="name" />
@@ -87,7 +90,9 @@ export default function SubmitForm({ slug, wallTitle }) {
                 required
               />
               <label htmlFor={`star-${n}`} title={`${n} star${n > 1 ? 's' : ''}`}>
-                ★
+                <svg viewBox="0 0 24 24" aria-hidden>
+                  <path d={STAR} fill="currentColor" />
+                </svg>
               </label>
             </span>
           ))}
@@ -106,26 +111,32 @@ export default function SubmitForm({ slug, wallTitle }) {
         />
       </div>
 
-      <div className="field">
-        <label htmlFor="f-avatar">
-          Photo <span className="hint">(optional — JPG/PNG, we’ll resize it)</span>
-        </label>
-        <input id="f-avatar" name="avatar" type="file" accept="image/*" />
-      </div>
+      {collectPhoto ? (
+        <>
+          <div className="field">
+            <label htmlFor="f-avatar">
+              Photo <span className="hint">(optional — JPG/PNG, we’ll resize it)</span>
+            </label>
+            <input id="f-avatar" name="avatar" type="file" accept="image/*" />
+          </div>
 
-      <div className="field">
-        <label htmlFor="f-avatar-url">
-          …or a link to your photo <span className="hint">(optional)</span>
-        </label>
-        <input id="f-avatar-url" name="avatar_url" type="url" maxLength={300} placeholder="https://…" />
-      </div>
+          <div className="field">
+            <label htmlFor="f-avatar-url">
+              …or a link to your photo <span className="hint">(optional)</span>
+            </label>
+            <input id="f-avatar-url" name="avatar_url" type="url" maxLength={300} placeholder="https://…" />
+          </div>
+        </>
+      ) : null}
 
-      <div className="field">
-        <label htmlFor="f-video">
-          Video testimonial <span className="hint">(optional — YouTube, Vimeo or Loom link)</span>
-        </label>
-        <input id="f-video" name="video_url" type="url" maxLength={300} placeholder="https://youtu.be/…" />
-      </div>
+      {collectVideo ? (
+        <div className="field">
+          <label htmlFor="f-video">
+            Video testimonial <span className="hint">(optional — YouTube, Vimeo or Loom link)</span>
+          </label>
+          <input id="f-video" name="video_url" type="url" maxLength={300} placeholder="https://youtu.be/…" />
+        </div>
+      ) : null}
 
       {/* Honeypot — real users never see or fill this. */}
       <input
@@ -138,12 +149,12 @@ export default function SubmitForm({ slug, wallTitle }) {
       />
 
       {error ? (
-        <p role="alert" style={{ color: 'var(--danger)', fontSize: '0.9rem' }}>
+        <p role="alert" style={{ color: 'var(--danger)', fontSize: '0.88rem' }}>
           {error}
         </p>
       ) : null}
 
-      <button className="btn" type="submit" disabled={state === 'sending'}>
+      <button className="btn" type="submit" disabled={state === 'sending'} style={{ width: '100%' }}>
         {state === 'sending' ? 'Sending…' : 'Submit testimonial'}
       </button>
     </form>

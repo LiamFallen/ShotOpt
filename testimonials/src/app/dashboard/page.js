@@ -22,13 +22,15 @@ export default async function DashboardPage() {
 
   return (
     <main>
+      <div className="content-head">
+        <h1>Walls</h1>
+      </div>
+
       <div className="stats">
         <div className="stat">
           <div className="n">
             {walls.length}
-            {Number.isFinite(plan.maxWalls) ? (
-              <span style={{ color: 'var(--muted)', fontSize: '1rem' }}> / {plan.maxWalls}</span>
-            ) : null}
+            {Number.isFinite(plan.maxWalls) ? <span className="cap"> / {plan.maxWalls}</span> : null}
           </div>
           <div className="l">Walls</div>
         </div>
@@ -37,7 +39,7 @@ export default async function DashboardPage() {
           <div className="l">Testimonials</div>
         </div>
         <div className="stat">
-          <div className="n" style={{ color: totals.pending ? 'var(--star)' : undefined }}>
+          <div className="n" style={{ color: totals.pending ? '#a15c00' : undefined }}>
             {totals.pending}
           </div>
           <div className="l">Pending review</div>
@@ -48,22 +50,24 @@ export default async function DashboardPage() {
         </div>
       </div>
 
-      <h2>Your walls</h2>
       {walls.length === 0 ? (
-        <div className="empty">No walls yet. Create your first one below — it takes 10 seconds.</div>
+        <div className="empty">
+          <strong>No walls yet</strong>
+          Create your first one below — it takes ten seconds.
+        </div>
       ) : (
         walls.map((w) => (
           <div className="wall-row" key={w.id}>
             <div className="grow">
-              <strong>{w.title}</strong>{' '}
-              <span style={{ color: 'var(--muted)', fontSize: '0.85rem' }}>/w/{w.slug}</span>
-              <div style={{ color: 'var(--muted)', fontSize: '0.82rem' }}>
+              <span className="title">{w.title}</span>{' '}
+              <span className="meta">/w/{w.slug}</span>
+              <div className="meta">
                 {w.total} testimonial{w.total === 1 ? '' : 's'} · {w.views} view
                 {w.views === 1 ? '' : 's'}
               </div>
             </div>
             {w.pending > 0 ? (
-              <span className="pill">{w.pending} pending</span>
+              <span className="pill warn">{w.pending} pending</span>
             ) : (
               <span className="pill muted">0 pending</span>
             )}
@@ -77,12 +81,14 @@ export default async function DashboardPage() {
         ))
       )}
 
-      <h2 style={{ marginTop: '2.5rem' }}>Create a wall</h2>
+      <h2>Create a wall</h2>
       {atWallCap ? (
         <div className="notice">
-          The {plan.name} plan includes {plan.maxWalls} wall{plan.maxWalls === 1 ? '' : 's'}.{' '}
-          <Link href="/dashboard/billing">Upgrade to Pro</Link> for unlimited walls, unlimited
-          testimonials and badge removal.
+          <span>
+            The {plan.name} plan includes {plan.maxWalls} wall{plan.maxWalls === 1 ? '' : 's'}.{' '}
+            <Link href="/dashboard/billing">Upgrade to Pro</Link> for unlimited walls, unlimited
+            testimonials and badge removal.
+          </span>
         </div>
       ) : (
         <CreateWallForm />

@@ -15,13 +15,13 @@ export default async function PlatformAdminPage() {
   ]);
 
   return (
-    <main className="container">
-      <nav className="admin-nav">
+    <main className="container" style={{ background: 'var(--tint)', maxWidth: 'none', minHeight: '100vh' }}>
+      <div style={{ maxWidth: 1080, margin: '0 auto' }}>
+      <div className="content-head">
         <h1>{PRODUCT_NAME} · Platform admin</h1>
-        <a href="/" style={{ marginLeft: 'auto' }}>
-          ← Home
-        </a>
-      </nav>
+        <div className="spacer" />
+        <a href="/">← Home</a>
+      </div>
 
       <div className="stats">
         <div className="stat">
@@ -54,8 +54,8 @@ export default async function PlatformAdminPage() {
           <div className="wall-row" key={u.id}>
             <div className="grow">
               <strong>{u.email}</strong>
-              {u.name ? <span style={{ color: 'var(--muted)' }}> — {u.name}</span> : null}
-              <div style={{ color: 'var(--muted)', fontSize: '0.82rem' }}>
+              {u.name ? <span style={{ color: 'var(--faint)' }}> — {u.name}</span> : null}
+              <div style={{ color: 'var(--faint)', fontSize: '0.82rem' }}>
                 {u.walls} wall{u.walls === 1 ? '' : 's'} · {u.testimonials} testimonial
                 {u.testimonials === 1 ? '' : 's'} · joined {u.created_at} UTC
               </div>
@@ -73,8 +73,8 @@ export default async function PlatformAdminPage() {
           <div className="wall-row" key={w.id}>
             <div className="grow">
               <strong>{w.title}</strong>{' '}
-              <span style={{ color: 'var(--muted)', fontSize: '0.85rem' }}>/w/{w.slug}</span>
-              <div style={{ color: 'var(--muted)', fontSize: '0.82rem' }}>
+              <span style={{ color: 'var(--faint)', fontSize: '0.85rem' }}>/w/{w.slug}</span>
+              <div style={{ color: 'var(--faint)', fontSize: '0.82rem' }}>
                 {w.owner || 'no owner (legacy)'} · {w.total} testimonial{w.total === 1 ? '' : 's'} ·{' '}
                 {w.views} view{w.views === 1 ? '' : 's'}
               </div>
@@ -85,6 +85,7 @@ export default async function PlatformAdminPage() {
           </div>
         ))
       )}
+      </div>
     </main>
   );
 }

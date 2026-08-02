@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getWallBySlug, approvedTestimonials } from '@/lib/db';
+import { getWallBySlug, approvedTestimonials, wallSummary } from '@/lib/db';
 import { avatarSrc } from '@/lib/media';
 import { parseVideoUrl } from '@/lib/video';
 import { badgeVisible } from '@/lib/plans';
@@ -25,6 +25,7 @@ export async function GET(_request, { params }) {
     return NextResponse.json({ error: 'Wall not found' }, { status: 404, headers: CORS });
   }
   const base = appUrl();
+  const summary = await wallSummary(wall.id);
   const items = (await approvedTestimonials(wall.id)).map((t) => ({
     id: t.id,
     name: t.name,
@@ -33,6 +34,7 @@ export async function GET(_request, { params }) {
     avatar: avatarSrc(t.avatar, base),
     rating: t.rating,
     text: t.text,
+    pinned: !!t.pinned,
     video: parseVideoUrl(t.video_url),
   }));
   return NextResponse.json(
@@ -45,6 +47,8 @@ export async function GET(_request, { params }) {
         hideBadge: !badgeVisible(wall),
         url: `${base}/w/${wall.slug}`,
         submitUrl: `${base}/submit/${wall.slug}`,
+        rating: summary.avg,
+        count: summary.count,
       },
       product: { name: PRODUCT_NAME, url: PRODUCT_URL },
       testimonials: items,
