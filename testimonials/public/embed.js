@@ -8,6 +8,8 @@
  *   data-testimonials-wall  wall slug (required)
  *   data-layout             "wall" (masonry, default) | "carousel" (auto-advancing row)
  *   data-theme              "light" (default) | "dark" | "auto" (follow the visitor's OS)
+ *   data-style              card design override: clean | gradient | aurora | bold | quote | spotlight
+ *                           (defaults to the style chosen in the dashboard)
  *   data-accent             optional #hex override of the wall's accent colour
  *   data-max                optional cap on how many testimonials to show
  */
@@ -70,7 +72,23 @@
       '.lw-arrow:hover{transform:translateY(-50%) scale(1.08)}' +
       '.lw-arrow svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}' +
       '.lw-prev{left:-10px}.lw-prev svg{transform:rotate(180deg)}' +
-      '.lw-next{right:-10px}';
+      '.lw-next{right:-10px}' +
+      /* card style library */
+      '.lw-s-gradient{border:0;background:linear-gradient(135deg,color-mix(in srgb,var(--lw-accent) 16%,#fff),#fff 48%,color-mix(in srgb,var(--lw-accent) 8%,#fff))}' +
+      '.lw-s-aurora{border:1px solid transparent;background:linear-gradient(var(--lw-card),var(--lw-card)) padding-box,linear-gradient(120deg,var(--lw-accent),#22d3ee 50%,#f472b6) border-box}' +
+      '.lw-s-bold{border:0;background:linear-gradient(150deg,color-mix(in srgb,var(--lw-accent) 45%,#0a2540),#0a2540 75%)}' +
+      '.lw-s-bold .lw-name,.lw-s-bold .lw-name a{color:#fff}.lw-s-bold .lw-role{color:rgba(255,255,255,.55)}.lw-s-bold .lw-text{color:rgba(255,255,255,.9)}.lw-s-bold .lw-off{color:rgba(255,255,255,.22)}' +
+      '.lw-s-quote{display:flex;flex-direction:column;border:0;background:rgba(135,146,162,.1);box-shadow:none;position:relative;padding-top:44px}' +
+      ".lw-s-quote:before{content:'\\201C';position:absolute;top:6px;left:16px;font-family:Georgia,'Times New Roman',serif;font-size:50px;line-height:1;color:var(--lw-accent)}" +
+      ".lw-s-quote .lw-text{order:1;font-family:Georgia,'Times New Roman',serif;font-style:italic;font-size:16px;color:var(--lw-text);margin-bottom:14px}" +
+      '.lw-s-quote .lw-stars{order:2}.lw-s-quote .lw-head{order:3;margin-bottom:0}.lw-s-quote .lw-video{order:4}' +
+      '.lw-s-quote .lw-avatar{width:32px;height:32px}' +
+      '.lw-s-spotlight{display:flex;flex-direction:column;align-items:center;text-align:center;border:0;padding:26px 20px 22px}' +
+      '.lw-s-spotlight .lw-head{flex-direction:column;gap:8px;margin-bottom:6px}' +
+      '.lw-s-spotlight .lw-avatar{width:56px;height:56px;border:0;padding:3px;background:linear-gradient(135deg,var(--lw-accent),#f472b6)}' +
+      '.lw-s-spotlight .lw-initials{padding:0;box-shadow:0 0 0 3px var(--lw-card),0 0 0 5px var(--lw-accent)}' +
+      '.lw-s-spotlight .lw-stars{justify-content:center}' +
+      '.lw-s-spotlight .lw-video{width:100%}';
     var el = document.createElement('style');
     el.id = 'lw-embed-css';
     el.textContent = css;
@@ -114,8 +132,10 @@
     container.style.setProperty('--lw-accent', accent);
   }
 
-  function renderCard(t) {
-    var card = el('article', 'lw-card');
+  var STYLES = ['clean', 'gradient', 'aurora', 'bold', 'quote', 'spotlight'];
+
+  function renderCard(t, styleKey) {
+    var card = el('article', 'lw-card' + (styleKey && styleKey !== 'clean' ? ' lw-s-' + styleKey : ''));
     var head = el('div', 'lw-head');
 
     if (t.avatar) {
@@ -196,17 +216,17 @@
     container.appendChild(badge);
   }
 
-  function renderWallLayout(container, items, data) {
+  function renderWallLayout(container, items, data, styleKey) {
     var cols = el('div', 'lw-cols');
-    items.forEach(function (t) { cols.appendChild(renderCard(t)); });
+    items.forEach(function (t) { cols.appendChild(renderCard(t, styleKey)); });
     container.appendChild(cols);
     renderBadge(container, data);
   }
 
-  function renderCarousel(container, items, data) {
+  function renderCarousel(container, items, data, styleKey) {
     var wrap = el('div', 'lw-carousel');
     var track = el('div', 'lw-track');
-    items.forEach(function (t) { track.appendChild(renderCard(t)); });
+    items.forEach(function (t) { track.appendChild(renderCard(t, styleKey)); });
     wrap.appendChild(track);
 
     function arrow(cls, dir) {
@@ -242,6 +262,8 @@
     var themeAttr = (container.getAttribute('data-theme') || 'light').toLowerCase();
     var accent = container.getAttribute('data-accent') || data.wall.accent || '#635bff';
     var layout = (container.getAttribute('data-layout') || 'wall').toLowerCase();
+    var styleKey = (container.getAttribute('data-style') || data.wall.cardStyle || 'clean').toLowerCase();
+    if (STYLES.indexOf(styleKey) === -1) styleKey = 'clean';
     var max = parseInt(container.getAttribute('data-max'), 10);
     var items = data.testimonials;
     if (max > 0) items = items.slice(0, max);
@@ -265,8 +287,8 @@
       renderBadge(container, data);
       return;
     }
-    if (layout === 'carousel') renderCarousel(container, items, data);
-    else renderWallLayout(container, items, data);
+    if (layout === 'carousel') renderCarousel(container, items, data, styleKey);
+    else renderWallLayout(container, items, data, styleKey);
   }
 
   function boot() {

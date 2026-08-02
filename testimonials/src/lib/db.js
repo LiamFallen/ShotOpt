@@ -57,6 +57,7 @@ async function migrate(c) {
         collect_photo INTEGER NOT NULL DEFAULT 1,
         collect_video INTEGER NOT NULL DEFAULT 1,
         auto_approve INTEGER NOT NULL DEFAULT 0,
+        card_style TEXT NOT NULL DEFAULT 'clean',
         created_at TEXT NOT NULL DEFAULT (datetime('now'))
       )`,
       `CREATE TABLE IF NOT EXISTS testimonials (
@@ -90,6 +91,7 @@ async function migrate(c) {
     'ALTER TABLE walls ADD COLUMN auto_approve INTEGER NOT NULL DEFAULT 0',
     'ALTER TABLE testimonials ADD COLUMN pinned INTEGER NOT NULL DEFAULT 0',
     "ALTER TABLE testimonials ADD COLUMN source TEXT NOT NULL DEFAULT 'form'",
+    "ALTER TABLE walls ADD COLUMN card_style TEXT NOT NULL DEFAULT 'clean'",
   ];
   for (const sql of upgrades) {
     try {

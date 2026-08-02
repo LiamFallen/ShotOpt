@@ -31,24 +31,25 @@ export default async function WallPage({ params }) {
   await incrementViews(wall.id);
   const [items, summary] = await Promise.all([approvedTestimonials(wall.id), wallSummary(wall.id)]);
 
+  const styleName = wall.card_style || 'clean';
   return (
-    <main
-      className="container"
-      style={{ '--brand': wall.accent, '--brand-dark': wall.accent }}
-    >
-      <header className="page-header">
-        <h1>{wall.title}</h1>
-        {wall.description ? <p>{wall.description}</p> : null}
-        {summary.count > 0 ? (
-          <div className="rating-line">
-            <Stars rating={Math.round(summary.avg)} size={15} />
-            <span>
-              {summary.avg} from {summary.count} testimonial{summary.count === 1 ? '' : 's'}
-            </span>
-          </div>
-        ) : null}
-      </header>
+    <main style={{ '--brand': wall.accent, '--brand-dark': wall.accent }}>
+      <div className="wall-hero">
+        <header className="page-header">
+          <h1>{wall.title}</h1>
+          {wall.description ? <p>{wall.description}</p> : null}
+          {summary.count > 0 ? (
+            <div className="rating-line">
+              <Stars rating={Math.round(summary.avg)} size={15} />
+              <span>
+                {summary.avg} from {summary.count} testimonial{summary.count === 1 ? '' : 's'}
+              </span>
+            </div>
+          ) : null}
+        </header>
+      </div>
 
+      <div className="container" style={{ paddingTop: '2.2rem' }}>
       {items.length === 0 ? (
         <div className="empty">
           <strong>No testimonials yet</strong>
@@ -57,7 +58,7 @@ export default async function WallPage({ params }) {
       ) : (
         <div className="masonry">
           {items.map((t) => (
-            <TestimonialCard key={t.id} t={t} />
+            <TestimonialCard key={t.id} t={t} styleName={styleName} />
           ))}
         </div>
       )}
@@ -75,6 +76,7 @@ export default async function WallPage({ params }) {
           </a>
         </div>
       ) : null}
+      </div>
     </main>
   );
 }

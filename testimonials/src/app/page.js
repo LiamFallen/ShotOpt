@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import Stars from '@/components/Stars';
+import SampleCard from '@/components/SampleCard';
 import {
   IconLink,
   IconVideo,
@@ -42,25 +42,6 @@ const SAMPLE = [
     color: '#7c6bfa',
   },
 ];
-
-function SampleCard({ t }) {
-  const initials = t.name.split(' ').map((w) => w[0]).join('');
-  return (
-    <article className="t-card">
-      <div className="t-head">
-        <span className="t-avatar initials" style={{ background: t.color }} aria-hidden>
-          {initials}
-        </span>
-        <div>
-          <div className="t-name">{t.name}</div>
-          <div className="t-role">{t.role}</div>
-        </div>
-      </div>
-      <Stars rating={t.rating} />
-      <p className="t-text">{t.text}</p>
-    </article>
-  );
-}
 
 const FEATURES = [
   {
@@ -108,10 +89,10 @@ export default async function LandingPage() {
             <IconHeartMark /> {PRODUCT_NAME}
           </Link>
           <div className="links">
-            <a href="#features">Features</a>
-            <a href="#embed">Embed</a>
-            <a href="#pricing">Pricing</a>
-            <a href="#faq">FAQ</a>
+            <a className="site-only" href="#features">Features</a>
+            <a className="site-only" href="#styles">Styles</a>
+            <a className="site-only" href="#pricing">Pricing</a>
+            <a className="site-only" href="#faq">FAQ</a>
             {user ? (
               <Link className="btn small" href="/dashboard">
                 Dashboard
@@ -145,15 +126,22 @@ export default async function LandingPage() {
                 See the embed <IconArrow size={16} />
               </a>
             </div>
-            <p className="hero-note">
-              Free includes {free.maxWalls} wall and {free.maxTestimonialsPerWall} testimonials. No
-              credit card.
-            </p>
+            <div className="hero-checks">
+              <span>
+                <IconCheck size={14} /> Free forever plan
+              </span>
+              <span>
+                <IconCheck size={14} /> No credit card
+              </span>
+              <span>
+                <IconCheck size={14} /> Live in 2 minutes
+              </span>
+            </div>
           </div>
           <div className="hero-cards" aria-hidden>
-            {SAMPLE.map((t) => (
-              <SampleCard key={t.name} t={t} />
-            ))}
+            <SampleCard styleName="clean" {...SAMPLE[0]} />
+            <SampleCard styleName="aurora" {...SAMPLE[1]} />
+            <SampleCard styleName="gradient" {...SAMPLE[2]} />
           </div>
         </header>
       </div>
@@ -179,6 +167,37 @@ export default async function LandingPage() {
       </section>
 
       <div className="section-tint">
+        <section className="section" id="styles">
+          <div className="section-head center">
+            <span className="eyebrow">Card styles</span>
+            <h2>A design library for your testimonials</h2>
+            <p>
+              Six hand-crafted looks — from crisp and minimal to gradient-wrapped and editorial.
+              Pick one per wall; every style follows your accent colour automatically.
+            </p>
+          </div>
+          <div className="gallery-grid">
+            {[
+              { key: 'clean', name: 'Clean', d: 'Crisp and quiet — fits any site', n: 'Sarah Chen', r: 'Head of Growth, Driftline', c: '#0ea5e9', t: 'We put the wall on our pricing page and trial-to-paid went up 22%.' },
+              { key: 'gradient', name: 'Gradient', d: 'Soft accent-tinted wash', n: 'Marcus Webb', r: 'Founder, Kettle & Co', c: '#635bff', t: 'I sent the link to 30 customers and woke up to 14 testimonials.' },
+              { key: 'aurora', name: 'Aurora', d: 'Vivid gradient border', n: 'Priya Patel', r: 'Freelance designer', c: '#e0447c', t: 'The embed inherits my site’s font so it looks completely native.' },
+              { key: 'bold', name: 'Bold', d: 'Deep ink, white type', n: 'Dan Okafor', r: 'CTO, Parcelform', c: '#22d3ee', t: 'Clean, fast, and the video cards don’t tank our page speed.' },
+              { key: 'quote', name: 'Editorial', d: 'Serif pull-quote', n: 'Elena Rossi', r: 'CEO, Fieldnote Analytics', c: '#635bff', t: 'Social proof used to be screenshots in a Notion doc. Now it’s a live wall.' },
+              { key: 'spotlight', name: 'Spotlight', d: 'Centered, gradient ring', n: 'Tom Askey', r: 'Indie maker', c: '#e07c3e', t: 'Exactly what I needed: collect, approve, embed. No bloat.' },
+            ].map((s) => (
+              <div className="gallery-item" key={s.key} style={{ '--brand': s.c }}>
+                <div className="lbl">
+                  <strong>{s.name}</strong>
+                  <span>{s.d}</span>
+                </div>
+                <SampleCard styleName={s.key} name={s.n} role={s.r} text={s.t} color={s.c} />
+              </div>
+            ))}
+          </div>
+        </section>
+      </div>
+
+      <div>
         <section className="section" id="embed">
           <div className="split">
             <div>
@@ -233,6 +252,7 @@ export default async function LandingPage() {
         </section>
       </div>
 
+      <div className="section-tint">
       <section className="section">
         <div className="section-head center">
           <span className="eyebrow">How it works</span>
@@ -265,8 +285,9 @@ export default async function LandingPage() {
           </div>
         </div>
       </section>
+      </div>
 
-      <div className="section-tint">
+      <div>
         <section className="section" id="pricing">
           <div className="section-head center">
             <span className="eyebrow">Pricing</span>

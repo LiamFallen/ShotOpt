@@ -7,6 +7,7 @@ import { parseVideoUrl } from '@/lib/video';
 import { removeAvatars } from '@/lib/media';
 import { requireUser } from '@/lib/auth';
 import { planOf } from '@/lib/plans';
+import { validCardStyle } from '@/lib/card-styles';
 
 const HEX = /^#[0-9a-fA-F]{6}$/;
 
@@ -58,11 +59,12 @@ export async function updateWall(formData) {
   const collectPhoto = formData.get('collect_photo') ? 1 : 0;
   const collectVideo = formData.get('collect_video') ? 1 : 0;
   const autoApprove = formData.get('auto_approve') ? 1 : 0;
+  const cardStyle = validCardStyle(String(formData.get('card_style') || wall.card_style));
   await run(
     `UPDATE walls SET title = ?, description = ?, accent = ?, hide_badge = ?,
-       prompt = ?, collect_photo = ?, collect_video = ?, auto_approve = ?
+       prompt = ?, collect_photo = ?, collect_video = ?, auto_approve = ?, card_style = ?
      WHERE id = ?`,
-    [title, description, accent, hideBadge, prompt, collectPhoto, collectVideo, autoApprove, wall.id]
+    [title, description, accent, hideBadge, prompt, collectPhoto, collectVideo, autoApprove, cardStyle, wall.id]
   );
   revalidatePath(`/dashboard/w/${wall.id}`);
   revalidatePath(`/w/${wall.slug}`);

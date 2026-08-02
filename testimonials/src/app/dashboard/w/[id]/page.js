@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import Stars from '@/components/Stars';
 import CopyLink from './copy-link';
 import AddTestimonialForm from './add-form';
+import StylePicker from './style-picker';
 import { getWallById, allTestimonials, wallSummary } from '@/lib/db';
 import { avatarSrc } from '@/lib/media';
 import { requireUser } from '@/lib/auth';
@@ -209,9 +210,15 @@ export default async function ManageWallPage({ params, searchParams }) {
         ))
       )}
 
-      <h2>Settings</h2>
-      <form className="card" action={updateWall} style={{ maxWidth: 560, marginBottom: '1.2rem' }}>
+      <h2>Design &amp; settings</h2>
+      <form className="card" action={updateWall} style={{ marginBottom: '1.2rem' }}>
         <input type="hidden" name="id" value={wall.id} />
+        <p style={{ margin: '0 0 1rem', fontSize: '0.88rem', color: 'var(--gray)' }}>
+          Pick how testimonials look on your wall and in your embeds — every style follows your
+          accent colour.
+        </p>
+        <StylePicker current={wall.card_style || 'clean'} accent={wall.accent} />
+        <div style={{ borderTop: '1px solid var(--line)', margin: '1.4rem 0' }} />
         <div className="two-col">
           <div className="field">
             <label htmlFor="s-title">Title</label>

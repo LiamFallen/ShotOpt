@@ -56,7 +56,7 @@ export default function SubmitForm({ slug, wallTitle, collectPhoto, collectVideo
   }
 
   return (
-    <form className="card" onSubmit={onSubmit} style={{ boxShadow: 'var(--shadow-lg)' }}>
+    <form className="card accent-top" onSubmit={onSubmit} style={{ boxShadow: 'var(--shadow-lg)' }}>
       <div className="field">
         <label htmlFor="f-name">Your name *</label>
         <input id="f-name" name="name" type="text" required maxLength={100} autoComplete="name" />

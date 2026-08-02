@@ -49,6 +49,7 @@ export async function GET(_request, { params }) {
         submitUrl: `${base}/submit/${wall.slug}`,
         rating: summary.avg,
         count: summary.count,
+        cardStyle: wall.card_style || 'clean',
       },
       product: { name: PRODUCT_NAME, url: PRODUCT_URL },
       testimonials: items,

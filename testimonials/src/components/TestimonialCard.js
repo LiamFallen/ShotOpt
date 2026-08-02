@@ -12,11 +12,11 @@ function initials(name) {
     .join('');
 }
 
-export default function TestimonialCard({ t }) {
+export default function TestimonialCard({ t, styleName = 'clean' }) {
   const video = parseVideoUrl(t.video_url);
   const safeUrl = /^https?:\/\//.test(t.url) ? t.url : '';
   return (
-    <article className="t-card">
+    <article className={`t-card tc-${styleName}`}>
       <div className="t-head">
         {t.avatar ? (
           // eslint-disable-next-line @next/next/no-img-element
