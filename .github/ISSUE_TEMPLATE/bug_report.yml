@@ -1,0 +1,37 @@
+name: Bug report
+description: Something renders wrong, breaks, or doesn't export
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: A clear description of the bug. Screenshots of the bad render help enormously.
+      placeholder: The shadow shows jagged edges when…
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Load a screenshot
+        2. Pick the Diffuse shadow
+        3. Tilt Y to -12°
+    validations:
+      required: true
+  - type: input
+    id: browser
+    attributes:
+      label: Browser and OS
+      placeholder: Chrome 132 on macOS 15
+    validations:
+      required: true
+  - type: textarea
+    id: settings
+    attributes:
+      label: Settings JSON (optional)
+      description: >
+        Paste the value of `localStorage.getItem("shotopt.v1")` from the
+        browser console — it makes the exact state reproducible.
+      render: json

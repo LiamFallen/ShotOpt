@@ -1,0 +1,24 @@
+name: Feature request
+description: Suggest a new background, style, effect, or capability
+labels: [enhancement]
+body:
+  - type: textarea
+    id: idea
+    attributes:
+      label: What would you like ShotOpt to do?
+      placeholder: A "polaroid" mockup style with a caption area…
+    validations:
+      required: true
+  - type: textarea
+    id: why
+    attributes:
+      label: What are you trying to make?
+      description: The use case helps more than the feature description.
+  - type: checkboxes
+    id: constraints
+    attributes:
+      label: Project constraints
+      description: ShotOpt is a single file with zero dependencies and zero network access — see CONTRIBUTING.md.
+      options:
+        - label: This could plausibly work fully in-browser with no external assets or services
+          required: true
