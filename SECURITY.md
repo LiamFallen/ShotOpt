@@ -2,19 +2,22 @@
 
 ## Reporting a vulnerability
 
-Please email **liam@liamfallen.com** rather than opening a public issue.
-You should get a response within a few days. Please include steps to
-reproduce and, if relevant, the browser and OS you tested on.
+Please use GitHub's private vulnerability reporting rather than opening a
+public issue: go to the repository's
+[Security tab](https://github.com/LiamFallen/ShotOpt/security) and click
+"Report a vulnerability". You should get a response within a few days.
+Please include steps to reproduce and, if relevant, the browser and OS you
+tested on.
 
 ## Scope and threat model
 
 ShotOpt is a fully client-side static site with an intentionally strict
 posture:
 
-- No backend, no accounts, no analytics, and **no network requests of any
-  kind** after page load: the Content-Security-Policy in `_headers` limits
-  every fetch/script/style/image to same-origin, so exfiltration paths are
-  blocked by the browser itself.
+- The app has no server component and makes **zero network requests after
+  page load**: the Content-Security-Policy in `_headers` limits every
+  fetch/script/style/image to same-origin, so exfiltration paths are blocked
+  by the browser itself. There are also no accounts and no analytics.
 - User images are held in memory / object URLs only; the only persisted data
   is the settings object and an optional watermark logo in `localStorage`.
 

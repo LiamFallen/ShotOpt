@@ -28,9 +28,10 @@ Examples of unacceptable behaviour:
 ## Enforcement
 
 Instances of abusive, harassing, or otherwise unacceptable behaviour may be
-reported to the maintainer at **liam@liamfallen.com**. All complaints will be
-reviewed and investigated promptly and fairly, and the reporter's privacy
-will be respected.
+reported privately to the maintainer,
+[@LiamFallen](https://github.com/LiamFallen), through GitHub. All complaints
+will be reviewed and investigated promptly and fairly, and the reporter's
+privacy will be respected.
 
 Maintainers who do not follow or enforce this Code of Conduct may be
 permanently removed from the project.

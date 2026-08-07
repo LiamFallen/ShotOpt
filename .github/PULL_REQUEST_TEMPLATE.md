@@ -8,7 +8,7 @@
 
 ## Checklist
 
-- [ ] Everything still lives in `index.html`: no build step, no dependencies, no external requests
+- [ ] Everything still lives in `index.html`, self-contained, with no build step or external requests
 - [ ] `CACHE` bumped in `sw.js` (required for any `index.html` change)
 - [ ] `npm test` passes locally
 - [ ] Tested in at least one of Chrome / Firefox / Safari (say which):

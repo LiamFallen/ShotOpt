@@ -4,7 +4,7 @@
 
 **Turn plain screenshots into polished images and motion mockups, entirely in your browser.**
 
-**[Try it live at shotopt.pages.dev](https://shotopt.pages.dev)** · no install, no signup, nothing uploaded
+**[Try it live at shotopt.pages.dev](https://shotopt.pages.dev)** · runs on your device, nothing to install
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-8b7bff.svg)](LICENSE)
 [![CI](https://github.com/LiamFallen/ShotOpt/actions/workflows/ci.yml/badge.svg)](https://github.com/LiamFallen/ShotOpt/actions/workflows/ci.yml)
@@ -22,10 +22,11 @@ looping GIF, with backgrounds, 3D perspective, scenes, VFX, and annotations.
 I originally built it as a small tool for my [OptOut](https://optout.ing)
 community. It kept growing, so now it's open source and free for everyone.
 
-**Nothing ever leaves your browser.** There is no backend, no analytics, no
-accounts, and no third-party requests of any kind. The
-`Content-Security-Policy` in `_headers` locks the page to same-origin, so the
-privacy claim is enforced by the browser rather than just promised.
+**Nothing ever leaves your browser.** ShotOpt is a static page with no
+server behind it. Your images stay in memory on your device, the app never
+phones home, and the `Content-Security-Policy` in `_headers` blocks every
+third-party request, so the privacy claim is enforced by the browser rather
+than just promised.
 
 ## Features
 
@@ -63,7 +64,7 @@ privacy claim is enforced by the browser rather than just promised.
 ## Quick start
 
 Use it at [shotopt.pages.dev](https://shotopt.pages.dev), or run it yourself.
-No build step, no dependencies, no package manager:
+It's plain static files, so any one-line server works:
 
 ```bash
 git clone https://github.com/LiamFallen/ShotOpt.git

@@ -7,9 +7,9 @@ please read this first. It's short.
 ## The three rules
 
 1. **One file.** The entire app (markup, styles and logic) lives in
-   `index.html`. No bundler, no framework, no build step. If your change needs
-   a build step, it needs a different approach.
-2. **Zero dependencies, zero network.** The Content-Security-Policy in
+   `index.html`. There is no build step of any kind. If your change needs
+   one, it needs a different approach.
+2. **Self-contained.** The Content-Security-Policy in
    `_headers` locks the page to same-origin. No CDN scripts, no fonts, no
    analytics, no API calls. Features that need an asset must generate it
    procedurally (see the background library or the GIF encoder for the
