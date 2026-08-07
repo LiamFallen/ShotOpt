@@ -5,7 +5,7 @@
 **Turn plain screenshots into polished images and motion mockups — entirely in your browser.**
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-8b7bff.svg)](LICENSE)
-[![CI](https://github.com/GitLiamNow/ShotOpt/actions/workflows/ci.yml/badge.svg)](https://github.com/GitLiamNow/ShotOpt/actions/workflows/ci.yml)
+[![CI](https://github.com/LiamFallen/ShotOpt/actions/workflows/ci.yml/badge.svg)](https://github.com/LiamFallen/ShotOpt/actions/workflows/ci.yml)
 [![Zero dependencies](https://img.shields.io/badge/dependencies-0-22d3ee.svg)](#how-it-works)
 [![PRs welcome](https://img.shields.io/badge/PRs-welcome-7ee08a.svg)](CONTRIBUTING.md)
 
@@ -60,7 +60,7 @@ privacy claim is enforced by the browser rather than just promised.
 No build step, no dependencies, no package manager:
 
 ```bash
-git clone https://github.com/GitLiamNow/ShotOpt.git
+git clone https://github.com/LiamFallen/ShotOpt.git
 cd ShotOpt
 python3 -m http.server 8787     # or: npx serve, php -S, caddy file-server…
 ```
@@ -120,7 +120,7 @@ works everywhere.
 
 Issues and PRs are very welcome — from a single new background gradient to a
 whole new scene. Start with [CONTRIBUTING.md](CONTRIBUTING.md); the
-[good first issue](https://github.com/GitLiamNow/ShotOpt/labels/good%20first%20issue)
+[good first issue](https://github.com/LiamFallen/ShotOpt/labels/good%20first%20issue)
 label is kept stocked with self-contained ideas. Please also read the
 [Code of Conduct](CODE_OF_CONDUCT.md).
 

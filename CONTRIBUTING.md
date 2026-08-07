@@ -22,7 +22,7 @@ please read this first. It's short.
 ## Running locally
 
 ```bash
-git clone https://github.com/GitLiamNow/ShotOpt.git
+git clone https://github.com/LiamFallen/ShotOpt.git
 cd ShotOpt
 python3 -m http.server 8787     # or any static file server
 ```
