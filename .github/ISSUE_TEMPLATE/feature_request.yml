@@ -18,7 +18,7 @@ body:
     id: constraints
     attributes:
       label: Project constraints
-      description: ShotOpt is a single file with zero dependencies and zero network access — see CONTRIBUTING.md.
+      description: ShotOpt is a single file with zero dependencies and zero network access. See CONTRIBUTING.md.
       options:
         - label: This could plausibly work fully in-browser with no external assets or services
           required: true

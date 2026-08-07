@@ -1,23 +1,23 @@
 # Contributing to ShotOpt
 
 Thanks for wanting to help! ShotOpt is deliberately unusual, and most rejected
-PRs fail on one of the project's constraints rather than on code quality — so
+PRs fail on one of the project's constraints rather than on code quality, so
 please read this first. It's short.
 
 ## The three rules
 
-1. **One file.** The entire app — markup, styles and logic — lives in
+1. **One file.** The entire app (markup, styles and logic) lives in
    `index.html`. No bundler, no framework, no build step. If your change needs
    a build step, it needs a different approach.
 2. **Zero dependencies, zero network.** The Content-Security-Policy in
    `_headers` locks the page to same-origin. No CDN scripts, no fonts, no
    analytics, no API calls. Features that need an asset must generate it
    procedurally (see the background library or the GIF encoder for the
-   pattern). This is the product's core promise — "your images never leave
-   your browser" — and it's enforced, not aspirational.
+   pattern). This is the product's core promise, "your images never leave
+   your browser", and the CSP makes the browser enforce it.
 3. **Bump the cache.** Any change to `index.html` must bump `CACHE` in
-   `sw.js` (`shotopt-v7` → `shotopt-v8`), or returning visitors keep the old
-   version.
+   `sw.js` (for example `shotopt-v9` to `shotopt-v10`), or returning visitors
+   keep the old version.
 
 ## Running locally
 
@@ -28,7 +28,7 @@ python3 -m http.server 8787     # or any static file server
 ```
 
 Open `http://127.0.0.1:8787`. Opening `index.html` straight from disk also
-works — you just lose the service worker and clipboard API (both need a
+works; you just lose the service worker and clipboard API (both need a
 secure context).
 
 ## Testing
@@ -52,14 +52,14 @@ Match what's there:
 
 - Two-space indent, no semicolon-free style, `const`/`let`, template literals.
 - The file is organised into numbered sections (`1. Background library`,
-  `9. Render`…) — put new code in the section it belongs to.
+  `9. Render`…). Put new code in the section it belongs to.
 - Comments explain **why**, not what. The existing comments document
   non-obvious constraints (canvas quirks, encoder behaviour, CSP fallout);
   follow that bar.
 - State lives in the single `S` object, persists via `localStorage`, and every
   new key needs a default in `DEFAULTS` so old saved states migrate cleanly.
-- UI controls wire themselves through `data-key` attributes where possible —
-  prefer that over bespoke listeners.
+- UI controls wire themselves through `data-key` attributes where possible.
+  Prefer that over bespoke listeners.
 
 ## Pull requests
 
@@ -67,12 +67,12 @@ Match what's there:
   visual.
 - Describe what you tested and in which browsers.
 - New features should degrade gracefully: WebGL, `ctx.filter`,
-  `MediaRecorder` and the Clipboard API all have fallback paths — yours
+  `MediaRecorder` and the Clipboard API all have fallback paths. Yours
   should too, or fail with a friendly toast.
 
 ## Reporting bugs
 
-Open an issue with the template — a screenshot of the bad render plus your
+Open an issue with the template. A screenshot of the bad render plus your
 browser/OS gets most rendering bugs fixed quickly. Settings live in
 `localStorage` under `shotopt.v1`; pasting that JSON into the issue makes
 bugs reproducible.

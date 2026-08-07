@@ -33,5 +33,5 @@ body:
       label: Settings JSON (optional)
       description: >
         Paste the value of `localStorage.getItem("shotopt.v1")` from the
-        browser console — it makes the exact state reproducible.
+        browser console. It makes the exact state reproducible.
       render: json
