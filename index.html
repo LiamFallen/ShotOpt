@@ -170,7 +170,9 @@
   .bgq[aria-pressed=true]{border-color:transparent;background:var(--card-2);box-shadow:0 0 0 2px var(--accent)}
   .bgq .ico{width:26px;height:26px;border-radius:8px;display:grid;place-items:center;font-size:12px;
     background:rgba(255,255,255,.07);color:var(--txt);overflow:hidden}
-  .bgq .ico.chk{background:conic-gradient(#33333c 0 25%,#22222a 0 50%,#33333c 0 75%,#22222a 0) 0 0/8px 8px}
+  /* position:static beats the absolute-fill .chk underlay rule used by swatch tiles */
+  .bgq .ico.chk{position:static;inset:auto;
+    background:conic-gradient(#33333c 0 25%,#22222a 0 50%,#33333c 0 75%,#22222a 0) 0 0/8px 8px}
   .bgq b{font-size:9px;font-weight:500;color:var(--dim);letter-spacing:.01em}
   .bgq[aria-pressed=true] b{color:#fff}
   .bgq input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;border:0;padding:0}
@@ -310,6 +312,13 @@
     box-shadow:0 0 0 1px rgba(255,255,255,.25)}
   .annbar .wdot i{display:block;border-radius:50%;background:currentColor}
   .stage.annotating #preview{cursor:crosshair !important}
+  .stage.annotating.annselect #preview{cursor:default !important}
+  .stage.annotating.annselect #preview.overann{cursor:move !important}
+  #annDel{position:absolute;z-index:7;width:24px;height:24px;border-radius:50%;
+    display:grid;place-items:center;font-size:11px;color:#fff;
+    background:#e5484d;border:1px solid rgba(255,255,255,.35);
+    box-shadow:0 6px 16px -4px rgba(0,0,0,.7);transition:.13s;transform:translate(-50%,-50%)}
+  #annDel:hover{transform:translate(-50%,-50%) scale(1.12)}
   #annInput{position:absolute;z-index:7;min-width:150px;max-width:340px;padding:7px 11px;
     background:rgba(12,12,17,.92);border:1.5px solid var(--accent);border-radius:9px;
     font-size:13px;font-weight:650;color:#fff;outline:0;backdrop-filter:blur(8px);
@@ -427,6 +436,22 @@
     overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .rchip[aria-pressed=true] b{color:#fff}
   .rchip i{font-style:normal;font-size:8.5px;color:var(--faint);margin-top:-3px}
+
+  /* ───── custom gradient editor ───── */
+  .cgpop{width:264px;max-height:none;overflow:visible}
+  .cgprev{height:64px;border-radius:11px;border:1px solid var(--line-2);margin-bottom:12px;
+    background:linear-gradient(135deg,#166534,#052e16)}
+  .cgcols{display:flex;align-items:flex-end;gap:9px}
+  .cgc{display:flex;flex-direction:column;align-items:center;gap:5px;flex:1}
+  .cgc span{font-size:9.5px;color:var(--faint);font-weight:550}
+  .cgc input[type=color]{-webkit-appearance:none;appearance:none;width:100%;height:38px;
+    padding:0;border:1px solid var(--line-2);border-radius:10px;background:none;cursor:pointer}
+  .cgc input[type=color]::-webkit-color-swatch-wrapper{padding:3px}
+  .cgc input[type=color]::-webkit-color-swatch{border:0;border-radius:7px}
+  .cgc input[type=color]::-moz-color-swatch{border:0;border-radius:7px}
+  .cgadd{width:30px;height:38px;flex:0 0 auto;border:1px dashed var(--line-2);border-radius:10px;
+    color:var(--dim);font-size:15px;transition:.14s}
+  .cgadd:hover{color:#fff;border-color:var(--line-3);background:var(--card-2)}
 
   /* ───── info tooltips ───── */
   .info{width:15px;height:15px;border-radius:50%;border:1px solid var(--line-2);
@@ -576,13 +601,12 @@
       </div>
 
       <div class="sec">
-        <h2>Background <button class="info" type="button" data-tip="150+ built-in backdrops. Magic builds one from your screenshot's colours, and Blur softens any of them with one click.">i</button></h2>
+        <h2>Background <button class="info" type="button" data-tip="200+ built-in backdrops. Custom builds your own colour or gradient (and can start from any gradient you have selected), Magic derives one from your screenshot, and Blur softens any of them with one click.">i</button></h2>
         <div class="bgquick">
           <button class="bgq" data-q="none" type="button" title="Transparent">
             <span class="ico chk"></span><b>None</b></button>
-          <div class="bgq" data-q="custom" title="Pick a colour">
-            <span class="ico" id="colDot"></span><b>Colour</b>
-            <input type="color" id="bgColor"></div>
+          <button class="bgq" id="cgBtn" type="button" title="Your own colour or gradient">
+            <span class="ico" id="colDot"></span><b>Custom</b></button>
           <div class="bgq" data-q="image" title="Use your own image">
             <span class="ico">▣</span><b>Image</b>
             <input type="file" id="bgFile" accept="image/*"></div>
@@ -817,6 +841,7 @@
   <div class="stage" id="stage">
     <canvas id="preview"></canvas>
     <input type="text" id="annInput" placeholder="Type, then Enter" maxlength="80" hidden>
+    <button id="annDel" type="button" title="Delete annotation (or press Delete)" hidden>✕</button>
     <div id="handles" hidden>
       <div class="h" data-h="tl" title="Drag to resize">
         <svg viewBox="0 0 16 16"><path d="M13 13 3 3M3 8V3h5M13 8v5H8"/></svg></div>
@@ -827,6 +852,10 @@
   </div>
 
   <div class="annbar" id="annBar" hidden>
+    <button data-t="sel" type="button" title="Select and move">
+      <svg viewBox="0 0 16 16" style="width:13px;height:13px;fill:currentColor">
+        <path d="M4.5 1.8 12.6 8l-3.9 1 2.1 4.1-2 1-2-4.2-2.7 2.9z"/></svg></button>
+    <span class="dvr"></span>
     <button data-t="arrow" type="button" title="Arrow" aria-pressed="true">↗</button>
     <button data-t="line" type="button" title="Line">╱</button>
     <button data-t="rect" type="button" title="Rectangle">▢</button>
@@ -874,6 +903,31 @@
   </div>
 </div>
 
+<!-- ══════════════ CUSTOM COLOUR / GRADIENT ══════════════ -->
+<div class="rpop cgpop" id="cgPop" hidden>
+  <div class="cgprev" id="cgPrev"></div>
+  <div class="ctrl">
+    <div class="seg" id="cgType">
+      <button data-v="solid" type="button">Solid</button>
+      <button data-v="linear" type="button" aria-pressed="true">Linear</button>
+      <button data-v="radial" type="button">Radial</button>
+    </div>
+  </div>
+  <div class="ctrl">
+    <div class="cgcols">
+      <label class="cgc"><input type="color" id="cg1" value="#166534"><span>Start</span></label>
+      <label class="cgc" id="cg2Wrap"><input type="color" id="cg2" value="#052e16"><span>End</span></label>
+      <label class="cgc" id="cg3Wrap"><input type="color" id="cg3" value="#22c55e"><span>Mid</span></label>
+      <button class="cgadd" id="cg3Toggle" type="button" title="Add or remove a middle colour">+</button>
+    </div>
+  </div>
+  <div class="ctrl" id="cgAngleCtrl">
+    <div class="lab"><span>Angle</span><i id="cgAngleOut">135°</i></div>
+    <input type="range" id="cgAngle" min="0" max="360" step="1" value="135">
+  </div>
+  <div class="dims" id="cgHint" style="text-align:left">Tip: select any built-in gradient first and Custom opens with its colours loaded, ready to tweak.</div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
@@ -895,7 +949,10 @@ const b = (x,y,r,c) => ({x,y,r,c});
  ["Plum","#3b1d4e"],["Forest","#14312a"],["Wine","#4a1220"],["Sand","#e8d9c0"],
  ["Porcelain","#fbfbf9"],["Sage","#9caf88"],["Butter","#f7e8b5"],["Blush","#f3d7d7"],
  ["Sky","#bcd8f0"],["Navy","#101d3c"],["Cocoa","#3d2b23"],["Olive","#3a4130"],
- ["Terracotta","#c96f4a"],["Teal","#0f4c4c"],["Lavender","#d6cdf0"],["Coal","#17171b"]
+ ["Terracotta","#c96f4a"],["Teal","#0f4c4c"],["Lavender","#d6cdf0"],["Coal","#17171b"],
+ ["Evergreen","#166534"],["Pine Night","#052e16"],["Near Black","#0d0d0d"],
+ ["Cream","#faf6ef"],["Denim","#29405e"],["Rust","#8c3b2e"],["Fog","#d4d6dd"],
+ ["Mauve","#7a5c7e"],["Ochre","#c98f2a"],["Ice","#eef4f8"],["Aubergine","#2e1836"]
 ].forEach(([n,c])=>SO("Solid",n,c));
 
 L("Gradient","Sunset",135,"#ff8a00","#ff2d75","#7b2ff7");
@@ -930,6 +987,22 @@ L("Gradient","Honey Dew",140,"#43cea2","#185a9d");
 L("Gradient","Sundown",180,"#1e130c","#9a8478");
 L("Gradient","Ultra",145,"#3f0d7e","#7b2ff7","#ff2d75","#ff8a00");
 L("Gradient","Cool Steel",155,"#e6e9f0","#eef1f5","#cfd9df");
+L("Gradient","Evergreen",135,"#166534","#052e16");
+L("Gradient","Evergreen Banner",180,"#166534","#052e16");
+L("Gradient","Evergreen Strip",90,"#166534","#052e16");
+L("Gradient","Meadow",140,"#22c55e","#166534","#052e16");
+L("Gradient","Amethyst",130,"#9d4edd","#5a189a","#240046");
+L("Gradient","Coral Dawn",120,"#ff9e7d","#ff5d8f");
+L("Gradient","Petrol",150,"#05445e","#189ab4","#75e6da");
+L("Gradient","Champagne",125,"#fdf0d5","#e8c982");
+L("Gradient","Midnight Oil",160,"#0b132b","#1c2541","#3a506b");
+L("Gradient","Raspberry",135,"#b5179e","#7209b7");
+L("Gradient","Sea Glass",145,"#d8f3dc","#95d5b2","#52b788");
+L("Gradient","Ash Rose",150,"#e8d5d5","#b98b8b","#7d5a5a");
+L("Gradient","Electric",130,"#00f5d4","#00bbf9","#9b5de5");
+L("Gradient","Espresso",155,"#3c2a21","#1a120b");
+L("Gradient","Polar",165,"#e3f2fd","#90caf9","#42a5f5");
+L("Gradient","Blood Orange",125,"#d00000","#e85d04","#faa307");
 
 M("Mesh","Sunset Pop","#ff2d75",[b(.02,.02,.85,"#ff8a00"),b(.98,.10,.75,"#ff2d75"),b(1,1,.95,"#7b2ff7"),b(.3,1.05,.8,"#c026d3")]);
 M("Mesh","Aurora","#0f172a",[b(.10,.05,.85,"#22d3ee"),b(.92,.18,.8,"#6366f1"),b(.65,1.05,.95,"#10b981"),b(.05,1,.75,"#3b82f6")]);
@@ -947,6 +1020,12 @@ M("Mesh","North Sea","#0a1626",[b(.15,.2,.8,"#155e75"),b(.85,.4,.7,"#1e40af"),b(
 M("Mesh","Sorbet","#fefce8",[b(.1,.15,.75,"#fda4af"),b(.9,.2,.7,"#a7f3d0"),b(.5,1,.8,"#fef08a")]);
 M("Mesh","Midnight Bloom","#0d0a1f",[b(.2,.85,.85,"#7c3aed"),b(.85,.2,.7,"#db2777"),b(.55,.45,.5,"#312e81")]);
 M("Mesh","Seafoam","#effdf5",[b(.12,.2,.8,"#6ee7b7"),b(.88,.3,.7,"#67e8f9"),b(.5,1.05,.85,"#a7f3d0")]);
+M("Mesh","Evergreen Glow","#052e16",[b(.15,.15,.85,"#166534"),b(.9,.3,.7,"#15803d"),b(.5,1.05,.9,"#14532d")]);
+M("Mesh","Velvet Night","#0d0d16",[b(.2,.2,.8,"#312e81"),b(.85,.35,.7,"#701a75"),b(.5,1.05,.9,"#1e1b4b")]);
+M("Mesh","Apricot","#fff5eb",[b(.12,.15,.8,"#fdba74"),b(.9,.3,.7,"#fda4af"),b(.5,1.05,.85,"#fed7aa")]);
+M("Mesh","Deep Teal","#042f2e",[b(.15,.2,.8,"#0d9488"),b(.85,.4,.7,"#155e75"),b(.5,1.05,.9,"#134e4a")]);
+M("Mesh","Lavender Haze","#f6f4fc",[b(.12,.18,.8,"#c4b5fd"),b(.88,.32,.7,"#f5d0fe"),b(.5,1.05,.85,"#ddd6fe")]);
+M("Mesh","Citrus Punch","#fffbe6",[b(.12,.2,.75,"#fde047"),b(.88,.28,.7,"#4ade80"),b(.5,1.05,.85,"#a3e635")]);
 
 M("Cosmic","Nebula","#07070d",[b(.25,.2,.75,"#4c1d95"),b(.8,.35,.65,"#be185d"),b(.5,1,.8,"#1e1b4b")]);
 M("Cosmic","Deep Space","#05060a",[b(.15,.85,.8,"#1e3a8a"),b(.85,.15,.7,"#5b21b6"),b(.5,.5,.45,"#0c4a6e")]);
@@ -958,6 +1037,9 @@ M("Cosmic","Pulsar","#03040a",[b(.5,.5,.5,"#22d3ee"),b(.5,.5,.22,"#e0f2fe"),b(.1
 M("Cosmic","Andromeda","#070312",[b(.3,.3,.7,"#a21caf"),b(.75,.65,.6,"#4338ca"),b(.5,.5,.25,"#f0abfc")]);
 M("Cosmic","Red Shift","#0a0406",[b(.2,.2,.7,"#be123c"),b(.85,.75,.65,"#7f1d1d"),b(.55,.5,.3,"#fda4af")]);
 M("Cosmic","Void","#010103",[b(.5,.55,.5,"#1e293b"),b(.5,.5,.2,"#475569")]);
+M("Cosmic","Emerald Void","#020a05",[b(.35,.3,.7,"#166534"),b(.8,.7,.6,"#052e16"),b(.55,.5,.28,"#22c55e")]);
+M("Cosmic","Ion Storm","#03060c",[b(.25,.25,.7,"#0284c7"),b(.8,.6,.6,"#7c3aed"),b(.55,.45,.25,"#67e8f9")]);
+M("Cosmic","Golden Nebula","#0a0703",[b(.3,.3,.7,"#b45309"),b(.8,.65,.6,"#78350f"),b(.55,.5,.28,"#fcd34d")]);
 
 M("Mystic","Dawn","#fff7ed",[b(.5,1.15,.95,"#c4b5fd"),b(.2,.05,.6,"#fed7aa")]);
 M("Mystic","Halo","#f8fafc",[b(.5,.95,.85,"#818cf8"),b(.5,.1,.5,"#e0e7ff")]);
@@ -969,6 +1051,9 @@ M("Mystic","Moonrise","#0e1220",[b(.5,.1,.6,"#94a3b8"),b(.5,1.05,.9,"#1e293b")])
 M("Mystic","Ember Glow","#1a0f0a",[b(.5,1.1,.9,"#f59e0b"),b(.2,.15,.5,"#78350f")]);
 M("Mystic","Mint Air","#f0fdf4",[b(.5,1.05,.9,"#86efac"),b(.85,.1,.5,"#dcfce7")]);
 M("Mystic","Cloud Nine","#f8fafc",[b(.5,1.15,1,"#cbd5e1"),b(.25,.1,.55,"#f1f5f9")]);
+M("Mystic","Evergreen Mist","#f0fdf4",[b(.5,1.1,.95,"#166534"),b(.2,.1,.5,"#86efac")]);
+M("Mystic","Rose Dawn","#fff1f2",[b(.5,1.1,.9,"#fda4af"),b(.8,.1,.5,"#ffe4e6")]);
+M("Mystic","Deep Calm","#0f1a2b",[b(.5,1.1,.95,"#334e68"),b(.2,.1,.5,"#102a43")]);
 
 add({cat:"Glass",name:"Silk",kind:"rays",base:"#0f172a",cols:["#60a5fa","#a78bfa","#0f172a"],n:26,warp:.55,angle:24});
 add({cat:"Glass",name:"Amber Ray",kind:"rays",base:"#7c2d12",cols:["#fbbf24","#f97316","#7c2d12"],n:20,warp:.4,angle:-18});
@@ -980,6 +1065,9 @@ add({cat:"Glass",name:"Emerald Ray",kind:"rays",base:"#022c22",cols:["#34d399","
 add({cat:"Glass",name:"Rose Ray",kind:"rays",base:"#4c0519",cols:["#fb7185","#fecdd3","#4c0519"],n:18,warp:.45,angle:38});
 add({cat:"Glass",name:"Swell",kind:"waves",base:"#1e1b4b",cols:["#818cf8","#c4b5fd","#1e1b4b"],n:8,amp:.17});
 add({cat:"Glass",name:"Mirage",kind:"waves",base:"#0c1a12",cols:["#34d399","#0d9488","#0c1a12"],n:10,amp:.12});
+add({cat:"Glass",name:"Evergreen Ray",kind:"rays",base:"#052e16",cols:["#166534","#4ade80","#052e16"],n:20,warp:.45,angle:-24});
+add({cat:"Glass",name:"Aurora Veil",kind:"rays",base:"#0b1026",cols:["#22d3ee","#a78bfa","#0b1026"],n:24,warp:.6,angle:14});
+add({cat:"Glass",name:"Honey Swell",kind:"waves",base:"#3b2506",cols:["#f59e0b","#fde68a","#3b2506"],n:8,amp:.16});
 
 L("Scenic","Big Sur",180,"#0b3d91","#1e6fd9","#7dd3fc","#fde68a");
 L("Scenic","Monterey",175,"#1e1b4b","#4338ca","#7c3aed","#f0abfc");
@@ -993,6 +1081,9 @@ L("Scenic","Mojave",176,"#2b1d12","#8a5a44","#e0a96d","#ffe8c2");
 L("Scenic","Sierra",180,"#231942","#5e548e","#9f86c0","#e0b1cb");
 M("Scenic","Alpenglow","#2b2d42",[b(.5,1.15,1,"#ef8354"),b(.5,-.1,.7,"#1d1e2c"),b(.2,.8,.45,"#bc4b51")]);
 M("Scenic","Polar Night","#0b132b",[b(.5,1.2,1,"#3a506b"),b(.5,-.05,.6,"#020408"),b(.75,.7,.4,"#5bc0be")]);
+L("Scenic","Evergreen Ridge",180,"#052e16","#166534","#4ade80","#ecfdf5");
+L("Scenic","Sundance",178,"#1a1423","#5d2a42","#b75d69","#fcd6a5");
+L("Scenic","Fjord",182,"#0d1b2a","#1b263b","#415a77","#e0e1dd");
 
 M("Abstract","Bloom","#fafafa",[b(.25,.3,.5,"#f43f5e"),b(.7,.35,.45,"#8b5cf6"),b(.5,.85,.5,"#06b6d4")]);
 M("Abstract","Ink Drop","#111114",[b(.35,.4,.45,"#e11d48"),b(.7,.65,.4,"#4f46e5")]);
@@ -1006,6 +1097,10 @@ add({cat:"Abstract",name:"Ripple Dark",kind:"rings",base:"#080a12",cols:["#33415
 add({cat:"Abstract",name:"Pulse",kind:"rings",base:"#2e1065",cols:["#a78bfa","#f0abfc"],n:12});
 add({cat:"Abstract",name:"Prism Wheel",kind:"conic",cols:["#6366f1","#0ea5e9","#10b981","#f59e0b","#ef4444","#ec4899","#6366f1"]});
 M("Abstract","Duo","#101014",[b(.0,.5,.75,"#ff2d75"),b(1,.5,.75,"#7b5cff")]);
+M("Abstract","Evergreen Drop","#0d0d0d",[b(.35,.4,.5,"#166534"),b(.7,.65,.4,"#052e16"),b(.5,.5,.2,"#4ade80")]);
+add({cat:"Abstract",name:"Emerald Rings",kind:"rings",base:"#052e16",cols:["#166534","#4ade80"],n:14});
+M("Abstract","Slate Duo","#0e1116",[b(.0,.5,.75,"#334155"),b(1,.5,.75,"#0ea5e9")]);
+add({cat:"Abstract",name:"Citrus Wheel",kind:"conic",cols:["#84cc16","#fbbf24","#fb923c","#84cc16"]});
 
 L("Earth","Sahara",165,"#f6e0b5","#e0a96d","#a86523");
 L("Earth","Glacier",170,"#e0f2fe","#93c5fd","#1e3a8a");
@@ -1019,6 +1114,10 @@ L("Earth","Slate Rain",165,"#8d99ae","#5c677d","#2b2d42");
 L("Earth","Dune Rose",155,"#f7d6bf","#d5a68c","#8a5a44");
 M("Earth","Oasis","#e0f2e9",[b(.2,.2,.7,"#74c69d"),b(.85,.8,.75,"#f4a261"),b(.5,.5,.4,"#2a9d8f")]);
 M("Earth","Canyon","#331b12",[b(.15,.85,.85,"#bc6c25"),b(.85,.2,.7,"#dda15e"),b(.5,.5,.4,"#606c38")]);
+L("Earth","Deep Pine",155,"#166534","#052e16","#0d0d0d");
+L("Earth","Meadow Light",145,"#f0fdf4","#bbf7d0","#166534");
+L("Earth","Peat",160,"#2b2118","#4a3728","#6b5138");
+M("Earth","Heather","#ede6f2",[b(.2,.25,.7,"#b39cc4"),b(.85,.75,.75,"#7c6a8e"),b(.5,.5,.4,"#93a68a")]);
 
 add({cat:"Texture",name:"Grid",kind:"grid",base:"#0f1115",line:"rgba(255,255,255,.07)",size:.045});
 add({cat:"Texture",name:"Grid Light",kind:"grid",base:"#f4f5f7",line:"rgba(0,0,0,.07)",size:.045});
@@ -1032,10 +1131,16 @@ add({cat:"Texture",name:"Graph",kind:"grid",base:"#fcfcf9",line:"rgba(60,120,80,
 add({cat:"Texture",name:"Pinstripe",kind:"stripes",base:"#1c2431",alt:"#161d28",n:120,angle:90});
 add({cat:"Texture",name:"Candy Cane",kind:"stripes",base:"#fdf2f8",alt:"#fce7f3",n:34,angle:-45});
 add({cat:"Texture",name:"Night Grid",kind:"grid",base:"#030308",line:"rgba(123,92,255,.16)",size:.06});
+add({cat:"Texture",name:"Pine Grid",kind:"grid",base:"#052e16",line:"rgba(74,222,128,.15)",size:.05});
+add({cat:"Texture",name:"Evergreen Stripe",kind:"stripes",base:"#166534",alt:"#0f4c28",n:30,angle:45});
+add({cat:"Texture",name:"Sage Dots",kind:"dots",base:"#f2f7f2",dot:"rgba(22,101,52,.18)",size:.035});
+add({cat:"Texture",name:"Chalk",kind:"grid",base:"#22252b",line:"rgba(255,255,255,.10)",size:.035});
+add({cat:"Texture",name:"Wafer",kind:"dots",base:"#151312",dot:"rgba(255,196,120,.14)",size:.03});
 
 BG.forEach(x => x.id = (x.cat+"-"+x.name).toLowerCase().replace(/[^a-z0-9]+/g,"-"));
 [{id:"magic",cat:"Magic",name:"Magic",kind:"magic"},
  {id:"custom",cat:"Magic",name:"Colour",kind:"solid"},
+ {id:"custom-gradient",cat:"Magic",name:"Custom gradient",kind:"cgrad"},
  {id:"image",cat:"Magic",name:"Image",kind:"image"},
  {id:"none",cat:"Magic",name:"None",kind:"none"}].forEach(x=>BG.push(x));
 const CATS = ["Magic","Solid","Gradient","Mesh","Cosmic","Mystic","Glass","Scenic","Abstract","Earth","Texture"];
@@ -1128,6 +1233,7 @@ function fixedSize(id){
 const DEFAULTS = {
   ratio:"auto", cw:1920, ch:1080, pad:10,
   bg:"mesh-midnight-bloom", custom:"#111827",
+  cgrad:{type:"linear", c1:"#166534", c2:"#052e16", c3:"#22c55e", use3:false, angle:135},
   grain:14, vignette:0, bgBlur:0, scene:"none",
   vfx:"none", vfxAmt:70,
   anim:"none", animDur:6, vidFmt:"webm",
@@ -1181,6 +1287,21 @@ function drawBg(ctx,W,H,def){
   switch(def.kind){
     case "none": return;
     case "solid": return fill(def.id==="custom" ? S.custom : def.color);
+    case "cgrad": {
+      const cg = S.cgrad || {};
+      const cols = cg.use3 ? [cg.c1,cg.c3,cg.c2] : [cg.c1,cg.c2];
+      if(cg.type==="radial"){
+        const g = ctx.createRadialGradient(W/2,H/2,0,W/2,H/2,D*.72);
+        cols.forEach((c,i)=>g.addColorStop(i/(cols.length-1),c));
+        return fill(g);
+      }
+      const a = ((cg.angle||135)-90)*Math.PI/180;
+      const len = Math.abs(W*Math.cos(a))+Math.abs(H*Math.sin(a));
+      const g = ctx.createLinearGradient(W/2-Math.cos(a)*len/2,H/2-Math.sin(a)*len/2,
+                                         W/2+Math.cos(a)*len/2,H/2+Math.sin(a)*len/2);
+      cols.forEach((c,i)=>g.addColorStop(i/(cols.length-1),c));
+      return fill(g);
+    }
     case "image": {
       if(!bgImage) return fill("#15151a");
       const k = Math.max(W/bgImage.width, H/bgImage.height);
@@ -1346,6 +1467,7 @@ function bgAccents(){
   const def = bgDef(S.bg);
   let cols = null;
   if(def.kind==="magic" && magicPalette) cols = magicPalette.slice(0,3);
+  else if(def.kind==="cgrad"){ const cg = S.cgrad||{}; cols = [cg.c1,cg.c2,cg.use3?cg.c3:cg.c2]; }
   else if(def.stops) cols = def.stops.map(s=>s[1]);
   else if(def.blobs) cols = def.blobs.map(x=>x.c);
   else if(def.cols) cols = def.cols;
@@ -2358,8 +2480,10 @@ function render(canvas,k){
   ctx.restore();
   applyVFX(canvas);
   ctx.save(); ctx.scale(k,k);
-  drawAnnots(ctx,F.W,F.H);             // annotations and watermark stay clean
-  drawWatermark(ctx,F.W,F.H);          // above the grade
+  // annotations and watermark stay clean above the grade; the selection
+  // outline only ever appears on the live preview, never in an export
+  drawAnnots(ctx,F.W,F.H, canvas===preview && ANN.on ? ANN.sel : -1);
+  drawWatermark(ctx,F.W,F.H);
   ctx.restore();
   return F;
 }
@@ -2392,6 +2516,7 @@ function draw(patch){
     preview.style.height = Math.round(F.H*fit)+"px";
     preview.classList.toggle("alpha", bgDef(S.bg).kind==="none");
     updateHandles(F,fit);
+    updateAnnDel(F,fit);
     const k = exportScale(F);
     dimsEl.textContent = `${F.W} × ${F.H} → ${Math.round(F.W*k)} × ${Math.round(F.H*k)} ${S.format.toUpperCase()}`
       + (k < S.scale-.001 ? ` · capped ${k.toFixed(2)}×` : "");
@@ -2595,6 +2720,17 @@ preview.addEventListener("mousemove",e=>{
   const {clientX,clientY} = e;
   hoverRaf = requestAnimationFrame(()=>{
     hoverRaf = 0;
+    if(ANN.on){
+      if(ANN.tool==="sel"){
+        const r = preview.getBoundingClientRect();
+        if(r.width){
+          const F = frameLayout();
+          const hit = hitAnnot((clientX-r.left)/r.width,(clientY-r.top)/r.height,F.W,F.H);
+          preview.classList.toggle("overann",hit>=0);
+        }
+      }
+      return;                                       // annotate cursors come from CSS
+    }
     const i = slotAtPoint(clientX,clientY);
     preview.style.cursor = i<0 ? "default" : (IMGS[i] ? "grab" : "pointer");
   });
@@ -2633,8 +2769,98 @@ bgFile.addEventListener("change",e=>{
   el.src = URL.createObjectURL(f);
   bgFile.value = "";
 });
-const bgColorIn = document.getElementById("bgColor");
-bgColorIn.addEventListener("input",()=>{ S.custom = bgColorIn.value; setKey("bg","custom"); });
+/* ── custom colour / gradient editor ───────────────────────
+   One popover covers solid, linear and radial. Opening it while a built-in
+   linear gradient is selected loads that gradient's colours and angle, so
+   "let me tweak this gradient" is the default flow rather than a dead end. */
+const cgPop = document.getElementById("cgPop");
+const cgEls = {
+  type: document.getElementById("cgType"),
+  c1: document.getElementById("cg1"), c2: document.getElementById("cg2"),
+  c3: document.getElementById("cg3"),
+  c2w: document.getElementById("cg2Wrap"), c3w: document.getElementById("cg3Wrap"),
+  t3: document.getElementById("cg3Toggle"),
+  angle: document.getElementById("cgAngle"), angleOut: document.getElementById("cgAngleOut"),
+  angleCtrl: document.getElementById("cgAngleCtrl"),
+  prev: document.getElementById("cgPrev")
+};
+function cgCss(cg){
+  cg = cg || S.cgrad;
+  if(cg.type==="solid" || !cg.type) return S.custom;
+  const cols = cg.use3 ? [cg.c1,cg.c3,cg.c2] : [cg.c1,cg.c2];
+  return cg.type==="radial"
+    ? `radial-gradient(circle, ${cols.join(", ")})`
+    : `linear-gradient(${cg.angle}deg, ${cols.join(", ")})`;
+}
+function cgSyncPanel(){
+  const cg = S.cgrad;
+  cgEls.type.querySelectorAll("button").forEach(b=>
+    b.setAttribute("aria-pressed",String(b.dataset.v===cg.type)));
+  cgEls.c1.value = cg.type==="solid" ? S.custom : cg.c1;
+  cgEls.c2.value = cg.c2; cgEls.c3.value = cg.c3;
+  cgEls.c2w.hidden = cg.type==="solid";
+  cgEls.c3w.hidden = cg.type==="solid" || !cg.use3;
+  cgEls.t3.hidden = cg.type==="solid";
+  cgEls.t3.textContent = cg.use3 ? "−" : "+";
+  cgEls.angleCtrl.hidden = cg.type!=="linear";
+  cgEls.angle.value = cg.angle;
+  cgEls.angleOut.textContent = cg.angle+"°";
+  cgEls.prev.style.background = cg.type==="solid" ? S.custom : cgCss(cg);
+}
+function cgApply(){
+  // solid keeps the legacy "custom" id so old saved states stay valid
+  setKey("bg", S.cgrad.type==="solid" ? "custom" : "custom-gradient");
+  cgSyncPanel();
+}
+function openCgPop(){
+  // prefill from the selected built-in linear gradient, if there is one
+  const def = bgDef(S.bg);
+  if(def.kind==="linear" && def.stops){
+    const st = def.stops;
+    S.cgrad = Object.assign({},S.cgrad,{
+      type:"linear", angle:def.angle,
+      c1:st[0][1], c2:st[st.length-1][1],
+      c3:st.length>2 ? st[Math.floor(st.length/2)][1] : S.cgrad.c3,
+      use3:st.length>2
+    });
+  }
+  cgSyncPanel();
+  cgPop.hidden = false;
+  const r = document.getElementById("cgBtn").getBoundingClientRect();
+  cgPop.style.left = Math.max(10,Math.min(r.left, window.innerWidth-264-10))+"px";
+  const ph = cgPop.offsetHeight;
+  let top = r.bottom+8;
+  if(top+ph > window.innerHeight-10) top = Math.max(10, window.innerHeight-10-ph);
+  cgPop.style.top = top+"px";
+}
+function closeCgPop(){ cgPop.hidden = true; }
+document.getElementById("cgBtn").addEventListener("click",e=>{
+  e.stopPropagation();
+  if(!cgPop.hidden){ closeCgPop(); return; }
+  openCgPop();
+  cgApply();                                        // selecting the chip applies it
+});
+document.addEventListener("pointerdown",e=>{
+  if(!cgPop.hidden && !cgPop.contains(e.target) && !e.target.closest("#cgBtn"))
+    closeCgPop();
+});
+cgEls.type.addEventListener("click",e=>{
+  const b = e.target.closest("button[data-v]"); if(!b) return;
+  S.cgrad = Object.assign({},S.cgrad,{type:b.dataset.v});
+  cgApply();
+});
+cgEls.c1.addEventListener("input",()=>{
+  if(S.cgrad.type==="solid") S.custom = cgEls.c1.value;
+  else S.cgrad = Object.assign({},S.cgrad,{c1:cgEls.c1.value});
+  cgApply();
+});
+cgEls.c2.addEventListener("input",()=>{ S.cgrad = Object.assign({},S.cgrad,{c2:cgEls.c2.value}); cgApply(); });
+cgEls.c3.addEventListener("input",()=>{ S.cgrad = Object.assign({},S.cgrad,{c3:cgEls.c3.value}); cgApply(); });
+cgEls.t3.addEventListener("click",()=>{ S.cgrad = Object.assign({},S.cgrad,{use3:!S.cgrad.use3}); cgApply(); });
+cgEls.angle.addEventListener("input",()=>{
+  S.cgrad = Object.assign({},S.cgrad,{angle:+cgEls.angle.value});
+  cgApply();
+});
 
 /* one-click background blur */
 document.getElementById("blurQuick").addEventListener("click",()=>
@@ -2728,8 +2954,37 @@ document.getElementById("copyBtn").addEventListener("click",async()=>{
    Stored in S.annots as fractions of the frame, so they survive resizes,
    ride through undo/redo, and render identically at any export scale.
    ══════════════════════════════════════════════════════════ */
-const ANN = {on:false, tool:"arrow", color:"#ff4757", width:.006, temp:null};
-function drawAnnots(ctx,W,H){
+const ANN = {on:false, tool:"arrow", color:"#ff4757", width:.006, temp:null, sel:-1};
+let measCtx = null;
+/** Pixel bounding box of an annotation at frame size W×H. */
+function annBBox(a,W,H){
+  const u = Math.min(W,H);
+  const P = a.p.map(p=>[p[0]*W,p[1]*H]);
+  if(a.t==="text"){
+    const fs = (a.w*5.2+.016)*u;
+    if(!measCtx) measCtx = document.createElement("canvas").getContext("2d");
+    measCtx.font = `700 ${fs}px -apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,sans-serif`;
+    const w = measCtx.measureText(a.str||"").width;
+    return {x0:P[0][0]-fs*.15, y0:P[0][1]-fs*.62, x1:P[0][0]+w+fs*.15, y1:P[0][1]+fs*.62};
+  }
+  let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;
+  for(const [x,y] of P){
+    x0 = Math.min(x0,x); y0 = Math.min(y0,y);
+    x1 = Math.max(x1,x); y1 = Math.max(y1,y);
+  }
+  const m = a.w*u*2.4+6;
+  return {x0:x0-m, y0:y0-m, x1:x1+m, y1:y1+m};
+}
+/** Topmost annotation under a fractional point, or -1. */
+function hitAnnot(fx,fy,W,H){
+  const px = fx*W, py = fy*H, pad = Math.min(W,H)*.012;
+  for(let i=S.annots.length-1;i>=0;i--){
+    const b = annBBox(S.annots[i],W,H);
+    if(px>=b.x0-pad && px<=b.x1+pad && py>=b.y0-pad && py<=b.y1+pad) return i;
+  }
+  return -1;
+}
+function drawAnnots(ctx,W,H,selIdx){
   const list = ANN.temp ? (S.annots||[]).concat([ANN.temp]) : (S.annots||[]);
   if(!list.length) return;
   const u = Math.min(W,H);
@@ -2779,13 +3034,43 @@ function drawAnnots(ctx,W,H){
     }
     ctx.restore();
   }
+  // Selection outline — preview only, never in exports (selIdx is -1 there)
+  if(selIdx>=0 && S.annots[selIdx]){
+    const b = annBBox(S.annots[selIdx],W,H);
+    ctx.save();
+    ctx.strokeStyle = "#8b7bff";
+    ctx.lineWidth = Math.max(1.5,u*.0028);
+    ctx.setLineDash([u*.014,u*.009]);
+    roundRect(ctx,b.x0,b.y0,b.x1-b.x0,b.y1-b.y0,u*.012);
+    ctx.stroke();
+    ctx.restore();
+  }
 }
+/** Floating delete button pinned to the selected annotation's corner. */
+function updateAnnDel(F,fit){
+  const el = document.getElementById("annDel");
+  if(!ANN.on || ANN.sel<0 || !S.annots[ANN.sel]){ el.hidden = true; return; }
+  const b = annBBox(S.annots[ANN.sel],F.W,F.H);
+  el.hidden = false;
+  el.style.left = (preview.offsetLeft + Math.min(b.x1,F.W)*fit)+"px";
+  el.style.top  = (preview.offsetTop  + Math.max(b.y0,0)*fit)+"px";
+}
+function deleteAnnSel(){
+  if(ANN.sel<0 || !S.annots[ANN.sel]) return;
+  S.annots = S.annots.filter((_,i)=>i!==ANN.sel);
+  ANN.sel = -1;
+  update();
+}
+document.getElementById("annDel").addEventListener("click",deleteAnnSel);
 function setAnnotate(on){
   ANN.on = !!on;
   ANN.temp = null;
+  ANN.sel = -1;
   document.getElementById("annBtn").setAttribute("aria-pressed",String(ANN.on));
   document.getElementById("annBar").hidden = !ANN.on;
+  document.getElementById("annDel").hidden = true;
   stage.classList.toggle("annotating",ANN.on);
+  stage.classList.toggle("annselect",ANN.on && ANN.tool==="sel");
   schedule();
 }
 document.getElementById("annBtn").addEventListener("click",()=>setAnnotate(!ANN.on));
@@ -2793,8 +3078,11 @@ document.getElementById("annBar").addEventListener("click",e=>{
   const b = e.target.closest("button"); if(!b) return;
   if(b.dataset.t){
     ANN.tool = b.dataset.t;
+    if(ANN.tool!=="sel") ANN.sel = -1;
+    stage.classList.toggle("annselect",ANN.tool==="sel");
     document.querySelectorAll("#annBar [data-t]").forEach(x=>
       x.setAttribute("aria-pressed",String(x===b)));
+    schedule();
   }else if(b.dataset.c){
     ANN.color = b.dataset.c;
     document.querySelectorAll("#annBar .cdot").forEach(x=>
@@ -2806,31 +3094,45 @@ document.getElementById("annBar").addEventListener("click",e=>{
   }
 });
 document.getElementById("annUndo").addEventListener("click",()=>{
+  if(ANN.sel>=0){ deleteAnnSel(); return; }
   if(S.annots.length){ S.annots = S.annots.slice(0,-1); update(); }
 });
 document.getElementById("annClear").addEventListener("click",()=>{
-  if(S.annots.length){ S.annots = []; update(); toast("Annotations cleared"); }
+  if(S.annots.length){ ANN.sel = -1; S.annots = []; update(); toast("Annotations cleared"); }
 });
-/* Text labels: click to place, type, Enter commits. */
-function openAnnText(cx,cy){
+/* Text labels: click to place, type, Enter commits. Pass editIdx to change an
+   existing label in place (double-click it with the Select tool). */
+function openAnnText(cx,cy,editIdx){
   const inp = document.getElementById("annInput");
   const r = preview.getBoundingClientRect();
   if(!r.width) return;
+  const editing = editIdx!=null && S.annots[editIdx];
   const fx = clamp((cx-r.left)/r.width,0,1), fy = clamp((cy-r.top)/r.height,0,1);
   const sr = stage.getBoundingClientRect();
   inp.style.left = (cx-sr.left)+"px";
   inp.style.top  = (cy-sr.top)+"px";
-  inp.style.color = ANN.color==="#0f1014" ? "#fff" : ANN.color;
-  inp.value = "";
+  const col = editing ? S.annots[editIdx].c : ANN.color;
+  inp.style.color = col==="#0f1014" ? "#fff" : col;
+  inp.value = editing ? (S.annots[editIdx].str||"") : "";
   inp.hidden = false;
   inp.focus();
+  if(editing) inp.select();
   let done = false;
   const commit = ()=>{
     if(done) return; done = true;
     const str = inp.value.trim();
     inp.hidden = true;
     inp.removeEventListener("keydown",key); inp.removeEventListener("blur",commit);
-    if(str){
+    if(editing){
+      if(str){
+        const na = Object.assign({},S.annots[editIdx],{str});
+        S.annots = S.annots.slice(); S.annots[editIdx] = na;
+      }else{
+        S.annots = S.annots.filter((_,i)=>i!==editIdx);   // emptied = deleted
+        ANN.sel = -1;
+      }
+      update();
+    }else if(str){
       S.annots = S.annots.concat([{t:"text",c:ANN.color,w:ANN.width,p:[[fx,fy]],str}]);
       update();
     }
@@ -2847,9 +3149,37 @@ function openAnnText(cx,cy){
 preview.addEventListener("pointerdown",e=>{
   if(!ANN.on || ANIM.playing) return;
   e.preventDefault(); e.stopPropagation();
+  const rect = preview.getBoundingClientRect();
+  if(ANN.tool==="sel"){
+    const F = frameLayout();
+    const hit = hitAnnot((e.clientX-rect.left)/rect.width,(e.clientY-rect.top)/rect.height,F.W,F.H);
+    ANN.sel = hit;
+    schedule();
+    if(hit<0) return;
+    preview.setPointerCapture(e.pointerId);
+    const orig = S.annots[hit].p.map(p=>[p[0],p[1]]);
+    let moved = false;
+    const move = ev=>{
+      const dx = (ev.clientX-e.clientX)/rect.width;
+      const dy = (ev.clientY-e.clientY)/rect.height;
+      if(!moved && Math.hypot(dx,dy)<.003) return;
+      moved = true;
+      const na = Object.assign({},S.annots[hit]);
+      na.p = orig.map(([x,y])=>[clamp(x+dx,-.25,1.25),clamp(y+dy,-.25,1.25)]);
+      S.annots = S.annots.slice(); S.annots[hit] = na;
+      schedule();
+    };
+    const up = ()=>{
+      preview.removeEventListener("pointermove",move);
+      preview.removeEventListener("pointerup",up);
+      if(moved) update();
+    };
+    preview.addEventListener("pointermove",move);
+    preview.addEventListener("pointerup",up);
+    return;
+  }
   if(ANN.tool==="text"){ openAnnText(e.clientX,e.clientY); return; }
   preview.setPointerCapture(e.pointerId);
-  const rect = preview.getBoundingClientRect();
   const pt = ev=>[clamp((ev.clientX-rect.left)/rect.width,0,1),
                   clamp((ev.clientY-rect.top)/rect.height,0,1)];
   ANN.temp = {t:ANN.tool, c:ANN.color, w:ANN.width, p:[pt(e),pt(e)]};
@@ -2872,6 +3202,14 @@ preview.addEventListener("pointerdown",e=>{
   preview.addEventListener("pointermove",move);
   preview.addEventListener("pointerup",up);
 }, true);            // capture: annotate wins over drag-to-move below
+preview.addEventListener("dblclick",e=>{
+  if(!ANN.on || ANN.tool!=="sel") return;
+  const rect = preview.getBoundingClientRect();
+  if(!rect.width) return;
+  const F = frameLayout();
+  const hit = hitAnnot((e.clientX-rect.left)/rect.width,(e.clientY-rect.top)/rect.height,F.W,F.H);
+  if(hit>=0 && S.annots[hit].t==="text"){ ANN.sel = hit; openAnnText(e.clientX,e.clientY,hit); }
+});
 
 /* ══════════════════════════════════════════════════════════
    12b. Motion — presets, live preview, video export
@@ -3711,12 +4049,26 @@ document.getElementById("magicNext").addEventListener("click",()=>applyMagic(1))
 document.getElementById("magicPrev").addEventListener("click",()=>applyMagic(-1));
 
 window.addEventListener("keydown",e=>{
+  if((e.key||"")==="Escape" && !cgPop.hidden){ closeCgPop(); return; }
   if((e.key||"")==="Escape" && !ratioPop.hidden){ closeRatioPop(); return; }
   if((e.key||"")==="Escape" && !tplModal.hidden){ closeTpl(); return; }
   if((e.key||"")==="Escape" && ANN.on){ setAnnotate(false); return; }
   if(/input|textarea|select/i.test(e.target.tagName)) return;
   const mod = e.metaKey||e.ctrlKey;
   const key = (e.key||"").toLowerCase();
+  if(ANN.on && ANN.sel>=0 && !mod){
+    if(key==="delete" || key==="backspace"){ e.preventDefault(); deleteAnnSel(); return; }
+    if(key.startsWith("arrow")){                             // nudge the annotation
+      e.preventDefault();
+      const d = (e.shiftKey ? .02 : .004);
+      const dx = key==="arrowleft" ? -d : key==="arrowright" ? d : 0;
+      const dy = key==="arrowup"   ? -d : key==="arrowdown"  ? d : 0;
+      const na = Object.assign({},S.annots[ANN.sel]);
+      na.p = na.p.map(([x,y])=>[clamp(x+dx,-.25,1.25),clamp(y+dy,-.25,1.25)]);
+      S.annots = S.annots.slice(); S.annots[ANN.sel] = na;
+      update(); return;
+    }
+  }
   if(!mod && !e.altKey && key.startsWith("arrow")){          // nudge position
     e.preventDefault();
     const d = e.shiftKey ? 5 : 1;
@@ -3774,8 +4126,11 @@ function syncUI(){
     b.setAttribute("aria-pressed", String(b.dataset.q===S.bg)));
   lpsEl.querySelectorAll(".lp").forEach(b=>
     b.setAttribute("aria-pressed", String(+b.dataset.i===S.preset)));
-  bgColorIn.value = S.custom;
-  document.getElementById("colDot").style.background = S.custom;
+  document.getElementById("colDot").style.background =
+    S.bg==="custom" ? S.custom : cgCss(S.cgrad);
+  document.getElementById("cgBtn").setAttribute("aria-pressed",
+    String(S.bg==="custom" || S.bg==="custom-gradient"));
+  if(!cgPop.hidden) cgSyncPanel();
   document.getElementById("customSize").hidden = S.ratio!=="custom";
   document.getElementById("multiOnly").hidden = S.count<2;
   document.getElementById("blurQuick").setAttribute("aria-pressed",String(S.bgBlur>0));

@@ -33,10 +33,13 @@ than just promised.
 - Drag-and-drop, paste (⌘V) or file-pick, up to 3 images at once
 - 15 mockup styles: Card, Glass, Inset, Outline, Retro, Stack, macOS Window, Browser and more
 - Annotate mode: arrows, lines, rectangles, ellipses, freehand pen and text
-  labels in five colours and three weights. Undoable, saved with your
+  labels in five colours and three weights, with a select tool to grab,
+  move, edit or delete anything you have drawn. Undoable, saved with your
   settings, and rendered into every export including video and GIF
-- 150+ backgrounds across 10 categories, plus custom colour, your own image,
-  transparent, and Magic (a palette derived from your screenshot)
+- 200+ backgrounds across 10 categories, plus your own image, transparent,
+  and Magic (a palette derived from your screenshot)
+- Custom gradient editor: build your own solid, linear or radial background,
+  or start from any built-in gradient and tweak its colours and angle
 - 26 one-click templates (product promo, UI showcase, minimal, abstract),
   including animated ones. Thumbnails preview your own screenshot live
 - Motion: 11 animation presets (push, pan, sweep, showcase orbit, float,
