@@ -11,7 +11,7 @@
 [![Zero dependencies](https://img.shields.io/badge/dependencies-0-22d3ee.svg)](#how-it-works)
 [![PRs welcome](https://img.shields.io/badge/PRs-welcome-7ee08a.svg)](CONTRIBUTING.md)
 
-<img src="docs/screenshot.png" alt="ShotOpt editing a dashboard screenshot with the Sphere Garden template" width="820">
+<img src="docs/screenshot.png" alt="ShotOpt editing a dashboard screenshot on a silk backdrop with a glow, showing the icon rail and mockup styles" width="820">
 
 </div>
 
