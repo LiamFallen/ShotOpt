@@ -1,6 +1,6 @@
 /* ShotOpt — offline service worker.
    Bump CACHE when you deploy so old assets are dropped. */
-const CACHE = "shotopt-v16";
+const CACHE = "shotopt-v17";
 const SHELL = ["./", "./index.html", "./icon.svg", "./manifest.webmanifest"];
 
 self.addEventListener("install", e => {
