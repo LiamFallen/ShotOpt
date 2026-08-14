@@ -36,7 +36,8 @@ than just promised.
   labels in five colours and three weights, with a select tool to grab,
   move, edit or delete anything you have drawn. Undoable, saved with your
   settings, and rendered into every export including video and GIF
-- 200+ backgrounds across 10 categories, plus your own image, transparent,
+- 220+ backgrounds across 11 categories, from gradients and meshes to fluted
+  glass and silky desktop-style wallpapers, plus your own image, transparent,
   and Magic (a palette derived from your screenshot)
 - Custom gradient editor: build your own solid, linear or radial background,
   or start from any built-in gradient and tweak its colours and angle
@@ -54,6 +55,8 @@ than just promised.
   colours from the background and cast soft shadows that follow the global
   light angle
 - 8 shadow types with opacity, size, light angle and distance
+- Glow: a halo of light behind the mockup in any colour, or auto-matched to
+  the background, with a strength dial
 - GPU-accelerated perspective: tilt X/Y, rotate, zoom, offset
 - Direct manipulation: drag the image to move it, grab a corner chip to
   resize, nudge with the arrow keys

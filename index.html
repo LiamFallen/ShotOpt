@@ -20,11 +20,11 @@
 <meta name="twitter:image" content="og.jpg">
 <style>
   :root{
-    --bg:#060608;
-    --panel:#0d0d12;
-    --card:#15151b;
-    --card-2:#1c1c24;
-    --card-3:#24242e;
+    --bg:#0a0a0b;
+    --panel:#111112;
+    --card:#1a1a1c;
+    --card-2:#222224;
+    --card-3:#2b2b2e;
     --line:rgba(255,255,255,.08);
     --line-2:rgba(255,255,255,.15);
     --line-3:rgba(255,255,255,.26);
@@ -54,28 +54,35 @@
   /* 100% of <body>, never 100vw/100vh: viewport units ignore CSS zoom, which
      would push panels off-screen on displays wide enough to zoom. */
   .app{display:flex;height:100%;width:100%;gap:12px;padding:12px;
-    background:radial-gradient(1200px 700px at 18% -10%,rgba(139,123,255,.08),transparent 65%),
-               radial-gradient(1000px 600px at 95% 110%,rgba(34,211,238,.05),transparent 60%),var(--bg)}
+    background:radial-gradient(1400px 800px at 50% -20%,rgba(255,255,255,.035),transparent 60%),var(--bg)}
   .side{display:flex;flex-direction:column;overflow:hidden;flex:0 0 auto;position:relative;z-index:2;
-    background:linear-gradient(180deg,rgba(20,20,27,.92),rgba(12,12,17,.92));
-    border:1px solid var(--line-2);border-radius:18px;
+    background:linear-gradient(180deg,rgba(24,24,26,.94),rgba(15,15,16,.94));
+    border:1px solid var(--line);border-radius:18px;
     box-shadow:0 24px 70px -30px rgba(0,0,0,.85);backdrop-filter:blur(14px)}
   .side.l{width:clamp(258px,18vw,344px)}
   .scroll{overflow-y:auto;overflow-x:hidden;flex:1;padding:0 12px 26px;scrollbar-gutter:stable}
   .panelfoot{flex:0 0 auto;padding:10px 12px;border-top:1px solid var(--line)}
 
   /* ───── brand ───── */
-  .brand{display:flex;align-items:center;gap:10px;padding:14px 16px 12px;flex:0 0 auto}
+  .brand{display:flex;align-items:center;gap:10px;padding:14px 16px 12px;flex:0 0 auto;min-width:0}
   .brand .mark{
-    width:22px;height:22px;border-radius:7px;flex:0 0 auto;
-    background:conic-gradient(from 210deg,#22d3ee,#8b7bff 40%,#d946ef 75%,#22d3ee);
-    box-shadow:0 0 0 1px rgba(255,255,255,.14) inset,0 3px 14px -2px rgba(139,123,255,.6);
+    width:22px;height:22px;border-radius:7px;flex:0 0 auto;position:relative;
+    background:linear-gradient(140deg,#34d399 0%,#16a34a 45%,#065f46 100%);
+    box-shadow:0 0 0 1px rgba(255,255,255,.16) inset,0 3px 14px -3px rgba(52,211,153,.55);
   }
-  .brand h1{font-size:13.5px;font-weight:640;margin:0;letter-spacing:-.015em}
+  .brand .mark::after{content:"";position:absolute;inset:2px;border-radius:5px;
+    background:linear-gradient(140deg,rgba(255,255,255,.34),transparent 55%)}
+  .brand h1{font-size:13.5px;font-weight:640;margin:0;letter-spacing:-.015em;
+    min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .brand .badge{
     margin-left:auto;font-size:9.5px;font-weight:600;letter-spacing:.04em;color:#7ee08a;
     background:rgba(126,224,138,.10);border:1px solid rgba(126,224,138,.22);
-    padding:3px 7px;border-radius:20px;
+    padding:3px 7px;border-radius:20px;white-space:nowrap;flex:0 0 auto;
+  }
+  /* Narrow panels: keep the row on one line — the pill keeps its lock, drops its word */
+  @media (max-width:1100px){
+    .brand .badge{font-size:0;padding:3px 5px}
+    .brand .badge::after{content:"🔒";font-size:10px}
   }
   .brand .ghlink{width:24px;height:24px;border-radius:8px;display:grid;place-items:center;
     color:var(--faint);transition:.14s var(--ease)}
@@ -93,7 +100,7 @@
     stroke-linecap:round;stroke-linejoin:round}
   .tabs button:hover{color:var(--txt)}
   .tabs button[aria-pressed=true]{background:var(--card-3);color:#fff;box-shadow:0 1px 3px rgba(0,0,0,.4)}
-  .tabs button[aria-pressed=true] svg{stroke:var(--accent)}
+  .tabs button[aria-pressed=true] svg{stroke:#fff}
 
   /* ───── sections ───── */
   .sec{padding:14px 0 15px;border-top:1px solid var(--line)}
@@ -155,7 +162,7 @@
     display:flex;flex-direction:column;gap:5px;transition:.15s var(--ease);position:relative}
   .tile:hover{border-color:var(--line-2);background:var(--card-2);transform:translateY(-1px)}
   .tile[aria-pressed=true]{border-color:transparent;background:var(--card-2);
-    box-shadow:0 0 0 2px var(--accent),0 4px 14px -6px rgba(0,0,0,.9)}
+    box-shadow:0 0 0 2px rgba(255,255,255,.85),0 4px 14px -6px rgba(0,0,0,.9)}
   .tile canvas{width:100%;height:54px;display:block;border-radius:8px;background:#e9eaee}
   .tiles.c4 .tile canvas{height:44px}
   .tile b{font-weight:500;font-size:9.5px;color:var(--dim);white-space:nowrap;overflow:hidden;
@@ -168,7 +175,7 @@
     padding:8px 3px 7px;display:flex;flex-direction:column;align-items:center;gap:6px;
     transition:.15s var(--ease);cursor:pointer}
   .bgq:hover{background:var(--card-2);border-color:var(--line-2);transform:translateY(-1px)}
-  .bgq[aria-pressed=true]{border-color:transparent;background:var(--card-2);box-shadow:0 0 0 2px var(--accent)}
+  .bgq[aria-pressed=true]{border-color:transparent;background:var(--card-2);box-shadow:0 0 0 2px rgba(255,255,255,.85)}
   .bgq .ico{width:26px;height:26px;border-radius:8px;display:grid;place-items:center;font-size:12px;
     background:rgba(255,255,255,.07);color:var(--txt);overflow:hidden}
   /* position:static beats the absolute-fill .chk underlay rule used by swatch tiles */
@@ -197,7 +204,7 @@
     line-height:0;transition:.15s var(--ease)}
   .sw canvas{width:100%;height:100%;display:block}
   .sw:hover{transform:translateY(-2px);border-color:var(--line-2)}
-  .sw[aria-pressed=true]{box-shadow:0 0 0 2px var(--panel),0 0 0 4px var(--accent)}
+  .sw[aria-pressed=true]{box-shadow:0 0 0 2px var(--panel),0 0 0 4px rgba(255,255,255,.85)}
   .sw .cap{position:absolute;left:0;right:0;bottom:0;font-size:8px;line-height:1.85;text-align:center;
     background:linear-gradient(transparent,rgba(0,0,0,.72));color:#fff;font-weight:550;
     opacity:0;transition:.15s;padding-top:6px}
@@ -329,13 +336,35 @@
   .btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:10px 14px;border-radius:11px;
     font-size:12.5px;font-weight:620;border:1px solid var(--line);background:var(--card);transition:.15s var(--ease)}
   .btn:hover{background:var(--card-2);border-color:var(--line-2)}
-  .btn.primary{border-color:transparent;color:#fff;
-    background:linear-gradient(100deg,#22d3ee,#8b7bff 55%,#c26bfa);
-    box-shadow:0 6px 22px -8px rgba(139,123,255,.85),0 0 0 1px rgba(255,255,255,.10) inset}
-  .btn.primary:hover{filter:brightness(1.1);transform:translateY(-1px)}
+  .btn.primary{border-color:transparent;color:#0c0c0d;font-weight:680;
+    background:linear-gradient(180deg,#ffffff,#e8e8ec);
+    box-shadow:0 8px 24px -10px rgba(255,255,255,.35),0 1px 0 rgba(255,255,255,.9) inset,0 2px 8px rgba(0,0,0,.35)}
+  .btn.primary:hover{background:#fff;transform:translateY(-1px);
+    box-shadow:0 10px 28px -10px rgba(255,255,255,.45),0 2px 8px rgba(0,0,0,.35)}
   .btn.sq{width:42px;flex:0 0 auto;padding:10px 0;font-size:14px}
   .dims{font-size:10px;color:var(--faint);font-variant-numeric:tabular-nums;letter-spacing:.01em;
     padding:0 6px;text-align:right}
+
+  /* fill-the-frame assist chip */
+  .fitchip{display:flex;align-items:center;gap:7px;width:100%;margin:-4px 0 13px;
+    padding:8px 11px;border-radius:10px;font-size:11.5px;font-weight:550;color:var(--dim);
+    background:var(--card);border:1px dashed var(--line-2);transition:.15s var(--ease)}
+  .fitchip:hover{color:#fff;background:var(--card-2);border-color:var(--line-3)}
+  .fitchip svg{width:15px;height:15px;flex:0 0 auto;fill:none;stroke:currentColor;
+    stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round}
+
+  /* glow colour swatches */
+  .glowsw{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+  .glowsw button,.glowcust{width:23px;height:23px;border-radius:50%;flex:0 0 auto;position:relative;
+    border:1px solid var(--line-2);background:var(--c,var(--card));transition:.14s var(--ease)}
+  .glowsw button:hover,.glowcust:hover{transform:scale(1.1)}
+  .glowsw button[aria-pressed=true],.glowcust.picked{
+    box-shadow:0 0 0 2px var(--panel),0 0 0 4px rgba(255,255,255,.85)}
+  .glowsw button[data-g="auto"]{
+    background:conic-gradient(#ff8a00,#22c55e,#22d3ee,#8b7bff,#ff2d75,#ff8a00)}
+  .glowcust{display:grid;place-items:center;color:var(--dim);font-size:13px;cursor:pointer;overflow:hidden}
+  .glowcust.picked span{display:none}
+  .glowcust input{position:absolute;inset:0;opacity:0;cursor:pointer;border:0;padding:0}
 
   /* layout presets — one generous stacked column, like a filmstrip */
   .lps{display:grid;grid-template-columns:1fr;gap:10px}
@@ -344,7 +373,7 @@
   .lp canvas{width:100%;display:block;aspect-ratio:4/3}
   .lp:hover{transform:translateY(-2px);border-color:var(--line-3);
     box-shadow:0 12px 30px -12px rgba(0,0,0,.7)}
-  .lp[aria-pressed=true]{box-shadow:0 0 0 2px var(--panel),0 0 0 4px var(--accent)}
+  .lp[aria-pressed=true]{box-shadow:0 0 0 2px var(--panel),0 0 0 4px rgba(255,255,255,.85)}
   .lp .cap{position:absolute;left:0;right:0;bottom:0;font-size:10px;line-height:2.4;text-align:center;
     background:linear-gradient(transparent,rgba(0,0,0,.78));color:#fff;font-weight:600;padding-top:10px}
 
@@ -429,7 +458,7 @@
     transition:.14s var(--ease)}
   .rchip:hover{background:var(--card-2);border-color:var(--line-2);transform:translateY(-1px)}
   .rchip[aria-pressed=true]{border-color:transparent;
-    box-shadow:0 0 0 2px var(--accent);background:var(--card-2)}
+    box-shadow:0 0 0 2px rgba(255,255,255,.85);background:var(--card-2)}
   .rchip .shape{display:grid;place-items:center;border:1.5px solid var(--dim);border-radius:4px;
     font-size:8.5px;font-weight:650;color:var(--dim);letter-spacing:-.02em}
   .rchip[aria-pressed=true] .shape{border-color:var(--accent);color:#fff}
@@ -576,6 +605,24 @@
       </div>
 
       <div class="sec">
+        <h2>Glow <button class="info" type="button" data-tip="A soft halo of light behind the mockup that makes it pop off the background. Auto matches your backdrop's colour; or pick any colour of your own.">i</button></h2>
+        <div class="glowsw" id="glowSw">
+          <button data-g="auto" type="button" title="Match the background"></button>
+          <button data-g="#ffffff" type="button" style="--c:#ffffff" title="White"></button>
+          <button data-g="#8b7bff" type="button" style="--c:#8b7bff" title="Violet"></button>
+          <button data-g="#22d3ee" type="button" style="--c:#22d3ee" title="Cyan"></button>
+          <button data-g="#22c55e" type="button" style="--c:#22c55e" title="Green"></button>
+          <button data-g="#ff2d75" type="button" style="--c:#ff2d75" title="Pink"></button>
+          <button data-g="#ff8a00" type="button" style="--c:#ff8a00" title="Orange"></button>
+          <label class="glowcust" title="Custom colour"><input type="color" id="glowCust" value="#8b7bff"><span>+</span></label>
+        </div>
+        <div class="ctrl" style="margin-top:12px">
+          <div class="lab"><span>Strength</span><i data-out="glow" data-suffix="%"></i></div>
+          <input type="range" data-key="glow" min="0" max="100" step="1">
+        </div>
+      </div>
+
+      <div class="sec">
         <h2>Finish</h2>
         <div class="check"><span>Screen sheen</span><button class="switch" data-key="sheen" type="button"></button></div>
         <div class="check"><span>Inner edge</span><button class="switch" data-key="edge" type="button"></button></div>
@@ -594,6 +641,9 @@
             <span class="rchev">⌄</span>
           </button>
         </div>
+        <button class="fitchip" id="fillChip" type="button" hidden>
+          <svg viewBox="0 0 16 16"><rect x="1.5" y="4" width="13" height="8" rx="1.6"/><path d="M5.5 8h5M8.5 5.8 10.5 8l-2 2.2"/></svg>
+          Make it fill the frame</button>
         <div class="ctrl row" id="customSize" hidden>
           <input type="number" data-key="cw" min="64" max="8000" step="1" placeholder="Width">
           <span style="color:var(--faint);font-size:11px">×</span>
@@ -606,7 +656,7 @@
       </div>
 
       <div class="sec">
-        <h2>Background <button class="info" type="button" data-tip="200+ built-in backdrops. Custom builds your own colour or gradient (and can start from any gradient you have selected), Magic derives one from your screenshot, and Blur softens any of them with one click.">i</button></h2>
+        <h2>Background <button class="info" type="button" data-tip="220+ built-in backdrops. Custom builds your own colour or gradient (and can start from any gradient you have selected), Magic derives one from your screenshot, and Blur softens any of them with one click.">i</button></h2>
         <div class="bgquick">
           <button class="bgq" data-q="none" type="button" title="Transparent">
             <span class="ico chk"></span><b>None</b></button>
@@ -1075,6 +1125,49 @@ add({cat:"Glass",name:"Rose Ray",kind:"rays",base:"#4c0519",cols:["#fb7185","#fe
 add({cat:"Glass",name:"Swell",kind:"waves",base:"#1e1b4b",cols:["#818cf8","#c4b5fd","#1e1b4b"],n:8,amp:.17});
 add({cat:"Glass",name:"Mirage",kind:"waves",base:"#0c1a12",cols:["#34d399","#0d9488","#0c1a12"],n:10,amp:.12});
 add({cat:"Glass",name:"Evergreen Ray",kind:"rays",base:"#052e16",cols:["#166534","#4ade80","#052e16"],n:20,warp:.45,angle:-24});
+
+const RB = (name,angle,n,freq,amp,phase,cols)=>add({cat:"Glass",name,kind:"ribbed",angle,n,freq,amp,phase,cols});
+RB("Fluted Sky",     125, 34, 1.1, .045, 0.4, ["#c3cdf2","#8a9fe0","#5b6fc0"]);
+RB("Fluted Abyss",   150, 30, 0.9, .055, 1.8, ["#07070d","#1c1cae","#4338ff"]);
+RB("Fluted Ember",   115, 38, 1.3, .04,  2.6, ["#2dd4bf","#ff8a00","#ff5d2e"]);
+RB("Fluted Fire",    130, 42, 1.5, .05,  0.9, ["#ffd166","#ff8a00","#b91c1c"]);
+RB("Fluted Mono",    140, 30, 1.0, .045, 3.4, ["#e5e7eb","#6b7280","#111827"]);
+RB("Fluted Orchid",  120, 36, 1.2, .05,  1.2, ["#f5d0fe","#a855f7","#4c1d95"]);
+RB("Fluted Evergreen",135, 32, 1.0, .05, 2.1, ["#4ade80","#166534","#052e16"]);
+
+const SK = (name,b0,b1,cols,layers)=>add({cat:"Silk",name,kind:"silk",b0,b1,cols,layers});
+SK("Sequoia Dusk","#1e1b4b","#0b0a1d",["#818cf8","#c084fc","#312e81"],[
+  [.30,.05,1.0,0.6,"#a5b4fc","#6366f1","#312e81"],
+  [.52,.06,0.8,2.4,"#c084fc","#7c3aed","#3b0764"],
+  [.74,.05,1.2,4.2,"#818cf8","#4338ca","#1e1b4b"]]);
+SK("Sonoma Light","#dbeafe","#93c5fd",["#60a5fa","#34d399","#2563eb"],[
+  [.34,.05,0.9,1.1,"#dcfce7","#4ade80","#15803d"],
+  [.56,.06,1.1,3.0,"#a7f3d0","#34d399","#065f46"],
+  [.78,.05,0.8,5.1,"#bfdbfe","#3b82f6","#1e3a8a"]]);
+SK("Ventura Blaze","#7c2d12","#1c0a02",["#fb923c","#f43f5e","#7c2d12"],[
+  [.32,.06,1.0,0.3,"#fed7aa","#fb923c","#9a3412"],
+  [.55,.06,0.9,2.2,"#fda4af","#f43f5e","#881337"],
+  [.78,.05,1.1,4.0,"#fdba74","#ea580c","#431407"]]);
+SK("Monterey Wave","#4c1d95","#111132",["#a78bfa","#f472b6","#38bdf8"],[
+  [.30,.06,0.9,1.6,"#e9d5ff","#a78bfa","#5b21b6"],
+  [.53,.06,1.1,3.5,"#fbcfe8","#f472b6","#831843"],
+  [.76,.05,0.9,5.4,"#bae6fd","#38bdf8","#0c4a6e"]]);
+SK("Big Sur Coast","#1d4ed8","#0b1020",["#60a5fa","#f97316","#dc2626"],[
+  [.32,.05,1.0,0.9,"#fef3c7","#f97316","#9a3412"],
+  [.54,.06,0.8,2.8,"#fecaca","#dc2626","#7f1d1d"],
+  [.77,.05,1.2,4.7,"#93c5fd","#2563eb","#1e3a8a"]]);
+SK("Graphite Flow","#27272a","#09090b",["#71717a","#3f3f46","#18181b"],[
+  [.33,.05,0.9,2.0,"#a1a1aa","#52525b","#27272a"],
+  [.56,.06,1.1,4.1,"#71717a","#3f3f46","#18181b"],
+  [.79,.05,0.8,0.7,"#52525b","#27272a","#09090b"]]);
+SK("Polar Silk","#e0f2fe","#bae6fd",["#7dd3fc","#e0f2fe","#0ea5e9"],[
+  [.34,.05,1.0,1.4,"#ffffff","#bae6fd","#38bdf8"],
+  [.57,.06,0.9,3.3,"#f0f9ff","#7dd3fc","#0284c7"],
+  [.80,.05,1.1,5.2,"#e0f2fe","#38bdf8","#075985"]]);
+SK("Evergreen Silk","#052e16","#010804",["#4ade80","#166534","#052e16"],[
+  [.32,.05,0.9,0.8,"#86efac","#22c55e","#15803d"],
+  [.55,.06,1.1,2.7,"#4ade80","#166534","#14532d"],
+  [.78,.05,0.8,4.6,"#34d399","#0f5132","#052e16"]]);
 add({cat:"Glass",name:"Aurora Veil",kind:"rays",base:"#0b1026",cols:["#22d3ee","#a78bfa","#0b1026"],n:24,warp:.6,angle:14});
 add({cat:"Glass",name:"Honey Swell",kind:"waves",base:"#3b2506",cols:["#f59e0b","#fde68a","#3b2506"],n:8,amp:.16});
 
@@ -1152,7 +1245,7 @@ BG.forEach(x => x.id = (x.cat+"-"+x.name).toLowerCase().replace(/[^a-z0-9]+/g,"-
  {id:"custom-gradient",cat:"Magic",name:"Custom gradient",kind:"cgrad"},
  {id:"image",cat:"Magic",name:"Image",kind:"image"},
  {id:"none",cat:"Magic",name:"None",kind:"none"}].forEach(x=>BG.push(x));
-const CATS = ["Magic","Solid","Gradient","Mesh","Cosmic","Mystic","Glass","Scenic","Abstract","Earth","Texture"];
+const CATS = ["Magic","Solid","Gradient","Mesh","Cosmic","Mystic","Glass","Silk","Scenic","Abstract","Earth","Texture"];
 
 /* ══════════════════════════════════════════════════════════
    2. Styles / shadows / layouts / ratios
@@ -1249,6 +1342,7 @@ const DEFAULTS = {
   wmOn:false, wmMode:"text", wmText:"Made with ShotOpt", wmPos:"br", wmOpacity:55, wmSize:18,
   style:"plain", radiusMode:"curved", radius:22,
   shadow:"diffuse", shOpacity:40, shSize:62, shAngle:180, shDist:30,
+  glow:0, glowColor:"auto",
   hideMockup:false, sheen:true, edge:true,
   count:1, arrange:"grid", gap:6, annots:[],
   zoom:97, tiltX:6, tiltY:-8, rotate:2, offX:0, offY:1, preset:6,
@@ -1354,6 +1448,77 @@ function drawBg(ctx,W,H,def){
         const g = ctx.createLinearGradient(0,0,W,H);
         def.cols.forEach((c,i)=>g.addColorStop(i/(def.cols.length-1),c));
         fill(g);
+      }
+      return;
+    }
+    case "ribbed": {
+      // Fluted glass: a hue gradient seen through vertical ridges that bend in
+      // slow horizontal waves. One ridge is drawn to a tile, tiled as a
+      // pattern, then warped by drawing in thin slices with a sine offset.
+      const a = ((def.angle||120)-90)*Math.PI/180;
+      const len = Math.abs(W*Math.cos(a))+Math.abs(H*Math.sin(a));
+      const g = ctx.createLinearGradient(W/2-Math.cos(a)*len/2,H/2-Math.sin(a)*len/2,
+                                         W/2+Math.cos(a)*len/2,H/2+Math.sin(a)*len/2);
+      def.cols.forEach((c,i)=>g.addColorStop(i/(def.cols.length-1),c));
+      fill(g);
+      // Floor the ridge width so small thumbnails show clean flutes, not moiré
+      const rw = Math.max(14, Math.round(W/def.n));
+      const tile = document.createElement("canvas");
+      tile.width = rw; tile.height = 2;
+      const tg = tile.getContext("2d");
+      const lg = tg.createLinearGradient(0,0,rw,0);
+      lg.addColorStop(0,   "rgba(0,0,0,.50)");
+      lg.addColorStop(.16, "rgba(255,255,255,.30)");
+      lg.addColorStop(.38, "rgba(255,255,255,.04)");
+      lg.addColorStop(.55, "rgba(0,0,0,.26)");
+      lg.addColorStop(.76, "rgba(255,255,255,.15)");
+      lg.addColorStop(1,   "rgba(0,0,0,.50)");
+      tg.fillStyle = lg; tg.fillRect(0,0,rw,2);
+      const pat = ctx.createPattern(tile,"repeat");
+      const slice = Math.max(2, Math.ceil(H/240));
+      for(let y=0;y<H;y+=slice){
+        const t = y/H;
+        const off = (Math.sin(t*Math.PI*2*def.freq+def.phase)
+                   + Math.sin(t*Math.PI*2*def.freq*1.7+def.phase*2.3)*.5)*def.amp*W;
+        ctx.save();
+        ctx.translate(off,0);
+        ctx.fillStyle = pat;
+        ctx.fillRect(-off-rw*3, y, W+rw*6, slice+1);
+        ctx.restore();
+      }
+      const gl = ctx.createLinearGradient(0,0,W,H);
+      gl.addColorStop(0,"rgba(255,255,255,.10)");
+      gl.addColorStop(.45,"rgba(255,255,255,0)");
+      gl.addColorStop(1,"rgba(0,0,0,.24)");
+      return fill(gl);
+    }
+    case "silk": {
+      // Desktop-wallpaper silk: broad ribbon dunes flowing across the frame,
+      // lit along their crests. Deterministic, so thumbnails and exports match.
+      const g0 = ctx.createLinearGradient(0,0,0,H);
+      g0.addColorStop(0,def.b0); g0.addColorStop(1,def.b1);
+      fill(g0);
+      for(const [y,amp,freq,ph,hi,c,lo] of def.layers){
+        const wy = t => H*(y + Math.sin(t*Math.PI*2*freq+ph)*amp
+                             + Math.sin(t*Math.PI*2*freq*2.13+ph*1.71)*amp*.38);
+        const X0 = -W*.05, X1 = W*1.05, STEPS = 56;
+        ctx.save();
+        if(FILTER_OK) ctx.filter = `blur(${Math.max(.5,D*.003)}px)`;
+        ctx.beginPath();
+        ctx.moveTo(X0,wy(0));
+        for(let i=1;i<=STEPS;i++) ctx.lineTo(X0+(X1-X0)*i/STEPS, wy(i/STEPS));
+        ctx.lineTo(X1,H*1.2); ctx.lineTo(X0,H*1.2); ctx.closePath();
+        const gg = ctx.createLinearGradient(0,H*(y-amp*1.6),0,H*Math.min(1.25,y+.62));
+        gg.addColorStop(0,hi); gg.addColorStop(.42,c); gg.addColorStop(1,lo);
+        ctx.fillStyle = gg; ctx.fill();
+        ctx.beginPath();
+        ctx.moveTo(X0,wy(0));
+        for(let i=1;i<=STEPS;i++) ctx.lineTo(X0+(X1-X0)*i/STEPS, wy(i/STEPS));
+        ctx.strokeStyle = "rgba(255,255,255,.22)";
+        ctx.lineWidth = Math.max(1,D*.0035);
+        if(FILTER_OK) ctx.filter = `blur(${Math.max(.5,D*.0022)}px)`;
+        ctx.stroke();
+        ctx.restore();
       }
       return;
     }
@@ -2373,6 +2538,55 @@ function drawShadowFor(ctx,shapes,unit,k){
   ctx.restore();
 }
 
+/** Colour halo behind the mockup — the shadow's offscreen/punch-out pipeline,
+    but centred (no light offset), tinted, and screen-blended so it reads as
+    emitted light rather than paint. */
+function drawGlowFor(ctx,shapes,unit,k){
+  const amt = (S.glow||0)/100;
+  if(amt<=0 || !shapes.length) return;
+  const hex = S.glowColor==="auto" ? bgAccents()[0] : S.glowColor;
+  const c = hexRgb(hex); if(!c) return;
+  const col = `${c.r},${c.g},${c.b}`;
+  const blur = Math.max(1, unit*46*(.35+amt));
+  const all = shapes.flatMap(s=>s.q);
+  const mgn = blur*2.4+8;
+  const x0 = Math.min(...all.map(p=>p.x))-mgn, y0 = Math.min(...all.map(p=>p.y))-mgn;
+  const Wl = Math.max(...all.map(p=>p.x))+mgn-x0, Hl = Math.max(...all.map(p=>p.y))+mgn-y0;
+  let sr = Math.min(k, 3000/Math.max(Wl,Hl));
+  if(blur*.3*sr<1.2) sr = Math.min(k, 1.2/(blur*.3));
+  const cw = Math.ceil(Wl*sr), ch = Math.ceil(Hl*sr);
+  if(cw<2||ch<2||cw>8192||ch>8192) return;
+  const sc = document.createElement("canvas"); sc.width = cw; sc.height = ch;
+  const s2 = sc.getContext("2d");
+  const map = p=>({x:(p.x-x0)*sr, y:(p.y-y0)*sr});
+  const tracePath = ()=>{ s2.beginPath(); for(const s of shapes) roundPolyPath(s2, s.q.map(map), s.r*sr); };
+  const plume = (sigma,alpha)=>{
+    s2.save();
+    if(FILTER_OK){
+      s2.filter = `blur(${Math.max(.5,sigma*sr)}px)`;
+      s2.fillStyle = `rgba(${col},${alpha})`;
+      tracePath(); s2.fill();
+    }else{
+      s2.translate(-1e5,0);
+      s2.shadowColor = `rgba(${col},${alpha})`;
+      s2.shadowBlur = sigma*2*sr;
+      s2.shadowOffsetX = 1e5;
+      s2.fillStyle = "#000";
+      tracePath(); s2.fill();
+    }
+    s2.restore();
+  };
+  plume(blur,     .85*amt);   // wide ambient halo
+  plume(blur*.35, .9*amt);    // bright rim close to the edge
+  s2.globalCompositeOperation = "destination-out";
+  s2.fillStyle = "#000"; tracePath(); s2.fill();
+  ctx.save();
+  ctx.globalCompositeOperation = "screen";
+  ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = "high";
+  ctx.drawImage(sc,x0,y0,Wl,Hl);
+  ctx.restore();
+}
+
 function drawItem(ctx,it,P,tex,ox,oy,scale,unit,k,m){
   const toC = (u,v) => { const p = P(it,u,v); return {x:ox+p.x*scale, y:oy+p.y*scale, w:p.w}; };
   const c00=toC(0,0), c10=toC(1,0), c11=toC(1,1), c01=toC(0,1);
@@ -2386,6 +2600,7 @@ function drawItem(ctx,it,P,tex,ox,oy,scale,unit,k,m){
     return {q, r: rA*e/texMin};
   });
   drawShadowFor(ctx,shapes,unit,k);
+  drawGlowFor(ctx,shapes,unit,k);
 
   const flat = !S.tiltX && !S.tiltY && !S.rotate && !it.rot;
   if(flat){
@@ -3818,6 +4033,26 @@ document.querySelectorAll(".switch[data-key]").forEach(b=>{
   b.addEventListener("click",()=>setKey(b.dataset.key, !S[b.dataset.key]));
 });
 
+/* Fill-the-frame assist: tighten padding and lend the mockup a studio angle so
+   a mismatched frame reads as a designed composition instead of dead space. */
+document.getElementById("fillChip").addEventListener("click",()=>{
+  animateTo({pad:4, tiltX:-9, tiltY:6, rotate:0, zoom:104, offX:0, offY:0});
+  toast("Composed for this frame — undo to go back");
+});
+
+/* glow colour swatches — picking a colour turns the halo on at a sensible level */
+document.getElementById("glowSw").addEventListener("click",e=>{
+  const b = e.target.closest("button[data-g]"); if(!b) return;
+  S.glowColor = b.dataset.g;
+  if(!(S.glow>0)) S.glow = 55;
+  update();
+});
+document.getElementById("glowCust").addEventListener("input",e=>{
+  S.glowColor = e.target.value;
+  if(!(S.glow>0)) S.glow = 55;
+  update();
+});
+
 /* ── visual canvas-size picker ─────────────────────────────
    A popover of proportioned chips, grouped like the old dropdown but scannable
    at a glance — each chip is drawn at its actual aspect ratio. */
@@ -4141,8 +4376,34 @@ function syncUI(){
     String(S.bg==="custom" || S.bg==="custom-gradient"));
   if(!cgPop.hidden) cgSyncPanel();
   document.getElementById("customSize").hidden = S.ratio!=="custom";
+  {
+    // Offer a one-click composition when the frame and content shapes clash
+    // (e.g. a wide screenshot in a square social frame).
+    const chip = document.getElementById("fillChip");
+    const ar = ratioAspect(S.ratio);
+    let show = false;
+    if(ar && IMGS.some(Boolean)){
+      const im = IMGS.find(Boolean);
+      const ai = im.w/im.h;
+      const mism = Math.max(ar/ai, ai/ar);
+      show = mism > 1.55 && S.pad > 6;
+    }
+    chip.hidden = !show;
+  }
   document.getElementById("multiOnly").hidden = S.count<2;
   document.getElementById("blurQuick").setAttribute("aria-pressed",String(S.bgBlur>0));
+  {
+    const gsw = document.getElementById("glowSw");
+    let matched = false;
+    gsw.querySelectorAll("button[data-g]").forEach(b=>{
+      const on = b.dataset.g===S.glowColor; if(on) matched = true;
+      b.setAttribute("aria-pressed",String(on));
+    });
+    const cust = gsw.querySelector(".glowcust");
+    cust.classList.toggle("picked", !matched);
+    if(!matched){ cust.style.setProperty("--c", S.glowColor); document.getElementById("glowCust").value = S.glowColor; }
+    else cust.style.removeProperty("--c");
+  }
   document.getElementById("wmTextCtrl").hidden = S.wmMode!=="text";
   document.getElementById("wmLogoCtrl").hidden = S.wmMode!=="logo";
   document.getElementById("vfxAmtCtrl").hidden = S.vfx==="none";
