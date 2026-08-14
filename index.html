@@ -20,14 +20,14 @@
 <meta name="twitter:image" content="og.jpg">
 <style>
   :root{
-    --bg:#0a0a0b;
-    --panel:#111112;
+    --bg:#070708;
+    --panel:#0f0f10;
     --card:#1a1a1c;
-    --card-2:#222224;
-    --card-3:#2b2b2e;
-    --line:rgba(255,255,255,.08);
-    --line-2:rgba(255,255,255,.15);
-    --line-3:rgba(255,255,255,.26);
+    --card-2:#232326;
+    --card-3:#2d2d30;
+    --line:rgba(255,255,255,.055);
+    --line-2:rgba(255,255,255,.11);
+    --line-3:rgba(255,255,255,.22);
     --txt:#f2f2f6;
     --dim:#b4b5c2;
     --faint:#8e8f9e;
@@ -46,19 +46,16 @@
   button,input,select,textarea{font:inherit;color:inherit}
   button{cursor:pointer;background:none;border:0;padding:0}
   button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--accent-2);outline-offset:2px}
-  ::-webkit-scrollbar{width:11px;height:11px}
+  ::-webkit-scrollbar{width:9px;height:9px}
   ::-webkit-scrollbar-thumb{background:rgba(255,255,255,.09);border-radius:11px;border:3.5px solid transparent;background-clip:padding-box}
   ::-webkit-scrollbar-thumb:hover{background:rgba(255,255,255,.2);background-clip:padding-box;border:3.5px solid transparent}
   [hidden]{display:none !important}
 
   /* 100% of <body>, never 100vw/100vh: viewport units ignore CSS zoom, which
      would push panels off-screen on displays wide enough to zoom. */
-  .app{display:flex;height:100%;width:100%;gap:12px;padding:12px;
-    background:radial-gradient(1400px 800px at 50% -20%,rgba(255,255,255,.035),transparent 60%),var(--bg)}
+  .app{display:flex;height:100%;width:100%;gap:10px;padding:10px;background:var(--bg)}
   .side{display:flex;flex-direction:column;overflow:hidden;flex:0 0 auto;position:relative;z-index:2;
-    background:linear-gradient(180deg,rgba(24,24,26,.94),rgba(15,15,16,.94));
-    border:1px solid var(--line);border-radius:18px;
-    box-shadow:0 24px 70px -30px rgba(0,0,0,.85);backdrop-filter:blur(14px)}
+    background:var(--panel);border:1px solid var(--line);border-radius:20px}
   .side.l{width:clamp(258px,18vw,344px)}
   .scroll{overflow-y:auto;overflow-x:hidden;flex:1;padding:0 12px 26px;scrollbar-gutter:stable}
   .panelfoot{flex:0 0 auto;padding:10px 12px;border-top:1px solid var(--line)}
@@ -92,9 +89,9 @@
 
   /* ───── tabs — icon over label ───── */
   .tabs{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:2px;margin:0 10px 12px;
-    background:rgba(0,0,0,.28);border:1px solid var(--line);border-radius:13px;padding:3px}
-  .tabs button{display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 2px 6px;
-    border-radius:10px;font-size:9px;font-weight:600;letter-spacing:.02em;color:var(--faint);
+    background:rgba(255,255,255,.045);border-radius:14px;padding:3px}
+  .tabs button{display:flex;flex-direction:column;align-items:center;gap:4px;padding:9px 2px 7px;
+    border-radius:11px;font-size:9px;font-weight:600;letter-spacing:.02em;color:var(--faint);
     transition:.16s var(--ease)}
   .tabs button svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.5;
     stroke-linecap:round;stroke-linejoin:round}
@@ -103,11 +100,11 @@
   .tabs button[aria-pressed=true] svg{stroke:#fff}
 
   /* ───── sections ───── */
-  .sec{padding:14px 0 15px;border-top:1px solid var(--line)}
+  .sec{padding:17px 0 18px;border-top:1px solid var(--line)}
   .sec:first-child{border-top:0;padding-top:6px}
   .sec > h2{
-    font-size:9.5px;font-weight:650;letter-spacing:.11em;text-transform:uppercase;color:var(--faint);
-    margin:0 0 11px;display:flex;align-items:center;gap:8px;
+    font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:#818290;
+    margin:0 0 12px;display:flex;align-items:center;gap:8px;
   }
   .sec > h2 .sp{flex:1}
   .sec > h2 .mini{font-size:10px;letter-spacing:0;text-transform:none;color:var(--faint);
@@ -138,14 +135,14 @@
 
   /* segmented */
   .seg{display:grid;gap:2px;grid-auto-flow:column;grid-auto-columns:1fr;
-    background:var(--card);border:1px solid var(--line);border-radius:11px;padding:3px}
+    background:rgba(255,255,255,.05);border-radius:12px;padding:3px}
   .seg button{padding:7px 4px;border-radius:8px;font-size:11.5px;color:var(--dim);white-space:nowrap;
     transition:.15s var(--ease);font-weight:500}
   .seg button:hover{color:var(--txt);background:rgba(255,255,255,.04)}
   .seg button[aria-pressed=true]{background:var(--card-3);color:#fff;font-weight:600;box-shadow:0 1px 3px rgba(0,0,0,.35)}
 
   select,input[type=text],input[type=number]{
-    width:100%;background:var(--card);border:1px solid var(--line);border-radius:10px;
+    width:100%;background:var(--card);border:1px solid transparent;border-radius:12px;
     padding:9px 11px;font-size:12px;outline:0;transition:.14s}
   select:hover,input[type=text]:hover,input[type=number]:hover{border-color:var(--line-2)}
   select:focus,input[type=text]:focus,input[type=number]:focus{border-color:var(--line-3);background:var(--card-2)}
@@ -156,14 +153,14 @@
   .row > *{min-width:0}
 
   /* tiles */
-  .tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
+  .tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
   .tiles.c4{grid-template-columns:repeat(4,1fr)}
-  .tile{border:1px solid var(--line);background:var(--card);border-radius:12px;padding:5px 5px 6px;
+  .tile{border:1px solid transparent;background:var(--card);border-radius:14px;padding:6px 6px 7px;
     display:flex;flex-direction:column;gap:5px;transition:.15s var(--ease);position:relative}
-  .tile:hover{border-color:var(--line-2);background:var(--card-2);transform:translateY(-1px)}
+  .tile:hover{background:var(--card-2);transform:translateY(-1px)}
   .tile[aria-pressed=true]{border-color:transparent;background:var(--card-2);
     box-shadow:0 0 0 2px rgba(255,255,255,.85),0 4px 14px -6px rgba(0,0,0,.9)}
-  .tile canvas{width:100%;height:54px;display:block;border-radius:8px;background:#e9eaee}
+  .tile canvas{width:100%;height:54px;display:block;border-radius:9px;background:#e9eaee}
   .tiles.c4 .tile canvas{height:44px}
   .tile b{font-weight:500;font-size:9.5px;color:var(--dim);white-space:nowrap;overflow:hidden;
     text-overflow:ellipsis;text-align:center;letter-spacing:.01em}
@@ -171,7 +168,7 @@
 
   /* background quick actions */
   .bgquick{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:14px}
-  .bgq{position:relative;border:1px solid var(--line);background:var(--card);border-radius:11px;
+  .bgq{position:relative;border:1px solid transparent;background:var(--card);border-radius:13px;
     padding:8px 3px 7px;display:flex;flex-direction:column;align-items:center;gap:6px;
     transition:.15s var(--ease);cursor:pointer}
   .bgq:hover{background:var(--card-2);border-color:var(--line-2);transform:translateY(-1px)}
@@ -199,11 +196,11 @@
   .chev.open span{transform:rotate(180deg)}
 
   /* swatches */
-  .swatches{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}
-  .sw{position:relative;aspect-ratio:1.1;border-radius:10px;overflow:hidden;border:1px solid var(--line);
+  .swatches{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+  .sw{position:relative;aspect-ratio:1.3;border-radius:14px;overflow:hidden;border:0;
     line-height:0;transition:.15s var(--ease)}
   .sw canvas{width:100%;height:100%;display:block}
-  .sw:hover{transform:translateY(-2px);border-color:var(--line-2)}
+  .sw:hover{transform:translateY(-2px) scale(1.02)}
   .sw[aria-pressed=true]{box-shadow:0 0 0 2px var(--panel),0 0 0 4px rgba(255,255,255,.85)}
   .sw .cap{position:absolute;left:0;right:0;bottom:0;font-size:8px;line-height:1.85;text-align:center;
     background:linear-gradient(transparent,rgba(0,0,0,.72));color:#fff;font-weight:550;
@@ -258,9 +255,7 @@
   .main{flex:1;display:flex;flex-direction:column;min-width:0;position:relative;gap:12px}
   .topbar{flex:0 0 auto;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
   .cluster{display:flex;align-items:center;gap:5px;padding:5px;
-    background:linear-gradient(180deg,rgba(20,20,27,.9),rgba(12,12,17,.9));
-    border:1px solid var(--line-2);border-radius:14px;
-    box-shadow:0 14px 40px -20px rgba(0,0,0,.8);backdrop-filter:blur(14px)}
+    background:var(--panel);border:1px solid var(--line);border-radius:15px}
   .iconbtn{width:32px;height:32px;border-radius:9px;display:grid;place-items:center;color:var(--dim);
     transition:.14s var(--ease);font-size:14px}
   .iconbtn:hover:not(:disabled){background:var(--card-2);color:#fff}
@@ -270,36 +265,31 @@
     transition:.15s var(--ease)}
   .pill:hover{color:#fff;background:var(--card-2)}
   .tbspace{flex:1}
-  .zoomlab{font-size:10.5px;color:var(--faint);font-variant-numeric:tabular-nums}
 
   .stage{flex:1;min-height:0;position:relative;display:grid;place-items:center;padding:26px 26px 78px;
-    border:1px solid var(--line);border-radius:18px;overflow:hidden;
-    background:radial-gradient(1000px 560px at 50% -12%,rgba(139,123,255,.07),transparent 70%),#08080b}
-  .stage::before{content:"";position:absolute;inset:0;pointer-events:none;
-    background-image:radial-gradient(rgba(255,255,255,.04) 1px,transparent 1px);background-size:24px 24px}
+    border:1px solid var(--line);border-radius:20px;overflow:hidden;background:#050505}
   #preview{position:relative;display:block;max-width:100%;max-height:100%;border-radius:3px;
     box-shadow:0 30px 80px -26px rgba(0,0,0,.9),0 0 0 1px rgba(255,255,255,.055)}
   #preview.alpha{background:conic-gradient(#2b2b33 0 25%,#1e1e25 0 50%,#2b2b33 0 75%,#1e1e25 0) 0 0/20px 20px}
   .overlay{position:absolute;inset:0;display:none;place-items:center;pointer-events:none;
     background:rgba(5,5,6,.78);backdrop-filter:blur(4px);z-index:5;border-radius:18px}
   .overlay.on{display:grid}
-  .overlay div{border:2px dashed var(--accent);border-radius:20px;padding:34px 54px;font-size:15px;
-    font-weight:600;background:rgba(139,123,255,.10)}
+  .overlay div{border-radius:22px;padding:34px 58px;font-size:15px;font-weight:600;
+    background:rgba(255,255,255,.08);box-shadow:0 0 0 1px rgba(255,255,255,.22) inset;
+    backdrop-filter:blur(10px)}
   kbd{font:inherit;font-size:9.5px;background:var(--card);border:1px solid var(--line);border-bottom-width:2px;
     border-radius:5px;padding:1.5px 5px;color:var(--dim)}
 
   /* ───── floating dock ───── */
   .dock{position:absolute;left:50%;bottom:24px;transform:translateX(-50%);z-index:6;
     display:flex;align-items:center;gap:4px;padding:5px;
-    background:rgba(16,16,22,.86);border:1px solid var(--line-2);border-radius:16px;
-    box-shadow:0 18px 50px -16px rgba(0,0,0,.9);backdrop-filter:blur(16px)}
-  .dock button{display:flex;align-items:center;gap:7px;padding:9px 15px;border-radius:11px;
+    background:rgba(14,14,15,.88);border:1px solid var(--line);border-radius:18px;
+    box-shadow:0 18px 50px -16px rgba(0,0,0,.9);backdrop-filter:blur(18px)}
+  .dock button{display:flex;align-items:center;gap:7px;padding:9px 16px;border-radius:13px;
     font-size:12.5px;font-weight:570;color:var(--dim);transition:.15s var(--ease);white-space:nowrap}
   .dock button:hover{color:#fff;background:rgba(255,255,255,.07)}
-  .dock button.hot{color:#fff;
-    background:linear-gradient(110deg,rgba(139,123,255,.22),rgba(34,211,238,.16));
-    box-shadow:0 0 0 1px rgba(139,123,255,.35) inset}
-  .dock button.hot:hover{filter:brightness(1.18)}
+  .dock button.hot{color:#0c0c0d;background:linear-gradient(180deg,#ffffff,#e9e9ed);font-weight:640}
+  .dock button.hot:hover{background:#fff}
   .dock .dvr{width:1px;height:18px;background:var(--line-2);margin:0 3px}
   .dock button[aria-pressed=true]{color:#fff;background:rgba(139,123,255,.2)}
 
@@ -333,7 +323,7 @@
     box-shadow:0 10px 30px -8px rgba(0,0,0,.8);transform:translate(-4px,-50%)}
 
   /* buttons */
-  .btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:10px 14px;border-radius:11px;
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:10px 14px;border-radius:12px;
     font-size:12.5px;font-weight:620;border:1px solid var(--line);background:var(--card);transition:.15s var(--ease)}
   .btn:hover{background:var(--card-2);border-color:var(--line-2)}
   .btn.primary{border-color:transparent;color:#0c0c0d;font-weight:680;
@@ -352,6 +342,15 @@
   .fitchip:hover{color:#fff;background:var(--card-2);border-color:var(--line-3)}
   .fitchip svg{width:15px;height:15px;flex:0 0 auto;fill:none;stroke:currentColor;
     stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round}
+
+  /* export popover */
+  .expsum{font-size:10px;font-weight:600;color:rgba(0,0,0,.45);background:rgba(0,0,0,.09);
+    padding:2px 7px;border-radius:7px;margin-left:2px}
+  .exppop{position:fixed;z-index:60;width:248px;padding:14px}
+  .exppop .expdims{margin:12px 2px 12px;font-size:10.5px;color:var(--faint);
+    font-variant-numeric:tabular-nums;text-align:center}
+  .exppop .expgo{width:100%;margin-top:8px}
+  .exppop .expgo:first-of-type{margin-top:0}
 
   /* glow colour swatches */
   .glowsw{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
@@ -445,7 +444,7 @@
   .rsel .rchev{color:var(--faint);font-size:11px}
   .rbx{display:inline-block;border:1.5px solid var(--faint);border-radius:3px;
     width:22px;height:15px;flex:0 0 auto}
-  .rpop{position:fixed;z-index:55;width:296px;max-height:min(560px,72vh);overflow-y:auto;
+  .rpop{border-radius:16px;position:fixed;z-index:55;width:296px;max-height:min(560px,72vh);overflow-y:auto;
     background:linear-gradient(180deg,#15151c,#0e0e13);border:1px solid var(--line-2);
     border-radius:16px;padding:12px;box-shadow:0 30px 90px -20px rgba(0,0,0,.95);
     animation:pop .16s var(--ease)}
@@ -872,25 +871,32 @@
       <button class="iconbtn" id="redoBtn" type="button" title="Redo (⇧⌘Z)">↻</button>
       <div class="vr"></div>
       <button class="pill" id="startOver" type="button">Start over</button>
-      <span class="zoomlab" id="zoomlab" title="Preview zoom — exports are always full resolution">—</span>
     </div>
     <div class="tbspace"></div>
     <div class="cluster">
-      <span class="dims" id="dims">—</span>
-      <div class="seg" data-key="scale" style="width:150px">
-        <button data-v="1" type="button">1×</button>
-        <button data-v="2" type="button">2×</button>
-        <button data-v="3" type="button">3×</button>
-        <button data-v="4" type="button">4×</button>
-      </div>
-      <select data-key="format" style="width:84px">
-        <option value="png">PNG</option>
-        <option value="jpeg">JPG</option>
-        <option value="webp">WEBP</option>
-      </select>
       <button class="btn sq" id="copyBtn" type="button" title="Copy to clipboard (⇧⌘C)">⧉</button>
-      <button class="btn primary" id="exportBtn" type="button">↑&nbsp; Export</button>
+      <button class="btn primary" id="exportBtn" type="button">↑&nbsp; Export
+        <span class="expsum" id="expSum">2× · PNG</span></button>
     </div>
+  </div>
+
+  <div class="rpop exppop" id="expPop" hidden>
+    <h3>Format</h3>
+    <div class="seg" data-key="format">
+      <button data-v="png" type="button">PNG</button>
+      <button data-v="jpeg" type="button">JPG</button>
+      <button data-v="webp" type="button">WEBP</button>
+    </div>
+    <h3>Size</h3>
+    <div class="seg" data-key="scale">
+      <button data-v="1" type="button">1×</button>
+      <button data-v="2" type="button">2×</button>
+      <button data-v="3" type="button">3×</button>
+      <button data-v="4" type="button">4×</button>
+    </div>
+    <div class="expdims" id="dims">—</div>
+    <button class="btn primary expgo" id="expGo" type="button">↓&nbsp; Download image</button>
+    <button class="btn expgo" id="expCopy" type="button">⧉&nbsp; Copy to clipboard</button>
   </div>
 
   <div class="stage" id="stage">
@@ -2186,37 +2192,47 @@ function buildTexture(i,kx){
 function drawPlaceholder(ctx,x,y,w,h){
   const f = Math.min(w,h);
   const g = ctx.createLinearGradient(x,y,x,y+h);
-  g.addColorStop(0,"#14141b"); g.addColorStop(1,"#0b0b10");
+  g.addColorStop(0,"#161618"); g.addColorStop(1,"#0c0c0e");
   ctx.fillStyle = g; ctx.fillRect(x,y,w,h);
-  const sheen = ctx.createRadialGradient(x+w*.5,y-h*.2,0,x+w*.5,y-h*.2,h*1.1);
-  sheen.addColorStop(0,"rgba(139,123,255,.13)"); sheen.addColorStop(.55,"rgba(34,211,238,.04)");
-  sheen.addColorStop(1,"rgba(0,0,0,0)");
-  ctx.fillStyle = sheen; ctx.fillRect(x,y,w,h);
+  const cx = x+w/2, cy = y+h/2-f*.13;
+  // media glyphs either side of a plus circle — quiet, monochrome
   ctx.save();
-  ctx.strokeStyle = "rgba(255,255,255,.14)";
-  ctx.lineWidth = Math.max(1.5,f*.004);
-  ctx.setLineDash([f*.024,f*.018]);
-  roundRect(ctx,x+f*.045,y+f*.045,w-f*.09,h-f*.09,f*.045); ctx.stroke();
-  ctx.restore();
-  // upload glyph in a gradient ring
-  const br = f*.075, cy = y+h/2-f*.14, cx = x+w/2;
-  const rg = ctx.createLinearGradient(cx-br,cy-br,cx+br,cy+br);
-  rg.addColorStop(0,"#22d3ee"); rg.addColorStop(1,"#8b7bff");
-  ctx.strokeStyle = rg; ctx.lineWidth = Math.max(2,br*.14); ctx.lineCap = "round";
-  ctx.beginPath(); ctx.arc(cx,cy,br,0,Math.PI*2); ctx.stroke();
-  ctx.strokeStyle = "rgba(255,255,255,.92)";
-  ctx.lineWidth = Math.max(2,br*.17);
+  ctx.strokeStyle = "rgba(255,255,255,.28)";
+  ctx.lineWidth = Math.max(1.5,f*.008); ctx.lineJoin = "round"; ctx.lineCap = "round";
+  const gs = f*.052;
+  // photo glyph (rounded frame + mountain + sun)
+  ctx.save(); ctx.translate(cx-f*.155,cy);
+  roundRect(ctx,-gs,-gs*.78,gs*2,gs*1.56,gs*.3); ctx.stroke();
   ctx.beginPath();
-  ctx.moveTo(cx,cy+br*.42); ctx.lineTo(cx,cy-br*.40);
-  ctx.moveTo(cx-br*.30,cy-br*.08); ctx.lineTo(cx,cy-br*.42); ctx.lineTo(cx+br*.30,cy-br*.08);
+  ctx.moveTo(-gs*.62,gs*.42); ctx.lineTo(-gs*.1,-gs*.18); ctx.lineTo(gs*.28,gs*.2);
+  ctx.lineTo(gs*.55,-gs*.05); ctx.stroke();
+  ctx.beginPath(); ctx.arc(-gs*.34,-gs*.34,gs*.13,0,Math.PI*2); ctx.stroke();
+  ctx.restore();
+  // clapper/play glyph
+  ctx.save(); ctx.translate(cx+f*.155,cy);
+  roundRect(ctx,-gs,-gs*.78,gs*2,gs*1.56,gs*.3); ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(-gs*.22,-gs*.34); ctx.lineTo(gs*.4,0); ctx.lineTo(-gs*.22,gs*.34);
+  ctx.closePath(); ctx.stroke();
+  ctx.restore();
+  // plus circle, filled white — the invitation
+  const br = f*.062;
+  ctx.fillStyle = "rgba(255,255,255,.95)";
+  ctx.beginPath(); ctx.arc(cx,cy,br,0,Math.PI*2); ctx.fill();
+  ctx.strokeStyle = "#0c0c0e";
+  ctx.lineWidth = Math.max(2,br*.16);
+  ctx.beginPath();
+  ctx.moveTo(cx,cy-br*.42); ctx.lineTo(cx,cy+br*.42);
+  ctx.moveTo(cx-br*.42,cy); ctx.lineTo(cx+br*.42,cy);
   ctx.stroke();
+  ctx.restore();
   ctx.textAlign = "center"; ctx.textBaseline = "middle";
-  ctx.fillStyle = "rgba(255,255,255,.9)";
-  ctx.font = `650 ${f*.085}px -apple-system,BlinkMacSystemFont,"Segoe UI",Inter,sans-serif`;
-  ctx.fillText("Drop, paste or click",x+w/2,y+h/2+f*.045);
-  ctx.fillStyle = "rgba(255,255,255,.34)";
-  ctx.font = `500 ${f*.040}px -apple-system,BlinkMacSystemFont,"Segoe UI",Inter,sans-serif`;
-  ctx.fillText("PNG · JPG · WEBP · GIF — or hit Templates below",x+w/2,y+h/2+f*.135);
+  ctx.fillStyle = "rgba(255,255,255,.92)";
+  ctx.font = `640 ${f*.082}px -apple-system,BlinkMacSystemFont,"Segoe UI",Inter,sans-serif`;
+  ctx.fillText("Drop, paste or click",x+w/2,y+h/2+f*.06);
+  ctx.fillStyle = "rgba(255,255,255,.32)";
+  ctx.font = `500 ${f*.038}px -apple-system,BlinkMacSystemFont,"Segoe UI",Inter,sans-serif`;
+  ctx.fillText("PNG · JPG · WEBP · GIF — or hit Templates below",x+w/2,y+h/2+f*.15);
 }
 
 /* ══════════════════════════════════════════════════════════
@@ -2718,7 +2734,6 @@ function render(canvas,k){
 const preview = document.getElementById("preview");
 const stage   = document.getElementById("stage");
 const dimsEl  = document.getElementById("dims");
-const zoomLab = document.getElementById("zoomlab");
 
 const MAX_SIDE = 8192, MAX_PX = 64e6;
 function exportScale(F){
@@ -2742,9 +2757,8 @@ function draw(patch){
     updateHandles(F,fit);
     updateAnnDel(F,fit);
     const k = exportScale(F);
-    dimsEl.textContent = `${F.W} × ${F.H} → ${Math.round(F.W*k)} × ${Math.round(F.H*k)} ${S.format.toUpperCase()}`
+    dimsEl.textContent = `${F.W} × ${F.H} → ${Math.round(F.W*k)} × ${Math.round(F.H*k)} px`
       + (k < S.scale-.001 ? ` · capped ${k.toFixed(2)}×` : "");
-    zoomLab.textContent = `Fit ${Math.round(fit*100)}%`;
   } finally { S = keep; }
 }
 let raf = 0;
@@ -3152,7 +3166,27 @@ async function toBlob(){
   }
   return new Promise(r=>c.toBlob(r,mime(),.97));
 }
-document.getElementById("exportBtn").addEventListener("click",async()=>{
+const expPop = document.getElementById("expPop");
+function openExpPop(){
+  const r = document.getElementById("exportBtn").getBoundingClientRect();
+  expPop.hidden = false;
+  expPop.style.top = (r.bottom+8)+"px";
+  expPop.style.right = Math.max(10, window.innerWidth-r.right)+"px";
+  expPop.style.left = "auto";
+}
+document.getElementById("exportBtn").addEventListener("click",e=>{
+  e.stopPropagation();
+  if(expPop.hidden) openExpPop(); else expPop.hidden = true;
+});
+document.addEventListener("pointerdown",e=>{
+  if(!expPop.hidden && !expPop.contains(e.target) && !e.target.closest("#exportBtn"))
+    expPop.hidden = true;
+});
+document.getElementById("expCopy").addEventListener("click",()=>{
+  expPop.hidden = true;
+  document.getElementById("copyBtn").click();
+});
+document.getElementById("expGo").addEventListener("click",async()=>{
   const blob = await toBlob();
   if(!blob){ toast("Export failed"); return; }
   const a = document.createElement("a");
@@ -4293,6 +4327,7 @@ document.getElementById("magicNext").addEventListener("click",()=>applyMagic(1))
 document.getElementById("magicPrev").addEventListener("click",()=>applyMagic(-1));
 
 window.addEventListener("keydown",e=>{
+  if((e.key||"")==="Escape" && !expPop.hidden){ expPop.hidden = true; return; }
   if((e.key||"")==="Escape" && !cgPop.hidden){ closeCgPop(); return; }
   if((e.key||"")==="Escape" && !ratioPop.hidden){ closeRatioPop(); return; }
   if((e.key||"")==="Escape" && !tplModal.hidden){ closeTpl(); return; }
@@ -4323,7 +4358,7 @@ window.addEventListener("keydown",e=>{
     S.preset = -1; update(); return;
   }
   if(mod && key==="z"){ e.preventDefault(); e.shiftKey ? redo() : undo(); }
-  else if(mod && key==="s"){ e.preventDefault(); document.getElementById("exportBtn").click(); }
+  else if(mod && key==="s"){ e.preventDefault(); document.getElementById("expGo").click(); }
   else if(mod && e.shiftKey && key==="c"){ e.preventDefault(); document.getElementById("copyBtn").click(); }
   else if(key===" " && !mod && S.anim!=="none"){ e.preventDefault(); setPlaying(!ANIM.playing); }
   else if(e.altKey && !mod && /^Digit[1-9]$/.test(e.code)){
@@ -4392,6 +4427,8 @@ function syncUI(){
   }
   document.getElementById("multiOnly").hidden = S.count<2;
   document.getElementById("blurQuick").setAttribute("aria-pressed",String(S.bgBlur>0));
+  document.getElementById("expSum").textContent =
+    `${S.scale}× · ${({png:"PNG",jpeg:"JPG",webp:"WEBP"})[S.format]||"PNG"}`;
   {
     const gsw = document.getElementById("glowSw");
     let matched = false;

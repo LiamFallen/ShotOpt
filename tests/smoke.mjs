@@ -102,9 +102,10 @@ await page.evaluate(() => {
 });
 ok("annotation stored", await page.evaluate(() => S.annots.length === 1));
 
-// PNG export produces a real file
+// PNG export produces a real file (Export opens a popover; Download lives inside)
 const dl = page.waitForEvent("download", { timeout: 30000 });
 await page.click("#exportBtn");
+await page.click("#expGo");
 const download = await dl;
 const tmp = path.join(ROOT, "tests", ".smoke-export.png");
 await download.saveAs(tmp);
