@@ -61,7 +61,7 @@ than just promised.
 - Direct manipulation: drag the image to move it, grab a corner chip to
   resize, nudge with the arrow keys
 - 12 layout presets with live thumbnails and glide transitions
-- Visual canvas-size picker with 23 sizes including LinkedIn, X, Open Graph,
+- Visual canvas-size picker with 24 sizes including LinkedIn, X, Open Graph,
   Instagram and Story presets, each drawn at its true aspect ratio
 - Grain, vignette, one-click background blur, text or logo watermark
 - Up to 4× export in PNG, JPG or WEBP at high encoder quality

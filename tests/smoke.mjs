@@ -102,16 +102,24 @@ await page.evaluate(() => {
 });
 ok("annotation stored", await page.evaluate(() => S.annots.length === 1));
 
-// PNG export produces a real file (Export opens a popover; Download lives inside)
+// Exact export presets render at their labelled pixel dimensions.
 const dl = page.waitForEvent("download", { timeout: 30000 });
 await page.click("#exportBtn");
+await page.click("#expSizeBtn");
+await page.click('.rchip[data-v="px:1200x628"]');
+ok("export size menu includes requested presets", await page.evaluate(() =>
+  !!document.querySelector('.rchip[data-v="px:1200x1200"]') &&
+  S.ratio === "px:1200x628" && S.scale === 1));
 await page.click("#expGo");
 const download = await dl;
 const tmp = path.join(ROOT, "tests", ".smoke-export.png");
 await download.saveAs(tmp);
 const size = fs.statSync(tmp).size;
+const png = fs.readFileSync(tmp);
+const width = png.readUInt32BE(16), height = png.readUInt32BE(20);
 fs.unlinkSync(tmp);
 ok("PNG export is non-trivial (" + size + " bytes)", size > 20000);
+ok("PNG export is exactly 1200 × 628", width === 1200 && height === 628);
 
 ok("no console errors", errors.length === 0);
 if (errors.length) console.log("   errors:\n   " + errors.join("\n   "));
