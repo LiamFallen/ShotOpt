@@ -338,6 +338,7 @@
   .expsum{font-size:11px;font-weight:600;color:rgba(0,0,0,.45);background:rgba(0,0,0,.09);
     padding:3px 8px;border-radius:8px;margin-left:2px}
   .exppop{position:fixed;z-index:60;width:288px;padding:17px}
+  .exppop .rsel{margin-bottom:2px}
   .exppop .expdims{margin:13px 2px 13px;font-size:12px;color:var(--faint);
     font-variant-numeric:tabular-nums;text-align:center}
   .exppop .expgo{width:100%;margin-top:8px}
@@ -914,7 +915,13 @@
       <button data-v="jpeg" type="button">JPG</button>
       <button data-v="webp" type="button">WEBP</button>
     </div>
-    <h3>Size</h3>
+    <h3>Canvas size</h3>
+    <button class="rsel" id="expSizeBtn" type="button">
+      <span class="rbx" id="expSizeBox"></span>
+      <span class="rlab" id="expSizeLab">Auto — fit content</span>
+      <span class="rchev">⌄</span>
+    </button>
+    <h3>Resolution</h3>
     <div class="seg" data-key="scale">
       <button data-v="1" type="button">1×</button>
       <button data-v="2" type="button">2×</button>
@@ -1338,6 +1345,7 @@ const RATIOS = [
   ]],
   ["LinkedIn", [
     ["px:1200x627","Post (landscape) — 1200 × 627"],
+    ["px:1200x628","Post (landscape) — 1200 × 628"],
     ["px:1200x1200","Post (square) — 1200 × 1200"],
     ["px:1080x1350","Post (portrait) — 1080 × 1350"],
     ["px:1584x396","Cover banner — 1584 × 396"],
@@ -3181,15 +3189,17 @@ function openExpPop(){
   const r = document.getElementById("exportBtn").getBoundingClientRect();
   expPop.hidden = false;
   expPop.style.top = (r.bottom+8)+"px";
-  expPop.style.right = Math.max(10, window.innerWidth-r.right)+"px";
-  expPop.style.left = "auto";
+  expPop.style.left = Math.max(10,Math.min(r.right-expPop.offsetWidth,
+    window.innerWidth-expPop.offsetWidth-10))+"px";
+  expPop.style.right = "auto";
 }
 document.getElementById("exportBtn").addEventListener("click",e=>{
   e.stopPropagation();
   if(expPop.hidden) openExpPop(); else expPop.hidden = true;
 });
 document.addEventListener("pointerdown",e=>{
-  if(!expPop.hidden && !expPop.contains(e.target) && !e.target.closest("#exportBtn"))
+  if(!expPop.hidden && !expPop.contains(e.target) && !ratioPop.contains(e.target)
+     && !e.target.closest("#exportBtn"))
     expPop.hidden = true;
 });
 document.getElementById("expCopy").addEventListener("click",()=>{
@@ -4103,6 +4113,7 @@ document.getElementById("glowCust").addEventListener("input",e=>{
 const ratioPop = document.createElement("div");
 ratioPop.className = "rpop"; ratioPop.hidden = true;
 document.body.appendChild(ratioPop);
+let ratioAnchor = null;
 function ratioAspect(v){
   const fx = fixedSize(v);
   if(fx) return fx.w/fx.h;
@@ -4113,6 +4124,16 @@ function ratioAspect(v){
 function ratioLabel(v){
   for(const [,items] of RATIOS) for(const it of items) if(it[0]===v) return it[1];
   return v;
+}
+function syncRatioButton(labelId,boxId){
+  document.getElementById(labelId).textContent = ratioLabel(S.ratio);
+  const ar = ratioAspect(S.ratio), box = document.getElementById(boxId);
+  let w = 22, h = 15;
+  if(ar){
+    if(ar>=1){ w = 22; h = Math.max(8,Math.round(22/ar)); }
+    else{ h = 20; w = Math.max(9,Math.round(20*ar)); }
+  }
+  box.style.width = w+"px"; box.style.height = h+"px";
 }
 function buildRatioPop(){
   ratioPop.innerHTML = "";
@@ -4135,31 +4156,43 @@ function buildRatioPop(){
                   + (v.startsWith("px:") ? `<i>${sub}</i>` : "");
       b.querySelector("b").textContent =
         v.startsWith("px:") || v==="auto" || v==="custom" ? name : (sub||name);
-      b.addEventListener("click",()=>{ setKey("ratio",v); closeRatioPop(); });
+      b.addEventListener("click",()=>{
+        S.ratio = v;
+        // Exact sizes selected during export should be exact output pixels.
+        // Users can still raise the resolution multiplier afterwards.
+        if(ratioAnchor?.id==="expSizeBtn" && fixedSize(v)) S.scale = 1;
+        update(); closeRatioPop();
+      });
       g.appendChild(b);
     }
     ratioPop.appendChild(g);
   }
 }
-function openRatioPop(){
+function openRatioPop(anchor){
+  ratioAnchor = anchor;
   buildRatioPop();
   ratioPop.querySelectorAll(".rchip").forEach(c=>
     c.setAttribute("aria-pressed",String(c.dataset.v===S.ratio)));
   ratioPop.hidden = false;
-  const r = document.getElementById("ratioBtn").getBoundingClientRect();
+  const r = anchor.getBoundingClientRect();
   ratioPop.style.left = Math.max(10,Math.min(r.left, window.innerWidth-296-10))+"px";
   const ph = Math.min(ratioPop.scrollHeight, Math.min(560, window.innerHeight*.72));
   let top = r.bottom+8;
   if(top+ph > window.innerHeight-10) top = Math.max(10, window.innerHeight-10-ph);
   ratioPop.style.top = top+"px";
 }
-function closeRatioPop(){ ratioPop.hidden = true; }
+function closeRatioPop(){ ratioPop.hidden = true; ratioAnchor = null; }
 document.getElementById("ratioBtn").addEventListener("click",e=>{
   e.stopPropagation();
-  ratioPop.hidden ? openRatioPop() : closeRatioPop();
+  ratioPop.hidden ? openRatioPop(e.currentTarget) : closeRatioPop();
+});
+document.getElementById("expSizeBtn").addEventListener("click",e=>{
+  e.stopPropagation();
+  ratioPop.hidden ? openRatioPop(e.currentTarget) : closeRatioPop();
 });
 document.addEventListener("pointerdown",e=>{
-  if(!ratioPop.hidden && !ratioPop.contains(e.target) && !e.target.closest("#ratioBtn"))
+  if(!ratioPop.hidden && !ratioPop.contains(e.target)
+     && !e.target.closest("#ratioBtn") && !e.target.closest("#expSizeBtn"))
     closeRatioPop();
 });
 
@@ -4391,13 +4424,8 @@ function syncUI(){
     o.textContent = (Math.round(S[o.dataset.out]*10)/10) + (o.dataset.suffix||"");
   });
   document.querySelectorAll("select[data-key]").forEach(el=>{ el.value = S[el.dataset.key]; });
-  document.getElementById("ratioBtnLab").textContent = ratioLabel(S.ratio);
-  {
-    const ar = ratioAspect(S.ratio), box = document.getElementById("ratioBtnBox");
-    let w = 22, h = 15;
-    if(ar){ if(ar>=1){ w = 22; h = Math.max(8,Math.round(22/ar)); } else{ h = 20; w = Math.max(9,Math.round(20*ar)); } }
-    box.style.width = w+"px"; box.style.height = h+"px";
-  }
+  syncRatioButton("ratioBtnLab","ratioBtnBox");
+  syncRatioButton("expSizeLab","expSizeBox");
   document.querySelectorAll(".seg[data-key]").forEach(g=>{
     g.querySelectorAll("button[data-v]").forEach(b=>
       b.setAttribute("aria-pressed", String(String(S[g.dataset.key])===b.dataset.v)));
@@ -4436,8 +4464,11 @@ function syncUI(){
   }
   document.getElementById("multiOnly").hidden = S.count<2;
   document.getElementById("blurQuick").setAttribute("aria-pressed",String(S.bgBlur>0));
-  document.getElementById("expSum").textContent =
-    `${S.scale}× · ${({png:"PNG",jpeg:"JPG",webp:"WEBP"})[S.format]||"PNG"}`;
+  {
+    const F = frameLayout(), k = exportScale(F);
+    document.getElementById("expSum").textContent =
+      `${Math.round(F.W*k)}×${Math.round(F.H*k)} · ${({png:"PNG",jpeg:"JPG",webp:"WEBP"})[S.format]||"PNG"}`;
+  }
   {
     const gsw = document.getElementById("glowSw");
     let matched = false;
