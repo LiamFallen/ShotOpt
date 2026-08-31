@@ -339,10 +339,13 @@
     padding:3px 8px;border-radius:8px;margin-left:2px}
   .exppop{position:fixed;z-index:60;width:288px;padding:17px}
   .exppop .rsel{margin-bottom:2px}
+  .exppop .expcustom{margin-top:8px}
+  .exppop .expcustom span{color:var(--faint);font-size:11px}
   .exppop .expdims{margin:13px 2px 13px;font-size:12px;color:var(--faint);
     font-variant-numeric:tabular-nums;text-align:center}
   .exppop .expgo{width:100%;margin-top:8px}
   .exppop .expgo:first-of-type{margin-top:0}
+  .exppop .expgo:disabled{opacity:.65;cursor:progress;transform:none}
 
   /* glow colour swatches */
   .glowsw{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
@@ -921,6 +924,11 @@
       <span class="rlab" id="expSizeLab">Auto — fit content</span>
       <span class="rchev">⌄</span>
     </button>
+    <div class="row expcustom" id="expCustomSize" hidden>
+      <input type="number" data-key="cw" min="64" max="8000" step="1" aria-label="Export width" placeholder="Width">
+      <span>×</span>
+      <input type="number" data-key="ch" min="64" max="8000" step="1" aria-label="Export height" placeholder="Height">
+    </div>
     <h3>Resolution</h3>
     <div class="seg" data-key="scale">
       <button data-v="1" type="button">1×</button>
@@ -1880,7 +1888,7 @@ const LOGO_KEY = "shotopt.logo";
 function setWmLogo(dataUrl,persist){
   if(!dataUrl){ wmLogo = null; try{ localStorage.removeItem(LOGO_KEY); }catch(e){} return; }
   const el = new Image();
-  el.onload = ()=>{ wmLogo = el; syncUI(); schedule(); };
+  el.onload = ()=>{ wmLogo = el; clearPreparedExport(); syncUI(); schedule(); };
   el.src = dataUrl;
   if(persist){
     try{ if(dataUrl.length < 400000) localStorage.setItem(LOGO_KEY,dataUrl); }catch(e){}
@@ -3148,7 +3156,7 @@ function renderWmSlot(){
       <button class="x" type="button" title="Remove">✕</button>`;
     wmLogoSlot.querySelector("img").src = wmLogo.src;
     wmLogoSlot.querySelector(".x").addEventListener("click",ev=>{
-      ev.stopPropagation(); setWmLogo(null); syncUI(); schedule();
+      ev.stopPropagation(); setWmLogo(null); clearPreparedExport(); syncUI(); schedule();
     });
   }else{
     wmLogoSlot.className = "slot";
@@ -3185,6 +3193,30 @@ async function toBlob(){
   return new Promise(r=>c.toBlob(r,mime(),.97));
 }
 const expPop = document.getElementById("expPop");
+const expGo = document.getElementById("expGo");
+let imageExportBusy = false, preparedExport = null;
+function clearPreparedExport(){
+  if(preparedExport) URL.revokeObjectURL(preparedExport.url);
+  preparedExport = null;
+}
+function syncExportAction(){
+  if(imageExportBusy) return;
+  expGo.disabled = false;
+  expGo.removeAttribute("aria-busy");
+  expGo.innerHTML = preparedExport ? "↓&nbsp; Download again" : "↓&nbsp; Download image";
+}
+function startPreparedDownload(){
+  if(!preparedExport) return;
+  const a = document.createElement("a");
+  a.href = preparedExport.url;
+  a.download = preparedExport.filename;
+  a.hidden = true;
+  document.body.appendChild(a);
+  a.click();
+  // Keeping the link alive briefly avoids Chrome/Safari dropping a generated
+  // download when its source element disappears in the same task.
+  setTimeout(()=>a.remove(),1000);
+}
 function openExpPop(){
   const r = document.getElementById("exportBtn").getBoundingClientRect();
   expPop.hidden = false;
@@ -3193,29 +3225,52 @@ function openExpPop(){
     window.innerWidth-expPop.offsetWidth-10))+"px";
   expPop.style.right = "auto";
 }
+function closeExpPop(){
+  expPop.hidden = true;
+  if(ratioAnchor?.id==="expSizeBtn") closeRatioPop();
+}
 document.getElementById("exportBtn").addEventListener("click",e=>{
   e.stopPropagation();
-  if(expPop.hidden) openExpPop(); else expPop.hidden = true;
+  if(expPop.hidden) openExpPop(); else closeExpPop();
 });
 document.addEventListener("pointerdown",e=>{
   if(!expPop.hidden && !expPop.contains(e.target) && !ratioPop.contains(e.target)
      && !e.target.closest("#exportBtn"))
-    expPop.hidden = true;
+    closeExpPop();
 });
 document.getElementById("expCopy").addEventListener("click",()=>{
-  expPop.hidden = true;
+  closeExpPop();
   document.getElementById("copyBtn").click();
 });
-document.getElementById("expGo").addEventListener("click",async()=>{
-  const blob = await toBlob();
-  if(!blob){ toast("Export failed"); return; }
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob);
-  a.download = `shotopt-${stamp()}@${S.scale}x.${S.format==="jpeg"?"jpg":S.format}`;
-  document.body.appendChild(a); a.click(); a.remove();
-  setTimeout(()=>URL.revokeObjectURL(a.href),4000);
-  toast(`Exported @${S.scale}×`);
+expGo.addEventListener("click",async()=>{
+  if(imageExportBusy) return;
+  // A prepared retry stays fully synchronous with this click, which works in
+  // browsers that block a download started only after async canvas encoding.
+  if(preparedExport){ startPreparedDownload(); toast("Download started"); return; }
+  imageExportBusy = true;
+  expGo.disabled = true;
+  expGo.setAttribute("aria-busy","true");
+  expGo.textContent = "Rendering image…";
+  await new Promise(requestAnimationFrame);              // paint feedback first
+  try{
+    const blob = await toBlob();
+    if(!blob || !blob.size) throw new Error("empty export");
+    const ext = blob.type==="image/jpeg" ? "jpg" : blob.type==="image/webp" ? "webp" : "png";
+    preparedExport = {
+      url:URL.createObjectURL(blob),
+      filename:`shotopt-${stamp()}@${S.scale}x.${ext}`
+    };
+    startPreparedDownload();
+    toast("Image ready — click Download again if needed");
+  }catch(e){
+    clearPreparedExport();
+    toast("Export failed — try 1× or a smaller size");
+  }finally{
+    imageExportBusy = false;
+    syncExportAction();
+  }
 });
+window.addEventListener("pagehide",clearPreparedExport);
 document.getElementById("copyBtn").addEventListener("click",async()=>{
   if(!window.ClipboardItem || !navigator.clipboard?.write){ toast("Clipboard images unsupported — use Export"); return; }
   try{
@@ -3541,6 +3596,7 @@ let tweenRaf = 0;
 function animateTo(patch,dur){
   dur = dur||420;
   if(tweenRaf){ cancelAnimationFrame(tweenRaf); tweenRaf = 0; }
+  clearPreparedExport();
   const from = {}, to = {};
   const inst = Object.assign({},patch);
   for(const key of TWEENABLE){
@@ -4042,6 +4098,7 @@ function pushHistory(){
 }
 function applySnap(s){
   if(tweenRaf){ cancelAnimationFrame(tweenRaf); tweenRaf = 0; }
+  clearPreparedExport();
   S = Object.assign({},DEFAULTS,JSON.parse(s));
   setPlaying(ANIM.playing);                          // stops if anim became "none"
   renderSlots(); buildSwatches();
@@ -4369,9 +4426,9 @@ function applyMagic(step){
 document.getElementById("shufBtn").addEventListener("click",()=>applyMagic(1));
 
 window.addEventListener("keydown",e=>{
-  if((e.key||"")==="Escape" && !expPop.hidden){ expPop.hidden = true; return; }
-  if((e.key||"")==="Escape" && !cgPop.hidden){ closeCgPop(); return; }
   if((e.key||"")==="Escape" && !ratioPop.hidden){ closeRatioPop(); return; }
+  if((e.key||"")==="Escape" && !expPop.hidden){ closeExpPop(); return; }
+  if((e.key||"")==="Escape" && !cgPop.hidden){ closeCgPop(); return; }
   if((e.key||"")==="Escape" && !tplModal.hidden){ closeTpl(); return; }
   if((e.key||"")==="Escape" && ANN.on){ setAnnotate(false); return; }
   if(/input|textarea|select/i.test(e.target.tagName)) return;
@@ -4448,6 +4505,7 @@ function syncUI(){
     String(S.bg==="custom" || S.bg==="custom-gradient"));
   if(!cgPop.hidden) cgSyncPanel();
   document.getElementById("customSize").hidden = S.ratio!=="custom";
+  document.getElementById("expCustomSize").hidden = S.ratio!=="custom";
   {
     // Offer a one-click composition when the frame and content shapes clash
     // (e.g. a wide screenshot in a square social frame).
@@ -4489,10 +4547,11 @@ function syncUI(){
   if(!vb.dataset.busy) vb.textContent = S.vidFmt==="gif" ? "⬇ Export GIF" : "⬇ Export video";
   document.getElementById("videoHint").textContent =
     S.vidFmt==="gif" ? "GIF · loops forever · up to 800px" : "WebM · renders in your browser";
+  syncExportAction();
   renderWmSlot();
   syncHistoryUI();
 }
-function update(){ save(); syncUI(); schedule(); scheduleThumbs(); pushHistory(); }
+function update(){ clearPreparedExport(); save(); syncUI(); schedule(); scheduleThumbs(); pushHistory(); }
 
 let toastT = 0;
 function toast(msg){
