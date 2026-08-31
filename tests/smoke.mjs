@@ -103,13 +103,26 @@ await page.evaluate(() => {
 ok("annotation stored", await page.evaluate(() => S.annots.length === 1));
 
 // Exact export presets render at their labelled pixel dimensions.
-const dl = page.waitForEvent("download", { timeout: 30000 });
 await page.click("#exportBtn");
+await page.click("#expSizeBtn");
+await page.keyboard.press("Escape");
+ok("Escape closes the nested size picker before Export", await page.evaluate(() =>
+  ratioPop.hidden && !expPop.hidden));
+await page.click("#expSizeBtn");
+await page.click('.rchip[data-v="custom"]');
+ok("custom export dimensions are editable in the Export popover", await page.evaluate(() =>
+  !document.getElementById("expCustomSize").hidden));
+await page.fill('#expCustomSize input[data-key="cw"]', "900");
+await page.fill('#expCustomSize input[data-key="ch"]', "500");
+ok("custom export dimensions update the frame", await page.evaluate(() => {
+  const F = frameLayout(); return F.W === 900 && F.H === 500;
+}));
 await page.click("#expSizeBtn");
 await page.click('.rchip[data-v="px:1200x628"]');
 ok("export size menu includes requested presets", await page.evaluate(() =>
   !!document.querySelector('.rchip[data-v="px:1200x1200"]') &&
   S.ratio === "px:1200x628" && S.scale === 1));
+const dl = page.waitForEvent("download", { timeout: 30000 });
 await page.click("#expGo");
 const download = await dl;
 const tmp = path.join(ROOT, "tests", ".smoke-export.png");
@@ -120,6 +133,18 @@ const width = png.readUInt32BE(16), height = png.readUInt32BE(20);
 fs.unlinkSync(tmp);
 ok("PNG export is non-trivial (" + size + " bytes)", size > 20000);
 ok("PNG export is exactly 1200 × 628", width === 1200 && height === 628);
+ok("completed export offers a synchronous download retry", await page.evaluate(() =>
+  document.getElementById("expGo").textContent.includes("Download again") &&
+  !document.getElementById("expGo").disabled));
+
+const retry = page.waitForEvent("download", { timeout: 10000 });
+await page.click("#expGo");
+await retry;
+ok("prepared export downloads again without re-rendering", true);
+
+await page.evaluate(() => setKey("grain", 23));
+ok("editing the composition invalidates a prepared export", await page.evaluate(() =>
+  document.getElementById("expGo").textContent.includes("Download image")));
 
 ok("no console errors", errors.length === 0);
 if (errors.length) console.log("   errors:\n   " + errors.join("\n   "));
